@@ -15,10 +15,19 @@ namespace UUIDNext.Generator
 
         private void SetVariant(byte[] bytes)
         {
-            bytes[8] |= 0b1000_0000;
-            bytes[8] &= 0b1011_1111;
+            const int variantByte = 8;
+            bytes[variantByte] |= 0b1000_0000;
+            bytes[variantByte] &= 0b1011_1111;
         }
 
-        private void SetVersion(byte[] bytes) => bytes[6] = Version;
+        private void SetVersion(byte[] bytes)
+        {
+            const int versionByte = 7;
+            byte previousValues = bytes[versionByte];
+            int partToKeep = previousValues % 16;
+            int versionPart = Version * 16;
+            byte newValue = (byte)(versionPart + partToKeep);
+            bytes[versionByte] = newValue;
+        }
     }
 }
