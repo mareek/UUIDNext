@@ -10,7 +10,7 @@ namespace UUIDNext.Generator
         {
             SetVersion(bytes);
             SetVariant(bytes);
-            return new Guid(bytes);
+            return new Guid(bytes.AsSpan(0..16));
         }
 
         private void SetVariant(byte[] bytes)
