@@ -14,9 +14,7 @@ namespace UUIDNext.Test.Generator
             for (int i = 0; i < 1000; i++)
             {
                 var newUuid = Uuid.NewV4();
-                var strUuid = newUuid.ToString();
-                Check.That(strUuid[14]).IsEqualTo('4');
-                Check.That(strUuid[19]).IsOneOf('8', '9', 'a', 'b', 'A', 'B');
+                UuidTestHelper.CheckVersionAndVariant(newUuid, 4);
                 Check.That(generatedUuids).Not.Contains(newUuid);
                 generatedUuids.Add(newUuid);
             }

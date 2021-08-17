@@ -22,7 +22,7 @@ namespace UUIDNext.Generator
 
         private void SetVersion(byte[] bytes)
         {
-            const int versionByte = 7;
+            int versionByte = BitConverter.IsLittleEndian ? 7 : 6;
             byte previousValues = bytes[versionByte];
             int partToKeep = previousValues % 16;
             int versionPart = Version * 16;
