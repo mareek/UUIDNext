@@ -12,11 +12,9 @@ namespace UUIDNext.Generator
 
         public Guid New()
         {
-            var bytes = ArrayPool<byte>.Shared.Rent(16);
+            Span<byte> bytes = stackalloc byte[16];
             _rng.GetBytes(bytes);
-            var result = CreateGuidFromBytes(bytes);
-            ArrayPool<byte>.Shared.Return(bytes);
-            return result;
+            return CreateGuidFromBytes(bytes);
         }
     }
 }

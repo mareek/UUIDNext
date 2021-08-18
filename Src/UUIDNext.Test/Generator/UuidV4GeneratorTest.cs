@@ -11,7 +11,7 @@ namespace UUIDNext.Test.Generator
         public void UuidV4DumbTest()
         {
             HashSet<Guid> generatedUuids = new();
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 var newUuid = Uuid.NewV4();
                 UuidTestHelper.CheckVersionAndVariant(newUuid, 4);

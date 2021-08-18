@@ -6,21 +6,21 @@ namespace UUIDNext.Generator
     {
         public abstract byte Version { get; }
 
-        protected Guid CreateGuidFromBytes(byte[] bytes)
+        protected Guid CreateGuidFromBytes(Span<byte> bytes)
         {
             SetVersion(bytes);
             SetVariant(bytes);
-            return new Guid(bytes.AsSpan(0..16));
+            return new Guid(bytes);
         }
 
-        private void SetVariant(byte[] bytes)
+        private void SetVariant(Span<byte> bytes)
         {
             const int variantByte = 8;
             bytes[variantByte] |= 0b1000_0000;
             bytes[variantByte] &= 0b1011_1111;
         }
 
-        private void SetVersion(byte[] bytes)
+        private void SetVersion(Span<byte> bytes)
         {
             int versionByte = BitConverter.IsLittleEndian ? 7 : 6;
             byte previousValues = bytes[versionByte];

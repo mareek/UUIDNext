@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 
 namespace UUIDNext.Generator
 {
     public abstract class UuidNameGeneratorBase : UuidGeneratorBase
     {
-        protected abstract HashAlgorithm HashAlgorithm { get; }
+        protected abstract ThreadLocal<HashAlgorithm> HashAlgorithm { get; }
 
         public Guid New(Guid namespaceId, string name)
         {
@@ -14,25 +15,31 @@ namespace UUIDNext.Generator
             return CreateGuidFromBytes(bytes);
         }
 
-        private byte[] GetUuidBytes(Guid namespaceId, string name)
+        private Span<byte> GetUuidBytes(Guid namespaceId, string name)
         {
             //Convert the name to a canonical sequence of octets (as defined by the standards or conventions of its name space);
-            byte[] utf8NameBytes = Encoding.UTF8.GetBytes(name); ;
+            var utf8NameByteCount = Encoding.UTF8.GetByteCount(name);
+            Span<byte> utf8NameBytes = (utf8NameByteCount > 256) ? new byte[utf8NameByteCount] : stackalloc byte[utf8NameByteCount];
+            Encoding.UTF8.GetBytes(name, utf8NameBytes);
+
             //put the name space ID in network byte order.
-            byte[] namespaceBytes = namespaceId.ToByteArray();
+            Span<byte> namespaceBytes = stackalloc byte[16];
+            namespaceId.TryWriteBytes(namespaceBytes);
             SwitchByteOrderIfNeeded(namespaceBytes);
 
             //Compute the hash of the name space ID concatenated with the name.
-            byte[] bytesToHash = new byte[namespaceBytes.Length + utf8NameBytes.Length];
-            Buffer.BlockCopy(namespaceBytes, 0, bytesToHash, 0, namespaceBytes.Length);
-            Buffer.BlockCopy(utf8NameBytes, 0, bytesToHash, namespaceBytes.Length, utf8NameBytes.Length);
+            int bytesToHashCount = namespaceBytes.Length + utf8NameBytes.Length;
+            Span<byte> bytesToHash = (utf8NameByteCount > 256) ? new byte[bytesToHashCount] : stackalloc byte[bytesToHashCount];
+            namespaceBytes.CopyTo(bytesToHash);
+            utf8NameBytes.CopyTo(bytesToHash[namespaceBytes.Length..]);
 
-            var hash = HashAlgorithm.ComputeHash(bytesToHash);
+            Span<byte> hash = new byte[HashAlgorithm.Value.HashSize / 8];
+            HashAlgorithm.Value.TryComputeHash(bytesToHash, hash, out var _);
             SwitchByteOrderIfNeeded(hash);
-            return hash;
+            return hash[0..16];
         }
 
-        private static void SwitchByteOrderIfNeeded(byte[] guidByteArray)
+        private static void SwitchByteOrderIfNeeded(Span<byte> guidByteArray)
         {
             if (!BitConverter.IsLittleEndian)
             {
@@ -45,9 +52,9 @@ namespace UUIDNext.Generator
             Permut(guidByteArray, 5, 4);
             Permut(guidByteArray, 6, 7);
 
-            static void Permut<T>(T[] array, int indexSource, int indexDest)
+            static void Permut(Span<byte> array, int indexSource, int indexDest)
             {
-                T temp = array[indexDest];
+                var temp = array[indexDest];
                 array[indexDest] = array[indexSource];
                 array[indexSource] = temp;
             }
