@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Security.Cryptography;
 
 namespace UUIDNext.Generator
@@ -7,7 +6,7 @@ namespace UUIDNext.Generator
     public class UuidV4Generator : UuidGeneratorBase
     {
         private readonly RandomNumberGenerator _rng = RandomNumberGenerator.Create();
-        
+
         public override byte Version => 4;
 
         public Guid New()

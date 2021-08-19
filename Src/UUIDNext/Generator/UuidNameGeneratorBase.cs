@@ -33,31 +33,11 @@ namespace UUIDNext.Generator
             namespaceBytes.CopyTo(bytesToHash);
             utf8NameBytes.CopyTo(bytesToHash[namespaceBytes.Length..]);
 
-            Span<byte> hash = new byte[HashAlgorithm.Value.HashSize / 8];
-            HashAlgorithm.Value.TryComputeHash(bytesToHash, hash, out var _);
+            HashAlgorithm hashAlgorithm = HashAlgorithm.Value;
+            Span<byte> hash = new byte[hashAlgorithm.HashSize / 8];
+            hashAlgorithm.TryComputeHash(bytesToHash, hash, out var _);
             SwitchByteOrderIfNeeded(hash);
             return hash[0..16];
-        }
-
-        private static void SwitchByteOrderIfNeeded(Span<byte> guidByteArray)
-        {
-            if (!BitConverter.IsLittleEndian)
-            {
-                // On Big Endian architecture everything is in network byte order so we don't need to switch
-                return;
-            }
-
-            Permut(guidByteArray, 0, 3);
-            Permut(guidByteArray, 1, 2);
-            Permut(guidByteArray, 5, 4);
-            Permut(guidByteArray, 6, 7);
-
-            static void Permut(Span<byte> array, int indexSource, int indexDest)
-            {
-                var temp = array[indexDest];
-                array[indexDest] = array[indexSource];
-                array[indexSource] = temp;
-            }
         }
     }
 }
