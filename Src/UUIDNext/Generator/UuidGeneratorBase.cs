@@ -4,7 +4,7 @@ namespace UUIDNext.Generator
 {
     public abstract class UuidGeneratorBase
     {
-        public abstract byte Version { get; }
+        protected abstract byte Version { get; }
 
         protected Guid CreateGuidFromBytes(Span<byte> bytes)
         {
@@ -25,8 +25,8 @@ namespace UUIDNext.Generator
             int versionByte = BitConverter.IsLittleEndian ? 7 : 6;
             byte previousValue = bytes[versionByte];
             int partToKeep = previousValue % 16;
-            int versionPart = Version * 16;
-            byte newValue = (byte)(versionPart + partToKeep);
+            int versionPart = Version << 4;
+            byte newValue = (byte)(versionPart | partToKeep);
             bytes[versionByte] = newValue;
         }
 

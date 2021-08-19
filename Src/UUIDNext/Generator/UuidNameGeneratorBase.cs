@@ -11,12 +11,6 @@ namespace UUIDNext.Generator
 
         public Guid New(Guid namespaceId, string name)
         {
-            var bytes = GetUuidBytes(namespaceId, name);
-            return CreateGuidFromBytes(bytes);
-        }
-
-        private Span<byte> GetUuidBytes(Guid namespaceId, string name)
-        {
             //Convert the name to a canonical sequence of octets (as defined by the standards or conventions of its name space);
             var utf8NameByteCount = Encoding.UTF8.GetByteCount(name);
             Span<byte> utf8NameBytes = (utf8NameByteCount > 256) ? new byte[utf8NameByteCount] : stackalloc byte[utf8NameByteCount];
@@ -34,10 +28,11 @@ namespace UUIDNext.Generator
             utf8NameBytes.CopyTo(bytesToHash[namespaceBytes.Length..]);
 
             HashAlgorithm hashAlgorithm = HashAlgorithm.Value;
-            Span<byte> hash = new byte[hashAlgorithm.HashSize / 8];
+            Span<byte> hash = stackalloc byte[hashAlgorithm.HashSize / 8];
             hashAlgorithm.TryComputeHash(bytesToHash, hash, out var _);
+
             SwitchByteOrderIfNeeded(hash);
-            return hash[0..16];
+            return CreateGuidFromBytes(hash[0..16]);
         }
     }
 }
