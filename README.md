@@ -1,2 +1,6 @@
 # UUIDNext
- A library to generate UUID V6 and V7 based on the latest RFC Draft
+
+ A fast .NET library to generate UUID/GUID.
+ Supports Version 3, 4, 5, 6\* and 7\*
+
+\* as specified in draft RFC
