@@ -24,14 +24,16 @@ namespace UUIDNext.Test.Generator
             Guid namespaceId1 = Guid.NewGuid();
             Guid namespaceId2 = Guid.NewGuid();
 
-            Check.That(Uuid.NewV5(namespaceId1, UuidTestHelper.LoremIpsum)).IsEqualTo(Uuid.NewV5(namespaceId1, UuidTestHelper.LoremIpsum));
-            Check.That(Uuid.NewV5(namespaceId2, poetry)).IsEqualTo(Uuid.NewV5(namespaceId2, poetry));
-            Check.That(Uuid.NewV5(namespaceId1, UuidTestHelper.LoremIpsum)).IsNotEqualTo(Uuid.NewV5(namespaceId2, UuidTestHelper.LoremIpsum));
-            Check.That(Uuid.NewV5(namespaceId1, UuidTestHelper.LoremIpsum)).IsNotEqualTo(Uuid.NewV5(namespaceId1, poetry));
-            Check.That(Uuid.NewV5(namespaceId1, UuidTestHelper.LoremIpsum)).IsNotEqualTo(Uuid.NewV5(namespaceId2, poetry));
+            UuidV5Generator generator = new();
 
-            UuidTestHelper.CheckVersionAndVariant(Uuid.NewV5(namespaceId1, UuidTestHelper.LoremIpsum), 5);
-            UuidTestHelper.CheckVersionAndVariant(Uuid.NewV5(namespaceId2, poetry), 5);
+            Check.That(generator.New(namespaceId1, UuidTestHelper.LoremIpsum)).IsEqualTo(generator.New(namespaceId1, UuidTestHelper.LoremIpsum));
+            Check.That(generator.New(namespaceId2, poetry)).IsEqualTo(generator.New(namespaceId2, poetry));
+            Check.That(generator.New(namespaceId1, UuidTestHelper.LoremIpsum)).IsNotEqualTo(generator.New(namespaceId2, UuidTestHelper.LoremIpsum));
+            Check.That(generator.New(namespaceId1, UuidTestHelper.LoremIpsum)).IsNotEqualTo(generator.New(namespaceId1, poetry));
+            Check.That(generator.New(namespaceId1, UuidTestHelper.LoremIpsum)).IsNotEqualTo(generator.New(namespaceId2, poetry));
+
+            UuidTestHelper.CheckVersionAndVariant(generator.New(namespaceId1, UuidTestHelper.LoremIpsum), 5);
+            UuidTestHelper.CheckVersionAndVariant(generator.New(namespaceId2, poetry), 5);
         }
     }
 }

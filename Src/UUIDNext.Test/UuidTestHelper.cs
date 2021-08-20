@@ -2,7 +2,7 @@
 using System.Linq;
 using NFluent;
 
-namespace UUIDNext.Test.Generator
+namespace UUIDNext.Test
 {
     internal static class UuidTestHelper
     {
