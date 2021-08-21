@@ -12,14 +12,13 @@ namespace UUIDNext.Generator
         public Guid New(Guid namespaceId, string name)
         {
             //Convert the name to a canonical sequence of octets (as defined by the standards or conventions of its name space);
-            var utf8NameByteCount = Encoding.UTF8.GetByteCount(name);
+            var utf8NameByteCount = Encoding.UTF8.GetByteCount(name.Normalize(NormalizationForm.FormC));
             Span<byte> utf8NameBytes = (utf8NameByteCount > 256) ? new byte[utf8NameByteCount] : stackalloc byte[utf8NameByteCount];
             Encoding.UTF8.GetBytes(name, utf8NameBytes);
 
             //put the name space ID in network byte order.
             Span<byte> namespaceBytes = stackalloc byte[16];
-            namespaceId.TryWriteBytes(namespaceBytes);
-            SwitchByteOrderIfNeeded(namespaceBytes);
+            GuidHelper.TryWriteBigEndianBytes(namespaceId, namespaceBytes);
 
             //Compute the hash of the name space ID concatenated with the name.
             int bytesToHashCount = namespaceBytes.Length + utf8NameBytes.Length;
@@ -31,8 +30,7 @@ namespace UUIDNext.Generator
             Span<byte> hash = stackalloc byte[hashAlgorithm.HashSize / 8];
             hashAlgorithm.TryComputeHash(bytesToHash, hash, out var _);
 
-            SwitchByteOrderIfNeeded(hash);
-            return CreateGuidFromBytes(hash[0..16]);
+            return CreateGuidFromBigEndianBytes(hash[0..16]);
         }
     }
 }

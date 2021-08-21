@@ -48,8 +48,7 @@ namespace UUIDNext.Generator
             SetSubSecB(bytes[6..8], unixTimeStamp);
             _rng.GetBytes(bytes[8..16]);
 
-            SwitchByteOrderIfNeeded(bytes);
-            return CreateGuidFromBytes(bytes);
+            return CreateGuidFromBigEndianBytes(bytes);
         }
 
         private void SetTimestamp(Span<byte> bytes, TimeSpan unixTimeStamp)

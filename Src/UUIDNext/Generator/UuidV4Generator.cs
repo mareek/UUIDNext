@@ -16,7 +16,7 @@ namespace UUIDNext.Generator
         {
             Span<byte> bytes = stackalloc byte[16];
             _rng.GetBytes(bytes);
-            return CreateGuidFromBytes(bytes);
+            return CreateGuidFromBigEndianBytes(bytes);
         }
     }
 }

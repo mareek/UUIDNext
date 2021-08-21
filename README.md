@@ -1,7 +1,6 @@
 # UUIDNext
 
- A fast and modern .NET library to generate UUID/GUID.
- Supports Version 3, 4, 5, 6 and 7
+ A fast and modern .NET library to generate UUID/GUID that are either name based (versions 3 & 5), sequential (versions 6 & 7) or random (version 4).
 
 ## How to Install
 
@@ -18,3 +17,9 @@ UUID Version 6 and 7 are intended to be used as a primary key in a database. The
 ## Why creating a new Library ? is there a problem with Guid.NewGuid() ?
 
 As I said, UUIDs V4 produced by Guid.NewGuid() are fine when tey are not used in the scenarios described above and there's no reason to stop using them. But if you find yourself in a position where UUID V4 is suboptimal, this library is for you.
+
+## Resources
+
+[RFC 4122](https://datatracker.ietf.org/doc/html/rfc4122) : The standard for UUID Version 1 to 5.
+
+[Draft UUID V6 RFC](https://github.com/uuid6/uuid6-ietf-draft) : The proposed standard for UUID Version 6 to 8
