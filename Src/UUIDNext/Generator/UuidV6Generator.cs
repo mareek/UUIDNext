@@ -52,5 +52,24 @@ namespace UUIDNext.Generator
             short sequence = GetSequenceNumber(unixTimeStamp);
             BinaryPrimitives.TryWriteInt16BigEndian(bytes, sequence);
         }
+
+        public (long timestamp, short sequence) Decode(Guid guid)
+        {
+            Span<byte> bytes = stackalloc byte[16];
+            GuidHelper.TryWriteBigEndianBytes(guid, bytes);
+
+            var timestampBytes = bytes[0..8];
+            //remove version information
+            timestampBytes[6] = (byte)((timestampBytes[6] << 4) | (timestampBytes[7] >> 4));
+            timestampBytes[7] = (byte)(timestampBytes[7] << 4);
+            long timestamp = BinaryPrimitives.ReadInt64BigEndian(timestampBytes) >> 4;
+
+            var sequenceBytes = bytes[8..10];
+            //remove variant information
+            sequenceBytes[0] &= 0b0011_1111;
+            short sequence = BinaryPrimitives.ReadInt16BigEndian(sequenceBytes);
+
+            return (timestamp, sequence);
+        }
     }
 }

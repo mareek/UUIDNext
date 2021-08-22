@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using UUIDNext.Generator;
+
+[assembly: InternalsVisibleTo("UUIDNext.Test")]
 
 namespace UUIDNext
 {
