@@ -1,46 +1,14 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using NFluent;
 using UUIDNext.Generator;
-using Xunit;
 
 namespace UUIDNext.Test.Generator
 {
-    public class UuidV6GeneratorTest
+    public class UuidV6GeneratorTest : UuidTimestampGeneratorBaseTest
     {
-        [Fact]
-        public void DumbTest()
-        {
-            ConcurrentBag<Guid> generatedUuids = new();
-            UuidV6Generator generator = new();
+        private readonly UuidV6Generator _generator = new();
 
-            Parallel.For(0, 100, _ => generatedUuids.Add(generator.New()));
+        protected override byte Version => 6;
 
-            Check.That(generatedUuids).ContainsNoDuplicateItem();
-
-            foreach (var uuid in generatedUuids)
-            {
-                UuidTestHelper.CheckVersionAndVariant(uuid, 6);
-            }
-        }
-
-        [Fact]
-        public void OrderTest()
-        {
-            UuidV6Generator generator = new();
-            Span<Guid> guids = stackalloc Guid[100];
-            for (int i = 0; i < 100; i++)
-            {
-                guids[i] = generator.New();
-            }
-
-            var comparer = new GuidComparer();
-            for (int i = 1; i < guids.Length; i++)
-            {
-                Check.That(comparer.Compare(guids[i - 1], guids[i])).IsStrictlyLessThan(0);
-            }
-        }
-
+        protected override Guid NewUuid() => _generator.New();
     }
 }

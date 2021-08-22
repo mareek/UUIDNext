@@ -2,14 +2,14 @@
 
 namespace UUIDNext.Generator
 {
-    public abstract class UUIDSequenceGeneratorBase : UuidGeneratorBase
+    public abstract class UuidTimestampGeneratorBase : UuidGeneratorBase
     {
         protected readonly RandomNumberGenerator _rng;
 
         private long _lastUsedTimestamp;
         private short _monotonicSequence;
 
-        protected UUIDSequenceGeneratorBase()
+        protected UuidTimestampGeneratorBase()
         {
             _rng = RandomNumberGenerator.Create();
             _lastUsedTimestamp = 0;

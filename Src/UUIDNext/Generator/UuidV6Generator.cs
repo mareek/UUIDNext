@@ -6,7 +6,7 @@ namespace UUIDNext.Generator
     /// <summary>
     /// Generate a UUID version 6 based on RFC draft at https://github.com/uuid6/uuid6-ietf-draft/
     /// </summary>
-    public class UuidV6Generator : UUIDSequenceGeneratorBase
+    public class UuidV6Generator : UuidTimestampGeneratorBase
     {
         private static readonly long GregorianCalendarStart = new DateTime(1582, 10, 15, 0, 0, 0, DateTimeKind.Utc).Ticks;
 
