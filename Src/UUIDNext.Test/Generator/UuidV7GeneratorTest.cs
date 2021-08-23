@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading.Tasks;
 using NFluent;
 using UUIDNext.Generator;
 using Xunit;
@@ -44,6 +47,21 @@ namespace UUIDNext.Test.Generator
             Check.That(timestampI).IsEqualTo(timestampO);
             Check.That(timestampMsI).IsNotEqualTo(timestampMsO);
             Check.That(sequenceI).IsEqualTo(0);
+        }
+
+        [Fact]
+        public void TestSequenceMultiThread()
+        {
+            UuidV7Generator generator = new();
+            var date = DateTime.UtcNow.Date;
+
+            ConcurrentBag<Guid> generatedUuids = new();
+            Parallel.For(0, 100, _ => generatedUuids.Add(generator.NewInternal(date)));
+
+            var uuidsParts = generatedUuids.Select(u => generator.Decode(u)).ToArray();
+            Check.That(uuidsParts.Select(x => x.sequence)).ContainsNoDuplicateItem();
+            Check.That(uuidsParts.Select(x => x.timestamp).Distinct()).HasSize(1);
+            Check.That(uuidsParts.Select(x => x.timestampMs).Distinct()).HasSize(1);
         }
     }
 }
