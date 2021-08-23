@@ -1,10 +1,10 @@
 # UUIDNext
 
- A fast and modern .NET library to generate UUID/GUID that are either name based (versions 3 & 5), sequential (versions 6 & 7) or random (version 4).
+ A fast and modern .NET library to generate UUID/GUID that are either name based (versions 3 & 5), sequential and database friendly (versions 6 & 7) or random (version 4).
 
 ## How to Install
 
-Download the source code, compile it and copy the resulting library to your project folder (a nuget package is in the works)
+UUIDNext is [available on nuget.org](https://www.nuget.org/packages/UUIDNext/)
 
 ## What are all these versions ? I didn't know there were so many types of GUID
 
