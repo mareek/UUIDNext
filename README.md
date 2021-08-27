@@ -1,10 +1,28 @@
 # UUIDNext
 
- A fast and modern .NET library to generate UUID/GUID that are either name based (versions 3 & 5), sequential and database friendly (versions 6 & 7) or random (version 4).
+A fast and modern .NET library to generate UUID/GUID that are either sequential and database friendly (versions 7), name based (versions  5) or random (version 4).
 
 ## How to Install
 
 UUIDNext is [available on nuget.org](https://www.nuget.org/packages/UUIDNext/)
+
+## How to Use
+
+```C#
+using System;
+using UUIDNext;
+
+// Creating a database friendly UUID (version 7)
+Guid sequentialUuid = Uuid.NewDatabaseFriendly();
+Console.WriteLine($"This is a database friendly UUID : {sequentialUuid}");
+
+
+
+// Creating a name based UUID (Version 5)
+Guid urlNamespaceId = Guid.Parse("6ba7b811-9dad-11d1-80b4-00c04fd430c8");
+Guid nameBasedUuid = Uuid.NewNameBased(urlNamespaceId, "https://github.com/uuid6/uuid6-ietf-draft");
+Console.WriteLine($"This is a name based URI : {nameBasedUuid}");
+```
 
 ## What are all these versions ? I didn't know there were so many types of GUID
 
@@ -16,7 +34,7 @@ UUID Version 6 and 7 are intended to be used as a primary key in a database. The
 
 ## Why creating a new Library ? is there a problem with Guid.NewGuid() ?
 
-As I said, UUIDs V4 produced by Guid.NewGuid() are fine when tey are not used in the scenarios described above and there's no reason to stop using them. But if you find yourself in a position where UUID V4 is suboptimal, this library is for you.
+As I said, UUIDs V4 produced by Guid.NewGuid() are fine when they are not used in the scenarios described above and there's no reason to stop using them. But if you find yourself in a position where UUID V4 is suboptimal, this library is for you.
 
 ## Resources
 
