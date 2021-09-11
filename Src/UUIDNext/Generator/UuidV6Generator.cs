@@ -15,7 +15,7 @@ namespace UUIDNext.Generator
         public Guid New() => NewInternal(DateTime.UtcNow);
 
         //For unit tests
-        internal Guid NewInternal(DateTime date)
+        private Guid NewInternal(DateTime date)
         {
             /* UUID V6 layout
               0                   1                   2                   3

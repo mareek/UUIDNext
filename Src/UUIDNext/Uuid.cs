@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using UUIDNext.Generator;
-
-[assembly: InternalsVisibleTo("UUIDNext.Test")]
 
 namespace UUIDNext
 {
@@ -12,9 +9,26 @@ namespace UUIDNext
         private static readonly UuidV5Generator _v5Generator = new();
         private static readonly UuidV4Generator _v4Generator = new();
 
+        /// <summary>
+        /// Create a new UUID Version 7
+        /// </summary>
         public static Guid NewDatabaseFriendly() => _v7Generator.New();
+
+        /// <summary>
+        /// Create a new UUID Version 5
+        /// </summary>
+        /// <param name="namespaceId">the name space ID</param>
+        /// <param name="name">the name from which to generate the UUID</param>
         public static Guid NewNameBased(Guid namespaceId, string name) => _v5Generator.New(namespaceId, name);
+
+        /// <summary>
+        /// Create a new UUID Version 4
+        /// </summary>
         public static Guid NewRandom() => _v4Generator.New();
+
+        /// <summary>
+        /// Create a new UUID Version 7
+        /// </summary>
         public static Guid NewSequential() => _v7Generator.New();
     }
 }

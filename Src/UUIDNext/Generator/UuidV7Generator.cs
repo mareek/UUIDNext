@@ -13,7 +13,7 @@ namespace UUIDNext.Generator
         public Guid New() => NewInternal(DateTime.UtcNow);
 
         //For unit tests
-        internal Guid NewInternal(DateTime date)
+        private Guid NewInternal(DateTime date)
         {
             /* We implement the first example given in section 4.4.4.1 of the RFC
               0                   1                   2                   3
