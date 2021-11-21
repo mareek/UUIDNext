@@ -7,7 +7,7 @@ namespace UUIDNext.Generator
         protected readonly RandomNumberGenerator _rng;
 
         private long _lastUsedTimestamp;
-        private short _monotonicSequence;
+        private int _monotonicSequence;
 
         protected UuidTimestampGeneratorBase()
         {
@@ -16,7 +16,7 @@ namespace UUIDNext.Generator
             _monotonicSequence = 0;
         }
 
-        protected short GetSequenceNumber(long timestamp)
+        protected int GetSequenceNumber(long timestamp)
         {
             lock (this)
             {

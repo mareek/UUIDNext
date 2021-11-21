@@ -16,10 +16,19 @@ namespace UUIDNext.Test
             Check.That(strUuid[19]).IsOneOf('8', '9', 'a', 'b', 'A', 'B');
         }
 
-        public static Guid NewInternal(this UuidTimestampGeneratorBase generator, DateTime date)
+        public static Guid NewInternal(this UuidV6Generator generator, DateTime date)
         {
             var newInternalMethod = generator.GetType().GetMethod("NewInternal", BindingFlags.Instance | BindingFlags.NonPublic);
             return (Guid)newInternalMethod.Invoke(generator, new object[] { date });
+        }
+
+        public static bool TryGenerateNew(this UuidTimestampGeneratorBase generator, DateTime date, out Guid newUuid)
+        {
+            var tryGenerateNewMethod = generator.GetType().GetMethod("TryGenerateNew", BindingFlags.Instance | BindingFlags.NonPublic);
+            object[] parameters = { date, Guid.Empty };
+            object result = tryGenerateNewMethod.Invoke(generator, parameters);
+            newUuid = (Guid)parameters[1];
+            return (bool)result;
         }
     }
 }

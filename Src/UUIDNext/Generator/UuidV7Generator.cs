@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers.Binary;
+using System.Threading;
 
 namespace UUIDNext.Generator
 {
@@ -10,10 +11,25 @@ namespace UUIDNext.Generator
     {
         protected override byte Version => 7;
 
-        public Guid New() => NewInternal(DateTime.UtcNow);
+        public Guid New()
+        {
+            const int MaxAttempt = 10;
+            int attemptCount = 0;
+            do
+            {
+                if (TryGenerateNew(DateTime.UtcNow, out Guid newUuid))
+                {
+                    return newUuid;
+                }
+                attemptCount++;
+                Thread.Sleep(1);
+            } while (attemptCount < MaxAttempt);
+
+            throw new Exception($"There are been too much attempt to generate an UUID withtin the last {MaxAttempt} ms");
+        }
 
         //For unit tests
-        private Guid NewInternal(DateTime date)
+        private bool TryGenerateNew(DateTime date, out Guid newUuid)
         {
             /* We implement the first example given in section 4.4.4.1 of the RFC
               0                   1                   2                   3
@@ -33,12 +49,34 @@ namespace UUIDNext.Generator
 
             TimeSpan unixTimeStamp = date - DateTime.UnixEpoch;
 
+            if (!TrySetSequence(bytes[6..8], unixTimeStamp))
+            {
+                newUuid = Guid.Empty;
+                return false;
+            }
+
             SetTimestampSeconds(bytes[0..5], unixTimeStamp);
             SetTimestampMs(bytes[4..6], unixTimeStamp);
-            SetSequence(bytes[6..8], unixTimeStamp);
             _rng.GetBytes(bytes[8..16]);
 
-            return CreateGuidFromBigEndianBytes(bytes);
+            newUuid = CreateGuidFromBigEndianBytes(bytes);
+            return true;
+        }
+
+        private bool TrySetSequence(Span<byte> bytes, TimeSpan unixTimeStamp)
+        {
+            // the sequence number is store on 12 bits so the maximum value is 2¹²-1
+            const int maxSequenceValue = 4095; 
+
+            long timestampInMs = Convert.ToInt64(Math.Floor(unixTimeStamp.TotalMilliseconds));
+            int sequence = GetSequenceNumber(timestampInMs);
+            if (sequence > maxSequenceValue)
+            {
+                return false;
+            }
+
+            BinaryPrimitives.TryWriteUInt16BigEndian(bytes, (ushort)sequence);
+            return true;
         }
 
         private void SetTimestampSeconds(Span<byte> bytes, TimeSpan unixTimeStamp)
@@ -61,13 +99,6 @@ namespace UUIDNext.Generator
             // as the 6 upper bits of the milliseconds will alaways be 0 we can simply add the two bytes
             bytes[0] |= timestampMsBytes[0];
             bytes[1] = timestampMsBytes[1];
-        }
-
-        private void SetSequence(Span<byte> bytes, TimeSpan unixTimeStamp)
-        {
-            long timestampInMs = Convert.ToInt64(Math.Floor(unixTimeStamp.TotalMilliseconds));
-            short sequence = GetSequenceNumber(timestampInMs);
-            BinaryPrimitives.TryWriteInt16BigEndian(bytes, sequence);
         }
 
         public (long timestamp, short timestampMs, short sequence) Decode(Guid guid)

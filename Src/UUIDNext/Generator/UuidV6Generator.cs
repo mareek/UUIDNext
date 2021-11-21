@@ -49,8 +49,8 @@ namespace UUIDNext.Generator
 
         private void SetSequenceBytes(Span<byte> bytes, long unixTimeStamp)
         {
-            short sequence = GetSequenceNumber(unixTimeStamp);
-            BinaryPrimitives.TryWriteInt16BigEndian(bytes, sequence);
+            int sequence = GetSequenceNumber(unixTimeStamp);
+            BinaryPrimitives.TryWriteUInt16BigEndian(bytes, (ushort)sequence);
         }
 
         public (long timestamp, short sequence) Decode(Guid guid)
