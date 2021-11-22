@@ -21,14 +21,14 @@ Console.WriteLine($"This is a database friendly UUID : {sequentialUuid}");
 // Creating a name based UUID (Version 5)
 Guid urlNamespaceId = Guid.Parse("6ba7b811-9dad-11d1-80b4-00c04fd430c8");
 Guid nameBasedUuid = Uuid.NewNameBased(urlNamespaceId, "https://github.com/uuid6/uuid6-ietf-draft");
-Console.WriteLine($"This is a name based URI : {nameBasedUuid}");
+Console.WriteLine($"This is a name based UUID : {nameBasedUuid}");
 ```
 
 ## What are all these versions ? I didn't know there were so many types of GUID
 
-The traditional GUID (a.k.a UUID Version 4) is fine and works really well to it's intended use. But it's random nature is problematic in some scenarios that's why other UUID versions have been created.
+The traditional GUID (a.k.a UUID Version 4) is fine and works really well for it's intended use. But its random nature is problematic in some scenarios that's why other UUID versions have been created.
 
-UUID Version 3 and 5 are name-based UUIDs. They take a namespace and an name as input and produce a hash-like UUID. Usage of Version 3 is discouraged as it is based on the obsolete MD5 hash function.
+UUID Version 3 and 5 are name-based UUIDs. They take a namespace and a name as input and produce a hash-like UUID. Usage of Version 3 is discouraged as it is based on the obsolete MD5 hash function.
 
 UUID Version 6 and 7 are intended to be used as a primary key in a database. The randomness of UUID V4 has a negative impact on performance when used as a key in a database and UUID V1 exposed the MAC address of the machine where it was created. UUID V6 & 7 aims to take the best of both worlds without their drawbacks. They are currently at the draft stage so their structure and implementation may change.
 
