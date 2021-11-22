@@ -10,13 +10,14 @@ namespace UUIDNext.Test.Generator
     public abstract class UuidTimestampGeneratorBaseTest
     {
         protected abstract byte Version { get; }
-        protected abstract Guid NewUuid();
+        protected abstract UuidTimestampGeneratorBase GetNewGenerator();
 
         [Fact]
         public void DumbTest()
         {
+            var generator = GetNewGenerator();
             ConcurrentBag<Guid> generatedUuids = new();
-            Parallel.For(0, 100, _ => generatedUuids.Add(NewUuid()));
+            Parallel.For(0, 100, _ => generatedUuids.Add(generator.New()));
 
             Check.That(generatedUuids).ContainsNoDuplicateItem();
 
@@ -29,10 +30,11 @@ namespace UUIDNext.Test.Generator
         [Fact]
         public void OrderTest()
         {
+            var generator = GetNewGenerator();
             Span<Guid> guids = stackalloc Guid[100];
             for (int i = 0; i < 100; i++)
             {
-                guids[i] = NewUuid();
+                guids[i] = generator.New();
             }
 
             var comparer = new GuidComparer();
@@ -40,6 +42,19 @@ namespace UUIDNext.Test.Generator
             {
                 Check.That(comparer.Compare(guids[i - 1], guids[i])).IsStrictlyLessThan(0);
             }
+        }
+
+        [Fact]
+        public void TestSequenceOverflow()
+        {
+            var generator = GetNewGenerator();
+            var date = DateTime.UtcNow.Date;
+
+            ConcurrentBag<bool> succeses = new();
+            Parallel.For(0, generator.GetSequenceMaxValue() + 1, _ => succeses.Add(generator.TryGenerateNew(date, out var _)));
+
+            Check.That(succeses).ContainsOnlyElementsThatMatch(e => e);
+            Check.That(generator.TryGenerateNew(date, out var _)).IsFalse();
         }
     }
 }

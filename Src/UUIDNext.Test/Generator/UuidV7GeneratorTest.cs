@@ -10,11 +10,9 @@ namespace UUIDNext.Test.Generator
 {
     public class UuidV7GeneratorTest : UuidTimestampGeneratorBaseTest
     {
-        private readonly UuidV7Generator _generator = new();
-
         protected override byte Version => 7;
 
-        protected override Guid NewUuid() => _generator.New();
+        protected override UuidTimestampGeneratorBase GetNewGenerator() => new UuidV7Generator();
 
         [Fact]
         public void TestSequence()
@@ -62,19 +60,6 @@ namespace UUIDNext.Test.Generator
             Check.That(uuidsParts.Select(x => x.sequence)).ContainsNoDuplicateItem();
             Check.That(uuidsParts.Select(x => x.timestamp).Distinct()).HasSize(1);
             Check.That(uuidsParts.Select(x => x.timestampMs).Distinct()).HasSize(1);
-        }
-
-        [Fact]
-        public void TestSequenceOverflow()
-        {
-            UuidV7Generator generator = new();
-            var date = DateTime.UtcNow.Date;
-
-            ConcurrentBag<bool> succeses = new();
-            Parallel.For(0, generator.GetSequenceMaxValue() + 1, _ => succeses.Add(generator.TryGenerateNew(date, out var _)));
-
-            Check.That(succeses).ContainsOnlyElementsThatMatch(e => e);
-            Check.That(generator.TryGenerateNew(date, out var _)).IsFalse();
         }
     }
 }
