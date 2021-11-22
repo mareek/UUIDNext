@@ -71,7 +71,7 @@ namespace UUIDNext.Test.Generator
             var date = DateTime.UtcNow.Date;
 
             ConcurrentBag<bool> succeses = new();
-            Parallel.For(0, 4096, _ => succeses.Add(generator.TryGenerateNew(date, out var _)));
+            Parallel.For(0, generator.GetSequenceMaxValue() + 1, _ => succeses.Add(generator.TryGenerateNew(date, out var _)));
 
             Check.That(succeses).ContainsOnlyElementsThatMatch(e => e);
             Check.That(generator.TryGenerateNew(date, out var _)).IsFalse();

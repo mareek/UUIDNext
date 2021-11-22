@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers.Binary;
-using System.Threading;
 
 namespace UUIDNext.Generator
 {
@@ -11,25 +10,10 @@ namespace UUIDNext.Generator
     {
         protected override byte Version => 7;
 
-        public Guid New()
-        {
-            const int MaxAttempt = 10;
-            int attemptCount = 0;
-            do
-            {
-                if (TryGenerateNew(DateTime.UtcNow, out Guid newUuid))
-                {
-                    return newUuid;
-                }
-                attemptCount++;
-                Thread.Sleep(1);
-            } while (attemptCount < MaxAttempt);
+        // the sequence number is stored on 12 bits so the maximum value is 2¹²-1
+        protected override int SequenceMaxValue => 4095;
 
-            throw new Exception($"There are been too much attempt to generate an UUID withtin the last {MaxAttempt} ms");
-        }
-
-        //For unit tests
-        private bool TryGenerateNew(DateTime date, out Guid newUuid)
+        protected override bool TryGenerateNew(DateTime date, out Guid newUuid)
         {
             /* We implement the first example given in section 4.4.4.1 of the RFC
               0                   1                   2                   3
@@ -65,12 +49,8 @@ namespace UUIDNext.Generator
 
         private bool TrySetSequence(Span<byte> bytes, TimeSpan unixTimeStamp)
         {
-            // the sequence number is store on 12 bits so the maximum value is 2¹²-1
-            const int maxSequenceValue = 4095; 
-
             long timestampInMs = Convert.ToInt64(Math.Floor(unixTimeStamp.TotalMilliseconds));
-            int sequence = GetSequenceNumber(timestampInMs);
-            if (sequence > maxSequenceValue)
+            if (!TryGetSequenceNumber(timestampInMs, out int sequence ))
             {
                 return false;
             }

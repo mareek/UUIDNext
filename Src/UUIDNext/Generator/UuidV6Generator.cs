@@ -12,10 +12,10 @@ namespace UUIDNext.Generator
 
         protected override byte Version => 6;
 
-        public Guid New() => NewInternal(DateTime.UtcNow);
+        // the sequence number is stored on 14 bits so the maximum value is 2¹⁴-1
+        protected override int SequenceMaxValue => 16383;
 
-        //For unit tests
-        private Guid NewInternal(DateTime date)
+        protected override bool TryGenerateNew(DateTime date, out Guid newUuid)
         {
             /* UUID V6 layout
               0                   1                   2                   3
@@ -33,13 +33,21 @@ namespace UUIDNext.Generator
 
             Span<byte> bytes = stackalloc byte[16];
             long timestamp = date.Ticks - GregorianCalendarStart;
-            SetTimestampBytes(bytes[0..8], timestamp);
-            SetSequenceBytes(bytes[8..10], timestamp);
+
+            if (!TrySetSequence(bytes[8..10], timestamp))
+            {
+                newUuid = Guid.Empty;
+                return false;
+            }
+
+            SetTimestamp(bytes[0..8], timestamp);
             _rng.GetBytes(bytes[10..16]);
-            return CreateGuidFromBigEndianBytes(bytes);
+
+            newUuid = CreateGuidFromBigEndianBytes(bytes);
+            return true;
         }
 
-        private static void SetTimestampBytes(Span<byte> bytes, long timestamp)
+        private static void SetTimestamp(Span<byte> bytes, long timestamp)
         {
             BinaryPrimitives.TryWriteInt64BigEndian(bytes, timestamp << 4);
             //shift lower 12 bits to make room for version Bits
@@ -47,10 +55,15 @@ namespace UUIDNext.Generator
             bytes[6] = (byte)(bytes[6] >> 4);
         }
 
-        private void SetSequenceBytes(Span<byte> bytes, long unixTimeStamp)
+        private bool TrySetSequence(Span<byte> bytes, long unixTimeStamp)
         {
-            int sequence = GetSequenceNumber(unixTimeStamp);
+            if (!TryGetSequenceNumber(unixTimeStamp, out int sequence))
+            {
+                return false;
+            }
+
             BinaryPrimitives.TryWriteUInt16BigEndian(bytes, (ushort)sequence);
+            return true;
         }
 
         public (long timestamp, short sequence) Decode(Guid guid)

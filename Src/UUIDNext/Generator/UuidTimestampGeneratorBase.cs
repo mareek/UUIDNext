@@ -1,4 +1,6 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Security.Cryptography;
+using System.Threading;
 
 namespace UUIDNext.Generator
 {
@@ -16,7 +18,34 @@ namespace UUIDNext.Generator
             _monotonicSequence = 0;
         }
 
-        protected int GetSequenceNumber(long timestamp)
+        protected abstract int SequenceMaxValue { get; }
+
+        public Guid New()
+        {
+            const int MaxAttempt = 10;
+            int attemptCount = 0;
+            do
+            {
+                if (TryGenerateNew(DateTime.UtcNow, out Guid newUuid))
+                {
+                    return newUuid;
+                }
+                attemptCount++;
+                Thread.Sleep(1);
+            } while (attemptCount < MaxAttempt);
+
+            throw new Exception($"There are been too much attempt to generate an UUID withtin the last {MaxAttempt} ms");
+        }
+
+        protected abstract bool TryGenerateNew(DateTime date, out Guid newUuid);
+
+        protected bool TryGetSequenceNumber(long timestamp, out int sequence)
+        {
+            sequence = GetSequenceNumber(timestamp);
+            return sequence <= SequenceMaxValue;
+        }
+
+        private int GetSequenceNumber(long timestamp)
         {
             lock (this)
             {

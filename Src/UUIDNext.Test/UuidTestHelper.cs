@@ -16,12 +16,6 @@ namespace UUIDNext.Test
             Check.That(strUuid[19]).IsOneOf('8', '9', 'a', 'b', 'A', 'B');
         }
 
-        public static Guid NewInternal(this UuidV6Generator generator, DateTime date)
-        {
-            var newInternalMethod = generator.GetType().GetMethod("NewInternal", BindingFlags.Instance | BindingFlags.NonPublic);
-            return (Guid)newInternalMethod.Invoke(generator, new object[] { date });
-        }
-
         public static bool TryGenerateNew(this UuidTimestampGeneratorBase generator, DateTime date, out Guid newUuid)
         {
             var tryGenerateNewMethod = generator.GetType().GetMethod("TryGenerateNew", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -30,5 +24,12 @@ namespace UUIDNext.Test
             newUuid = (Guid)parameters[1];
             return (bool)result;
         }
+
+        public static int GetSequenceMaxValue(this UuidTimestampGeneratorBase generator)
+        {
+            var sequenceMaxValueProperty = generator.GetType().GetProperty("SequenceMaxValue", BindingFlags.Instance | BindingFlags.NonPublic);
+            return (int)sequenceMaxValueProperty.GetValue(generator, null);
+        }
+
     }
 }
