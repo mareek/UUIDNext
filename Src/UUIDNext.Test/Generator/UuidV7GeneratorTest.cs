@@ -61,5 +61,29 @@ namespace UUIDNext.Test.Generator
             Check.That(uuidsParts.Select(x => x.timestamp).Distinct()).HasSize(1);
             Check.That(uuidsParts.Select(x => x.timestampMs).Distinct()).HasSize(1);
         }
+
+        [Theory]
+        [InlineData(0, 0, 0)]
+        [InlineData(500, 0b0000_1000, 0)]
+        [InlineData(937.5, 0b0000_1111, 0)]
+        [InlineData(31.25, 0, 0b1000_0000)]
+        [InlineData(0.48828125, 0, 0b10)]
+        public void TestSubSecondEncoding(double msValue, int expectedMsUpperByte, int expectedMsLowerByte)
+        {
+            UuidV7Generator generator = new();
+
+            var msValueInTicks = msValue * 10_000;
+            generator.TryGenerateNew(DateTime.Today.AddTicks((long)msValueInTicks), out var guid);
+
+            Span<byte> guidBytes = stackalloc byte[16];
+            GuidHelper.TryWriteBigEndianBytes(guid, guidBytes);
+            var msUpperByte = 0b0000_1111 & guidBytes[4];
+            var msLowerByte = guidBytes[5];
+
+            Check.That(msUpperByte).IsEqualTo(expectedMsUpperByte);
+            Check.That(msLowerByte).IsEqualTo(expectedMsLowerByte);
+
+            Check.That(generator.Decode(guid).timestampMs).IsEqualTo(msValue);
+        }
     }
 }

@@ -40,7 +40,7 @@ namespace UUIDNext.Generator
             }
 
             SetTimestampSeconds(bytes[0..5], unixTimeStamp);
-            SetTimestampMs(bytes[4..6], unixTimeStamp);
+            SetTimestampSubsecond(bytes[4..6], unixTimeStamp);
             _rng.GetBytes(bytes[8..16]);
 
             newUuid = CreateGuidFromBigEndianBytes(bytes);
@@ -50,7 +50,7 @@ namespace UUIDNext.Generator
         private bool TrySetSequence(Span<byte> bytes, TimeSpan unixTimeStamp)
         {
             long timestampInMs = Convert.ToInt64(Math.Floor(unixTimeStamp.TotalMilliseconds));
-            if (!TryGetSequenceNumber(timestampInMs, out int sequence ))
+            if (!TryGetSequenceNumber(timestampInMs, out int sequence))
             {
                 return false;
             }
@@ -70,18 +70,21 @@ namespace UUIDNext.Generator
             timestampinSecondsBytes[3..8].CopyTo(bytes);
         }
 
-        private void SetTimestampMs(Span<byte> bytes, TimeSpan unixTimeStamp)
+        private void SetTimestampSubsecond(Span<byte> bytes, TimeSpan unixTimeStamp)
         {
-            short timestampMs = (short)unixTimeStamp.Milliseconds;
+            // See RFC Section 4.4.4.2. UUIDv7 Decoding for more details
+            double subSecondTimestamp = unixTimeStamp.TotalSeconds % 1;
+            short timestampMs = (short)(4096 * subSecondTimestamp);
             Span<byte> timestampMsBytes = stackalloc byte[2];
             BinaryPrimitives.TryWriteInt16BigEndian(timestampMsBytes, timestampMs);
+
             // this byte is shared with the last 4 bits of the timestamp.
-            // as the 6 upper bits of the milliseconds will alaways be 0 we can simply add the two bytes
+            // as the 4 upper bits of the subsecond will alaways be 0 we can simply add the two bytes
             bytes[0] |= timestampMsBytes[0];
             bytes[1] = timestampMsBytes[1];
         }
 
-        public (long timestamp, short timestampMs, short sequence) Decode(Guid guid)
+        public (long timestamp, double timestampMs, short sequence) Decode(Guid guid)
         {
             Span<byte> bytes = stackalloc byte[16];
             GuidHelper.TryWriteBigEndianBytes(guid, bytes);
@@ -93,7 +96,7 @@ namespace UUIDNext.Generator
             var timestampMsBytes = bytes[4..6];
             //remove lower 4 bits of unix timestamp
             timestampMsBytes[0] &= 0b0000_1111;
-            short timestampMs = BinaryPrimitives.ReadInt16BigEndian(timestampMsBytes);
+            var timestampMs = BinaryPrimitives.ReadInt16BigEndian(timestampMsBytes) / 4.096;
 
             var sequenceBytes = bytes[6..8];
             //remove version information
