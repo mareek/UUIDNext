@@ -10,6 +10,11 @@ namespace UUIDNext
         private static readonly UuidV4Generator _v4Generator = new();
 
         /// <summary>
+        /// A read-only instance of the System.Guid structure whose value is all ones (FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF).
+        /// </summary>
+        public static readonly Guid Max = new("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
+
+        /// <summary>
         /// Create a new UUID Version 7
         /// </summary>
         public static Guid NewDatabaseFriendly() => _v7Generator.New();
