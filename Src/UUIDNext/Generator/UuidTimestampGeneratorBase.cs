@@ -7,6 +7,7 @@ namespace UUIDNext.Generator
     public abstract class UuidTimestampGeneratorBase : UuidGeneratorBase
     {
         protected readonly RandomNumberGenerator _rng;
+        private readonly int _sequenceMaxValue;
 
         private long _lastUsedTimestamp;
         private int _monotonicSequence;
@@ -14,11 +15,13 @@ namespace UUIDNext.Generator
         protected UuidTimestampGeneratorBase()
         {
             _rng = RandomNumberGenerator.Create();
+            _sequenceMaxValue = (1 << SequenceBitSize) - 1;
+
             _lastUsedTimestamp = 0;
             _monotonicSequence = 0;
         }
 
-        protected abstract int SequenceMaxValue { get; }
+        protected abstract int SequenceBitSize { get; }
 
         public Guid New()
         {
@@ -42,7 +45,7 @@ namespace UUIDNext.Generator
         protected bool TryGetSequenceNumber(long timestamp, out int sequence)
         {
             sequence = GetSequenceNumber(timestamp);
-            return sequence <= SequenceMaxValue;
+            return sequence <= _sequenceMaxValue;
         }
 
         private int GetSequenceNumber(long timestamp)
@@ -56,11 +59,13 @@ namespace UUIDNext.Generator
                 else
                 {
                     _lastUsedTimestamp = timestamp;
-                    _monotonicSequence = 0;
+                    _monotonicSequence = GetSequenceSeed();
                 }
 
                 return _monotonicSequence;
             }
         }
+
+        protected abstract int GetSequenceSeed();
     }
 }

@@ -27,9 +27,9 @@ namespace UUIDNext.Test
 
         public static int GetSequenceMaxValue(this UuidTimestampGeneratorBase generator)
         {
-            var sequenceMaxValueProperty = generator.GetType().GetProperty("SequenceMaxValue", BindingFlags.Instance | BindingFlags.NonPublic);
-            return (int)sequenceMaxValueProperty.GetValue(generator, null);
+            var sequenceBitSizeProperty = generator.GetType().GetProperty("SequenceBitSize", BindingFlags.Instance | BindingFlags.NonPublic);
+            int sequenceBitSize = (int)sequenceBitSizeProperty.GetValue(generator, null);
+            return (1 << sequenceBitSize) - 1;
         }
-
     }
 }

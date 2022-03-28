@@ -10,8 +10,7 @@ namespace UUIDNext.Generator
     {
         protected override byte Version => 7;
 
-        // the sequence number is stored on 12 bits so the maximum value is 2¹²-1
-        protected override int SequenceMaxValue => 4095;
+        protected override int SequenceBitSize => 12;
 
         protected override bool TryGenerateNew(DateTime date, out Guid newUuid)
         {
@@ -59,6 +58,17 @@ namespace UUIDNext.Generator
             return true;
         }
 
+        protected override int GetSequenceSeed()
+        {
+            // following section 6.2 on "Fixed-Length Dedicated Counter Seeding", the initial value of the sequence is randomized
+            Span<byte> buffer = stackalloc byte[4];
+            _rng.GetBytes(buffer[2..4]);
+            int randomSeed = BinaryPrimitives.ReadInt32BigEndian(buffer);
+            
+            //Setting the highest bit to 0 mitigate the risk of a sequence overflow (see section 6.2)
+            return randomSeed & 0b111_1111_1111; 
+        }
+
         private void SetTimestampSeconds(Span<byte> bytes, TimeSpan unixTimeStamp)
         {
             long timestampInSeconds = Convert.ToInt64(Math.Floor(unixTimeStamp.TotalSeconds));
@@ -84,7 +94,7 @@ namespace UUIDNext.Generator
             bytes[1] = timestampMsBytes[1];
         }
 
-        public (long timestamp, double timestampMs, short sequence) Decode(Guid guid)
+        public static (long timestamp, double timestampMs, short sequence) Decode(Guid guid)
         {
             Span<byte> bytes = stackalloc byte[16];
             GuidHelper.TryWriteBigEndianBytes(guid, bytes);

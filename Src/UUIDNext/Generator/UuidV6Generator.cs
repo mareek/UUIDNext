@@ -12,8 +12,9 @@ namespace UUIDNext.Generator
 
         protected override byte Version => 6;
 
-        // the sequence number is stored on 14 bits so the maximum value is 2¹⁴-1
-        protected override int SequenceMaxValue => 16383;
+        protected override int SequenceBitSize => 14;
+
+        protected override int GetSequenceSeed() => 0;
 
         protected override bool TryGenerateNew(DateTime date, out Guid newUuid)
         {
@@ -66,7 +67,7 @@ namespace UUIDNext.Generator
             return true;
         }
 
-        public (long timestamp, short sequence) Decode(Guid guid)
+        public static (long timestamp, short sequence) Decode(Guid guid)
         {
             Span<byte> bytes = stackalloc byte[16];
             GuidHelper.TryWriteBigEndianBytes(guid, bytes);

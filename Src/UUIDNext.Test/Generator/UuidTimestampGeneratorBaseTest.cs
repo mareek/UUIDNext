@@ -12,6 +12,8 @@ namespace UUIDNext.Test.Generator
         protected abstract byte Version { get; }
         protected abstract UuidTimestampGeneratorBase GetNewGenerator();
 
+        protected abstract int GetSequence(Guid uuid);
+
         [Fact]
         public void DumbTest()
         {
@@ -49,9 +51,15 @@ namespace UUIDNext.Test.Generator
         {
             var generator = GetNewGenerator();
             var date = DateTime.UtcNow.Date;
+            int sequenceMaxValue = generator.GetSequenceMaxValue();
+
+            Check.That(generator.TryGenerateNew(date, out var firstUuid)).IsTrue();
+            var firsSequenceNumber = GetSequence(firstUuid);
+
+            Check.That(firsSequenceNumber).IsStrictlyLessThan((sequenceMaxValue + 1) / 2);
 
             ConcurrentBag<bool> succeses = new();
-            Parallel.For(0, generator.GetSequenceMaxValue() + 1, _ => succeses.Add(generator.TryGenerateNew(date, out var _)));
+            Parallel.For(0, sequenceMaxValue - firsSequenceNumber, _ => succeses.Add(generator.TryGenerateNew(date, out var _)));
 
             Check.That(succeses).ContainsOnlyElementsThatMatch(e => e);
             Check.That(generator.TryGenerateNew(date, out var _)).IsFalse();
