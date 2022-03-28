@@ -18,14 +18,14 @@ namespace UUIDNext.Generator
               0                   1                   2                   3
               0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-             |                            unixts                             |
+             |                           unix_ts_ms                          |
              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-             |unixts |         msec          |  ver  |          seq          |
+             |          unix_ts_ms           |  ver  |       rand_a          |
              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-             |var|                         rand                              |
+             |var|                        rand_b                             |
              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-             |                             rand                              |
-             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+             |                            rand_b                             |
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
              */
 
             Span<byte> bytes = stackalloc byte[16];
@@ -38,8 +38,7 @@ namespace UUIDNext.Generator
                 return false;
             }
 
-            SetTimestampSeconds(bytes[0..5], unixTimeStamp);
-            SetTimestampSubsecond(bytes[4..6], unixTimeStamp);
+            SetTimestamp(bytes[0..6], unixTimeStamp);
             _rng.GetBytes(bytes[8..16]);
 
             newUuid = CreateGuidFromBigEndianBytes(bytes);
@@ -64,56 +63,34 @@ namespace UUIDNext.Generator
             Span<byte> buffer = stackalloc byte[4];
             _rng.GetBytes(buffer[2..4]);
             int randomSeed = BinaryPrimitives.ReadInt32BigEndian(buffer);
-            
+
             //Setting the highest bit to 0 mitigate the risk of a sequence overflow (see section 6.2)
-            return randomSeed & 0b111_1111_1111; 
+            return randomSeed & 0b111_1111_1111;
         }
 
-        private void SetTimestampSeconds(Span<byte> bytes, TimeSpan unixTimeStamp)
+        private void SetTimestamp(Span<byte> bytes, TimeSpan unixTimeStamp)
         {
-            long timestampInSeconds = Convert.ToInt64(Math.Floor(unixTimeStamp.TotalSeconds));
-            // The timestamp is stored on 36 bits (4 and a half bytes) so we shift the
-            // timestamp value by 4 bits and copy the 5 less significant bytes of the timestamp
-            long shiftedTimestamp = timestampInSeconds << 4;
-            Span<byte> timestampinSecondsBytes = stackalloc byte[8];
-            BinaryPrimitives.TryWriteInt64BigEndian(timestampinSecondsBytes, shiftedTimestamp);
-            timestampinSecondsBytes[3..8].CopyTo(bytes);
+            long timestampInMilliseconds = Convert.ToInt64(Math.Floor(unixTimeStamp.TotalMilliseconds));
+            Span<byte> timestampInMillisecondsBytes = stackalloc byte[8];
+            BinaryPrimitives.TryWriteInt64BigEndian(timestampInMillisecondsBytes, timestampInMilliseconds);
+            timestampInMillisecondsBytes[2..8].CopyTo(bytes);
         }
 
-        private void SetTimestampSubsecond(Span<byte> bytes, TimeSpan unixTimeStamp)
-        {
-            // See RFC Section 4.4.4.2. UUIDv7 Decoding for more details
-            double subSecondTimestamp = unixTimeStamp.TotalSeconds % 1;
-            short timestampMs = (short)(4096 * subSecondTimestamp);
-            Span<byte> timestampMsBytes = stackalloc byte[2];
-            BinaryPrimitives.TryWriteInt16BigEndian(timestampMsBytes, timestampMs);
-
-            // this byte is shared with the last 4 bits of the timestamp.
-            // as the 4 upper bits of the subsecond will alaways be 0 we can simply add the two bytes
-            bytes[0] |= timestampMsBytes[0];
-            bytes[1] = timestampMsBytes[1];
-        }
-
-        public static (long timestamp, double timestampMs, short sequence) Decode(Guid guid)
+        public static (long timestampMs, short sequence) Decode(Guid guid)
         {
             Span<byte> bytes = stackalloc byte[16];
             GuidHelper.TryWriteBigEndianBytes(guid, bytes);
 
             Span<byte> timestampBytes = stackalloc byte[8];
-            bytes[0..5].CopyTo(timestampBytes[3..8]);
-            long timestamp = BinaryPrimitives.ReadInt64BigEndian(timestampBytes) >> 4;
-
-            var timestampMsBytes = bytes[4..6];
-            //remove lower 4 bits of unix timestamp
-            timestampMsBytes[0] &= 0b0000_1111;
-            var timestampMs = BinaryPrimitives.ReadInt16BigEndian(timestampMsBytes) / 4.096;
+            bytes[0..6].CopyTo(timestampBytes[2..8]);
+            long timestampMs = BinaryPrimitives.ReadInt64BigEndian(timestampBytes);
 
             var sequenceBytes = bytes[6..8];
             //remove version information
             sequenceBytes[0] &= 0b0000_1111;
             short sequence = BinaryPrimitives.ReadInt16BigEndian(sequenceBytes);
 
-            return (timestamp, timestampMs, sequence);
+            return (timestampMs, sequence);
         }
     }
 }
