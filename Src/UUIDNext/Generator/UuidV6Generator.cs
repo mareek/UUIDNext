@@ -14,7 +14,7 @@ namespace UUIDNext.Generator
 
         protected override int SequenceBitSize => 14;
 
-        protected override int GetSequenceSeed() => 0;
+        protected override ushort GetSequenceSeed() => 0;
 
         protected override bool TryGenerateNew(DateTime date, out Guid newUuid)
         {
@@ -35,7 +35,7 @@ namespace UUIDNext.Generator
             Span<byte> bytes = stackalloc byte[16];
             long timestamp = date.Ticks - GregorianCalendarStart;
 
-            if (!TrySetSequence(bytes[8..10], timestamp))
+            if (!TrySetSequence(bytes[8..10], ref timestamp))
             {
                 newUuid = Guid.Empty;
                 return false;
@@ -56,14 +56,14 @@ namespace UUIDNext.Generator
             bytes[6] = (byte)(bytes[6] >> 4);
         }
 
-        private bool TrySetSequence(Span<byte> bytes, long unixTimeStamp)
+        private bool TrySetSequence(Span<byte> bytes, ref long unixTimeStamp)
         {
-            if (!TryGetSequenceNumber(unixTimeStamp, out int sequence))
+            if (!TryGetSequenceNumber(ref unixTimeStamp, out ushort sequence))
             {
                 return false;
             }
 
-            BinaryPrimitives.TryWriteUInt16BigEndian(bytes, (ushort)sequence);
+            BinaryPrimitives.TryWriteUInt16BigEndian(bytes, sequence);
             return true;
         }
 

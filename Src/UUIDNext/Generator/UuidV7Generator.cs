@@ -31,48 +31,46 @@ namespace UUIDNext.Generator
             Span<byte> bytes = stackalloc byte[16];
 
             TimeSpan unixTimeStamp = date - DateTime.UnixEpoch;
+            long timestampInMs = Convert.ToInt64(Math.Floor(unixTimeStamp.TotalMilliseconds));
 
-            if (!TrySetSequence(bytes[6..8], unixTimeStamp))
+            if (!TrySetSequence(bytes[6..8], ref timestampInMs))
             {
                 newUuid = Guid.Empty;
                 return false;
             }
 
-            SetTimestamp(bytes[0..6], unixTimeStamp);
+            SetTimestamp(bytes[0..6], timestampInMs);
             _rng.GetBytes(bytes[8..16]);
 
             newUuid = CreateGuidFromBigEndianBytes(bytes);
             return true;
         }
 
-        private bool TrySetSequence(Span<byte> bytes, TimeSpan unixTimeStamp)
+        private bool TrySetSequence(Span<byte> bytes, ref long timestampInMs)
         {
-            long timestampInMs = Convert.ToInt64(Math.Floor(unixTimeStamp.TotalMilliseconds));
-            if (!TryGetSequenceNumber(timestampInMs, out int sequence))
+            if (!TryGetSequenceNumber(ref timestampInMs, out ushort sequence))
             {
                 return false;
             }
 
-            BinaryPrimitives.TryWriteUInt16BigEndian(bytes, (ushort)sequence);
+            BinaryPrimitives.TryWriteUInt16BigEndian(bytes, sequence);
             return true;
         }
 
-        protected override int GetSequenceSeed()
+        protected override ushort GetSequenceSeed()
         {
             // following section 6.2 on "Fixed-Length Dedicated Counter Seeding", the initial value of the sequence is randomized
-            Span<byte> buffer = stackalloc byte[4];
-            _rng.GetBytes(buffer[2..4]);
-            int randomSeed = BinaryPrimitives.ReadInt32BigEndian(buffer);
-
+            Span<byte> buffer = stackalloc byte[2];
+            _rng.GetBytes(buffer);
             //Setting the highest bit to 0 mitigate the risk of a sequence overflow (see section 6.2)
-            return randomSeed & 0b111_1111_1111;
+            buffer[0] &= 0b0000_0111;
+            return BinaryPrimitives.ReadUInt16BigEndian(buffer);
         }
 
-        private void SetTimestamp(Span<byte> bytes, TimeSpan unixTimeStamp)
+        private void SetTimestamp(Span<byte> bytes, long timestampInMs)
         {
-            long timestampInMilliseconds = Convert.ToInt64(Math.Floor(unixTimeStamp.TotalMilliseconds));
             Span<byte> timestampInMillisecondsBytes = stackalloc byte[8];
-            BinaryPrimitives.TryWriteInt64BigEndian(timestampInMillisecondsBytes, timestampInMilliseconds);
+            BinaryPrimitives.TryWriteInt64BigEndian(timestampInMillisecondsBytes, timestampInMs);
             timestampInMillisecondsBytes[2..8].CopyTo(bytes);
         }
 

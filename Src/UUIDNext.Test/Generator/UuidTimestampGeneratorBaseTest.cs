@@ -64,5 +64,24 @@ namespace UUIDNext.Test.Generator
             Check.That(succeses).ContainsOnlyElementsThatMatch(e => e);
             Check.That(generator.TryGenerateNew(date, out var _)).IsFalse();
         }
+
+        [Fact]
+        public void TestBackwardClock()
+        {
+            var date = DateTime.UtcNow.Date;
+            var pastDate = date.AddSeconds(-5);
+
+            var generator = GetNewGenerator();
+            Check.That(generator.TryGenerateNew(date, out var guid1)).IsTrue();
+
+            Check.That(generator.TryGenerateNew(pastDate, out var guid2)).IsTrue();
+            Check.That(guid1.ToString()).IsBefore(guid2.ToString());
+
+            Check.That(generator.TryGenerateNew(date, out var guid3)).IsTrue();
+            Check.That(guid2.ToString()).IsBefore(guid3.ToString());
+
+            Check.That(generator.TryGenerateNew(pastDate, out var guid4)).IsTrue();
+            Check.That(guid3.ToString()).IsBefore(guid4.ToString());
+        }
     }
 }

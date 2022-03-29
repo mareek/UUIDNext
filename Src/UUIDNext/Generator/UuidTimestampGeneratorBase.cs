@@ -10,7 +10,8 @@ namespace UUIDNext.Generator
         private readonly int _sequenceMaxValue;
 
         private long _lastUsedTimestamp;
-        private int _monotonicSequence;
+        private long _timestampOffset;
+        private ushort _monotonicSequence;
 
         protected UuidTimestampGeneratorBase()
         {
@@ -18,6 +19,7 @@ namespace UUIDNext.Generator
             _sequenceMaxValue = (1 << SequenceBitSize) - 1;
 
             _lastUsedTimestamp = 0;
+            _timestampOffset = 0;
             _monotonicSequence = 0;
         }
 
@@ -42,16 +44,18 @@ namespace UUIDNext.Generator
 
         protected abstract bool TryGenerateNew(DateTime date, out Guid newUuid);
 
-        protected bool TryGetSequenceNumber(long timestamp, out int sequence)
+        protected bool TryGetSequenceNumber(ref long timestamp, out ushort sequence)
         {
-            sequence = GetSequenceNumber(timestamp);
+            sequence = GetSequenceNumber(ref timestamp);
             return sequence <= _sequenceMaxValue;
         }
 
-        private int GetSequenceNumber(long timestamp)
+        private ushort GetSequenceNumber(ref long timestamp)
         {
             lock (this)
             {
+                EnsureTimestampNeverMoveBackward(ref timestamp);
+
                 if (timestamp == _lastUsedTimestamp)
                 {
                     _monotonicSequence += 1;
@@ -66,6 +70,18 @@ namespace UUIDNext.Generator
             }
         }
 
-        protected abstract int GetSequenceSeed();
+        private void EnsureTimestampNeverMoveBackward(ref long timestamp)
+        {
+            timestamp += _timestampOffset;
+            // if the computer clock has moved backward since the last generated UUID,
+            // we add an offset to ensure the timestamp always move forward (See RFC Section 6.2)
+            if (timestamp < _lastUsedTimestamp)
+            {
+                _timestampOffset += _lastUsedTimestamp - timestamp;
+                timestamp = _lastUsedTimestamp;
+            }
+        }
+
+        protected abstract ushort GetSequenceSeed();
     }
 }
