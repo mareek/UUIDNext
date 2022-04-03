@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Security.Cryptography;
 using System.Threading;
 
@@ -44,10 +45,16 @@ namespace UUIDNext.Generator
 
         protected abstract bool TryGenerateNew(DateTime date, out Guid newUuid);
 
-        protected bool TryGetSequenceNumber(ref long timestamp, out ushort sequence)
+        protected bool TrySetSequence(Span<byte> bytes, ref long timestamp)
         {
-            sequence = GetSequenceNumber(ref timestamp);
-            return sequence <= _sequenceMaxValue;
+            var sequence = GetSequenceNumber(ref timestamp);
+            if (sequence > _sequenceMaxValue)
+            {
+                return false;
+            }
+
+            BinaryPrimitives.TryWriteUInt16BigEndian(bytes, sequence);
+            return true;
         }
 
         private ushort GetSequenceNumber(ref long timestamp)
@@ -82,6 +89,14 @@ namespace UUIDNext.Generator
             }
         }
 
-        protected abstract ushort GetSequenceSeed();
+        private ushort GetSequenceSeed()
+        {
+            // following section 6.2 on "Fixed-Length Dedicated Counter Seeding", the initial value of the sequence is randomized
+            Span<byte> buffer = stackalloc byte[2];
+            _rng.GetBytes(buffer);
+            //Setting the highest bit to 0 mitigate the risk of a sequence overflow (see section 6.2)
+            buffer[0] &= 0b0000_0111;
+            return BinaryPrimitives.ReadUInt16BigEndian(buffer);
+        }
     }
 }

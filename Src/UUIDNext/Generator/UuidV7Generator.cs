@@ -46,27 +46,6 @@ namespace UUIDNext.Generator
             return true;
         }
 
-        private bool TrySetSequence(Span<byte> bytes, ref long timestampInMs)
-        {
-            if (!TryGetSequenceNumber(ref timestampInMs, out ushort sequence))
-            {
-                return false;
-            }
-
-            BinaryPrimitives.TryWriteUInt16BigEndian(bytes, sequence);
-            return true;
-        }
-
-        protected override ushort GetSequenceSeed()
-        {
-            // following section 6.2 on "Fixed-Length Dedicated Counter Seeding", the initial value of the sequence is randomized
-            Span<byte> buffer = stackalloc byte[2];
-            _rng.GetBytes(buffer);
-            //Setting the highest bit to 0 mitigate the risk of a sequence overflow (see section 6.2)
-            buffer[0] &= 0b0000_0111;
-            return BinaryPrimitives.ReadUInt16BigEndian(buffer);
-        }
-
         private void SetTimestamp(Span<byte> bytes, long timestampInMs)
         {
             Span<byte> timestampInMillisecondsBytes = stackalloc byte[8];
