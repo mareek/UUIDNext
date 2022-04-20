@@ -25,8 +25,6 @@ namespace UUIDNext.Test.Generator
             Check.That(generator.TryGenerateNew(date, out var guido)).IsTrue();
             var (timestampO, sequenceO) = UuidV6Generator.Decode(guido);
 
-            Check.That(sequenceO).IsEqualTo(0);
-
             Check.That(generator.TryGenerateNew(date, out var guida)).IsTrue();
             var (timestampA, sequenceA) = UuidV6Generator.Decode(guida);
 
@@ -34,10 +32,9 @@ namespace UUIDNext.Test.Generator
             Check.That(sequenceA).IsEqualTo(sequenceO + 1);
 
             Check.That(generator.TryGenerateNew(date.AddTicks(1), out var guidu)).IsTrue();
-            var (timestampU, sequenceU) = UuidV6Generator.Decode(guidu);
+            var (timestampU, _) = UuidV6Generator.Decode(guidu);
 
-            Check.That(sequenceU).IsEqualTo(0);
-            Check.That(timestampU).IsNotEqualTo(timestampO);
+            Check.That(timestampU).IsStrictlyGreaterThan(timestampO);
         }
 
         [Fact]

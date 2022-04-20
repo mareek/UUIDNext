@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers.Binary;
+using System.Security.Cryptography;
 
 namespace UUIDNext.Generator
 {
@@ -40,7 +41,7 @@ namespace UUIDNext.Generator
             }
 
             SetTimestamp(bytes[0..8], timestamp);
-            _rng.GetBytes(bytes[10..16]);
+            RandomNumberGenerator.Fill(bytes[10..16]);
 
             newUuid = CreateGuidFromBigEndianBytes(bytes);
             return true;

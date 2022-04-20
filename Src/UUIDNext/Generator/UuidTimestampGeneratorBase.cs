@@ -7,7 +7,6 @@ namespace UUIDNext.Generator
 {
     public abstract class UuidTimestampGeneratorBase : UuidGeneratorBase
     {
-        protected readonly RandomNumberGenerator _rng;
         private readonly int _sequenceMaxValue;
 
         private long _lastUsedTimestamp;
@@ -16,7 +15,6 @@ namespace UUIDNext.Generator
 
         protected UuidTimestampGeneratorBase()
         {
-            _rng = RandomNumberGenerator.Create();
             _sequenceMaxValue = (1 << SequenceBitSize) - 1;
 
             _lastUsedTimestamp = 0;
@@ -93,7 +91,7 @@ namespace UUIDNext.Generator
         {
             // following section 6.2 on "Fixed-Length Dedicated Counter Seeding", the initial value of the sequence is randomized
             Span<byte> buffer = stackalloc byte[2];
-            _rng.GetBytes(buffer);
+            RandomNumberGenerator.Fill(buffer);
             //Setting the highest bit to 0 mitigate the risk of a sequence overflow (see section 6.2)
             buffer[0] &= 0b0000_0111;
             return BinaryPrimitives.ReadUInt16BigEndian(buffer);
