@@ -8,14 +8,12 @@ namespace UUIDNext.Generator
     /// </summary>
     public class UuidV4Generator : UuidGeneratorBase
     {
-        private readonly RandomNumberGenerator _rng = RandomNumberGenerator.Create();
-
         protected override byte Version => 4;
 
         public Guid New()
         {
             Span<byte> bytes = stackalloc byte[16];
-            _rng.GetBytes(bytes);
+            RandomNumberGenerator.Fill(bytes);
             return CreateGuidFromBigEndianBytes(bytes);
         }
     }
