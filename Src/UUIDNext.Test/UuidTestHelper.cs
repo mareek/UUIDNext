@@ -16,13 +16,11 @@ namespace UUIDNext.Test
             Check.That(strUuid[19]).IsOneOf('8', '9', 'a', 'b', 'A', 'B');
         }
 
-        public static bool TryGenerateNew(this UuidTimestampGeneratorBase generator, DateTime date, out Guid newUuid)
+        public static Guid New(this UuidTimestampGeneratorBase generator, DateTime date)
         {
-            var tryGenerateNewMethod = generator.GetType().GetMethod("TryGenerateNew", BindingFlags.Instance | BindingFlags.NonPublic);
-            object[] parameters = { date, Guid.Empty };
-            object result = tryGenerateNewMethod.Invoke(generator, parameters);
-            newUuid = (Guid)parameters[1];
-            return (bool)result;
+            var tryGenerateNewMethod = generator.GetType().GetMethod("New", BindingFlags.Instance | BindingFlags.NonPublic);
+            object[] parameters = { date };
+            return (Guid)tryGenerateNewMethod.Invoke(generator, parameters);
         }
 
         public static int GetSequenceMaxValue(this UuidTimestampGeneratorBase generator)

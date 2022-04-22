@@ -14,7 +14,7 @@ namespace UUIDNext.Test.Generator
 
         protected override UuidTimestampGeneratorBase GetNewGenerator() => new UuidV6Generator();
 
-        protected override int GetSequence(Guid uuid) => UuidV6Generator.Decode(uuid).sequence;
+        protected override (long timestamp, int sequence) DecodeUuid(Guid uuid) => UuidV6Generator.Decode(uuid);
 
         [Fact]
         public void TestSequence()
@@ -22,16 +22,16 @@ namespace UUIDNext.Test.Generator
             UuidV6Generator generator = new();
             var date = DateTime.UtcNow.Date;
 
-            Check.That(generator.TryGenerateNew(date, out var guido)).IsTrue();
+            var guido = generator.New(date);
             var (timestampO, sequenceO) = UuidV6Generator.Decode(guido);
 
-            Check.That(generator.TryGenerateNew(date, out var guida)).IsTrue();
+            var guida = generator.New(date);
             var (timestampA, sequenceA) = UuidV6Generator.Decode(guida);
 
             Check.That(timestampA).IsEqualTo(timestampO);
             Check.That(sequenceA).IsEqualTo(sequenceO + 1);
 
-            Check.That(generator.TryGenerateNew(date.AddTicks(1), out var guidu)).IsTrue();
+            var guidu = generator.New(date.AddTicks(1));
             var (timestampU, _) = UuidV6Generator.Decode(guidu);
 
             Check.That(timestampU).IsStrictlyGreaterThan(timestampO);
@@ -44,7 +44,7 @@ namespace UUIDNext.Test.Generator
             var date = DateTime.UtcNow.Date;
 
             ConcurrentBag<Guid> generatedUuids = new();
-            Parallel.For(0, 100, _ => generatedUuids.Add(generator.TryGenerateNew(date, out var guido) ? guido : Guid.Empty));
+            Parallel.For(0, 100, _ => generatedUuids.Add(generator.New(date)));
 
             var uuidsParts = generatedUuids.Select(u => UuidV6Generator.Decode(u)).ToArray();
             Check.That(uuidsParts.Select(x => x.sequence)).ContainsNoDuplicateItem();

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers.Binary;
 using System.Security.Cryptography;
-using System.Threading;
 
 namespace UUIDNext.Generator
 {
@@ -24,55 +23,42 @@ namespace UUIDNext.Generator
 
         protected abstract int SequenceBitSize { get; }
 
-        public Guid New()
+        protected abstract Guid New(DateTime date);
+
+        public Guid New() => New(DateTime.UtcNow);
+
+        protected void SetSequence(Span<byte> bytes, ref long timestamp)
         {
-            const int MaxAttempt = 10;
-            int attemptCount = 0;
-            do
+            lock (this)
             {
-                if (TryGenerateNew(DateTime.UtcNow, out Guid newUuid))
+                var sequence = GetSequenceNumber(ref timestamp);
+                if (sequence > _sequenceMaxValue)
                 {
-                    return newUuid;
+                    // if the sequence is greater than the max value, we take advantage
+                    // of the anti-rewind mechanis to simulate a slight change in clock time
+                    _timestampOffset += 1;
+                    sequence = GetSequenceNumber(ref timestamp);
                 }
-                attemptCount++;
-                Thread.Sleep(1);
-            } while (attemptCount < MaxAttempt);
 
-            throw new Exception($"There are been too much attempt to generate an UUID withtin the last {MaxAttempt} ms");
-        }
-
-        protected abstract bool TryGenerateNew(DateTime date, out Guid newUuid);
-
-        protected bool TrySetSequence(Span<byte> bytes, ref long timestamp)
-        {
-            var sequence = GetSequenceNumber(ref timestamp);
-            if (sequence > _sequenceMaxValue)
-            {
-                return false;
+                BinaryPrimitives.TryWriteUInt16BigEndian(bytes, sequence);
             }
-
-            BinaryPrimitives.TryWriteUInt16BigEndian(bytes, sequence);
-            return true;
         }
 
         private ushort GetSequenceNumber(ref long timestamp)
         {
-            lock (this)
+            EnsureTimestampNeverMoveBackward(ref timestamp);
+
+            if (timestamp == _lastUsedTimestamp)
             {
-                EnsureTimestampNeverMoveBackward(ref timestamp);
-
-                if (timestamp == _lastUsedTimestamp)
-                {
-                    _monotonicSequence += 1;
-                }
-                else
-                {
-                    _lastUsedTimestamp = timestamp;
-                    _monotonicSequence = GetSequenceSeed();
-                }
-
-                return _monotonicSequence;
+                _monotonicSequence += 1;
             }
+            else
+            {
+                _lastUsedTimestamp = timestamp;
+                _monotonicSequence = GetSequenceSeed();
+            }
+
+            return _monotonicSequence;
         }
 
         private void EnsureTimestampNeverMoveBackward(ref long timestamp)

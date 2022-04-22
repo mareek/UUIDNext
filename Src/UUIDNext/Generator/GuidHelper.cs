@@ -38,9 +38,7 @@ namespace UUIDNext.Generator
 
             static void Permut(Span<byte> array, int indexSource, int indexDest)
             {
-                var temp = array[indexDest];
-                array[indexDest] = array[indexSource];
-                array[indexSource] = temp;
+                (array[indexSource], array[indexDest]) = (array[indexDest], array[indexSource]);
             }
         }
     }

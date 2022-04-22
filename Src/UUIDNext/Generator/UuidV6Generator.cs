@@ -15,7 +15,7 @@ namespace UUIDNext.Generator
 
         protected override int SequenceBitSize => 14;
 
-        protected override bool TryGenerateNew(DateTime date, out Guid newUuid)
+        protected override Guid New(DateTime date)
         {
             /* UUID V6 layout
               0                   1                   2                   3
@@ -34,17 +34,11 @@ namespace UUIDNext.Generator
             Span<byte> bytes = stackalloc byte[16];
             long timestamp = date.Ticks - GregorianCalendarStart;
 
-            if (!TrySetSequence(bytes[8..10], ref timestamp))
-            {
-                newUuid = Guid.Empty;
-                return false;
-            }
-
+            SetSequence(bytes[8..10], ref timestamp);
             SetTimestamp(bytes[0..8], timestamp);
             RandomNumberGenerator.Fill(bytes[10..16]);
 
-            newUuid = CreateGuidFromBigEndianBytes(bytes);
-            return true;
+            return CreateGuidFromBigEndianBytes(bytes);
         }
 
         private static void SetTimestamp(Span<byte> bytes, long timestamp)

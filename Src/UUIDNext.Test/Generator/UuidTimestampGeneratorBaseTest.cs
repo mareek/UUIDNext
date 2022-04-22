@@ -12,7 +12,7 @@ namespace UUIDNext.Test.Generator
         protected abstract byte Version { get; }
         protected abstract UuidTimestampGeneratorBase GetNewGenerator();
 
-        protected abstract int GetSequence(Guid uuid);
+        protected abstract (long timestamp, int sequence) DecodeUuid(Guid uuid);
 
         [Fact]
         public void DumbTest()
@@ -53,16 +53,17 @@ namespace UUIDNext.Test.Generator
             var date = DateTime.UtcNow.Date;
             int sequenceMaxValue = generator.GetSequenceMaxValue();
 
-            Check.That(generator.TryGenerateNew(date, out var firstUuid)).IsTrue();
-            var firsSequenceNumber = GetSequence(firstUuid);
+            var firstUuid = generator.New(date);
+            var (firstTimestamp, firstSequenceNumber) = DecodeUuid(firstUuid);
 
-            Check.That(firsSequenceNumber).IsStrictlyLessThan((sequenceMaxValue + 1) / 2);
+            Check.That(firstSequenceNumber).IsStrictlyLessThan((sequenceMaxValue + 1) / 2);
 
-            ConcurrentBag<bool> succeses = new();
-            Parallel.For(0, sequenceMaxValue - firsSequenceNumber, _ => succeses.Add(generator.TryGenerateNew(date, out var _)));
+            Parallel.For(0, sequenceMaxValue - firstSequenceNumber, _ => generator.New(date));
 
-            Check.That(succeses).ContainsOnlyElementsThatMatch(e => e);
-            Check.That(generator.TryGenerateNew(date, out var _)).IsFalse();
+            var lastUuid = generator.New(date);
+            var (lastTimestamp, lastSequenceNumber) = DecodeUuid(lastUuid);
+            Check.That(lastSequenceNumber).IsStrictlyLessThan((sequenceMaxValue + 1) / 2);
+            Check.That(lastTimestamp).IsEqualTo(firstTimestamp + 1);
         }
 
         [Fact]
@@ -72,15 +73,15 @@ namespace UUIDNext.Test.Generator
             var pastDate = date.AddSeconds(-5);
 
             var generator = GetNewGenerator();
-            Check.That(generator.TryGenerateNew(date, out var guid1)).IsTrue();
+            var guid1 = generator.New(date);
 
-            Check.That(generator.TryGenerateNew(pastDate, out var guid2)).IsTrue();
+            var guid2 = generator.New(pastDate);
             Check.That(guid1.ToString()).IsBefore(guid2.ToString());
 
-            Check.That(generator.TryGenerateNew(date, out var guid3)).IsTrue();
+            var guid3 = generator.New(date);
             Check.That(guid2.ToString()).IsBefore(guid3.ToString());
 
-            Check.That(generator.TryGenerateNew(pastDate, out var guid4)).IsTrue();
+            var guid4 = generator.New(pastDate);
             Check.That(guid3.ToString()).IsBefore(guid4.ToString());
         }
     }

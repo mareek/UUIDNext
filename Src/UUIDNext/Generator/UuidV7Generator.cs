@@ -13,7 +13,7 @@ namespace UUIDNext.Generator
 
         protected override int SequenceBitSize => 12;
 
-        protected override bool TryGenerateNew(DateTime date, out Guid newUuid)
+        protected override Guid New(DateTime date)
         {
             /* We implement the first example given in section 4.4.4.1 of the RFC
               0                   1                   2                   3
@@ -34,17 +34,11 @@ namespace UUIDNext.Generator
             TimeSpan unixTimeStamp = date - DateTime.UnixEpoch;
             long timestampInMs = Convert.ToInt64(Math.Floor(unixTimeStamp.TotalMilliseconds));
 
-            if (!TrySetSequence(bytes[6..8], ref timestampInMs))
-            {
-                newUuid = Guid.Empty;
-                return false;
-            }
-
+            SetSequence(bytes[6..8], ref timestampInMs);
             SetTimestamp(bytes[0..6], timestampInMs);
             RandomNumberGenerator.Fill(bytes[8..16]);
 
-            newUuid = CreateGuidFromBigEndianBytes(bytes);
-            return true;
+            return CreateGuidFromBigEndianBytes(bytes);
         }
 
         private void SetTimestamp(Span<byte> bytes, long timestampInMs)
