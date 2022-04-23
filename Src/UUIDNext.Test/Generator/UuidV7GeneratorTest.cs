@@ -11,6 +11,7 @@ namespace UUIDNext.Test.Generator
     public class UuidV7GeneratorTest : UuidTimestampGeneratorBaseTest
     {
         protected override byte Version => 7;
+        protected override TimeSpan TimestampGranularity => TimeSpan.FromMilliseconds(1);
 
         protected override UuidTimestampGeneratorBase GetNewGenerator() => new UuidV7Generator();
 

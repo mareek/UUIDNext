@@ -10,6 +10,7 @@ namespace UUIDNext.Test.Generator
     public abstract class UuidTimestampGeneratorBaseTest
     {
         protected abstract byte Version { get; }
+        protected abstract TimeSpan TimestampGranularity { get; }
         protected abstract UuidTimestampGeneratorBase GetNewGenerator();
 
         protected abstract (long timestamp, int sequence) DecodeUuid(Guid uuid);
@@ -106,6 +107,29 @@ namespace UUIDNext.Test.Generator
 
             var guid4 = generator.New(pastDate);
             Check.That(guid3.ToString()).IsBefore(guid4.ToString());
+        }
+
+        [Fact]
+        public void TestTimestampDriftreduction()
+        {
+            var date = DateTime.UtcNow.Date;
+            var pastDate = date.AddSeconds(-5);
+            var futureDate = date.Add(TimestampGranularity);
+
+            var generator = GetNewGenerator();
+            var guid1 = generator.New(date);
+            var (timestamp1, sequence1) = DecodeUuid(guid1);
+
+            var guid2 = generator.New(pastDate);
+            var (timestamp2, sequence2) = DecodeUuid(guid2);
+            Check.That(guid1.ToString()).IsBefore(guid2.ToString());
+            Check.That(timestamp2).IsEqualTo(timestamp1);
+            Check.That(sequence2).IsStrictlyGreaterThan(sequence1);
+
+            var guid3 = generator.New(futureDate);
+            var (timestamp3, _) = DecodeUuid(guid3);
+            Check.That(guid2.ToString()).IsBefore(guid3.ToString());
+            Check.That(timestamp3).IsEqualTo(timestamp1 + 1);
         }
     }
 }

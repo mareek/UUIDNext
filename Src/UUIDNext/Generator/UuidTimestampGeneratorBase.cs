@@ -66,13 +66,23 @@ namespace UUIDNext.Generator
 
         private void EnsureTimestampNeverMoveBackward(ref long timestamp)
         {
-            timestamp += _timestampOffset;
-            // if the computer clock has moved backward since the last generated UUID,
-            // we add an offset to ensure the timestamp always move forward (See RFC Section 6.2)
-            if (timestamp < _lastUsedTimestamp)
+            long offsetTimestamp = timestamp + _timestampOffset;
+
+            if (offsetTimestamp < _lastUsedTimestamp)
             {
-                _timestampOffset += _lastUsedTimestamp - timestamp;
+                // if the computer clock has moved backward since the last generated UUID,
+                // we add an offset to ensure the timestamp always move forward (See RFC Section 6.2)
+                _timestampOffset = _lastUsedTimestamp - timestamp;
                 timestamp = _lastUsedTimestamp;
+            }
+            else if (_timestampOffset > 0 && timestamp > _lastUsedTimestamp)
+            {
+                // reset the offset to reduce the drift with the actual time when possible
+                _timestampOffset = 0;
+            }
+            else
+            {
+                timestamp = offsetTimestamp;
             }
         }
 
@@ -81,7 +91,7 @@ namespace UUIDNext.Generator
             // following section 6.2 on "Fixed-Length Dedicated Counter Seeding", the initial value of the sequence is randomized
             Span<byte> buffer = stackalloc byte[2];
             RandomNumberGenerator.Fill(buffer);
-            //Setting the highest bit to 0 mitigate the risk of a sequence overflow (see section 6.2)
+            // Setting the highest bit to 0 mitigate the risk of a sequence overflow (see section 6.2)
             buffer[0] &= 0b0000_0111;
             return BinaryPrimitives.ReadUInt16BigEndian(buffer);
         }
