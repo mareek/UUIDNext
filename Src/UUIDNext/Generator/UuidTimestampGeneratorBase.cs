@@ -29,19 +29,22 @@ namespace UUIDNext.Generator
 
         protected void SetSequence(Span<byte> bytes, ref long timestamp)
         {
+            ushort sequence;
+            long originalTimestamp = timestamp;
+
             lock (this)
             {
-                var sequence = GetSequenceNumber(ref timestamp);
+                sequence = GetSequenceNumber(ref timestamp);
                 if (sequence > _sequenceMaxValue)
                 {
                     // if the sequence is greater than the max value, we take advantage
-                    // of the anti-rewind mechanis to simulate a slight change in clock time
-                    _timestampOffset += 1;
+                    // of the anti-rewind mechanism to simulate a slight change in clock time
+                    timestamp = originalTimestamp + 1;
                     sequence = GetSequenceNumber(ref timestamp);
                 }
-
-                BinaryPrimitives.TryWriteUInt16BigEndian(bytes, sequence);
             }
+
+            BinaryPrimitives.TryWriteUInt16BigEndian(bytes, sequence);
         }
 
         private ushort GetSequenceNumber(ref long timestamp)
