@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "UUIDNext.Benchmarks": {
+      "commandName": "Project",
+      "commandLineArgs": "load -v 7 --duration 1"
+    }
+  }
+}
