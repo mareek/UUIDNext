@@ -6,7 +6,7 @@ namespace UUIDNext.Generator
     {
         public static Guid FromBigEndianBytes(Span<byte> bytes)
         {
-            SwitchByteOrderIfNeeded(bytes);
+            SwitchByteOrder(bytes);
             return new Guid(bytes);
         }
 
@@ -17,18 +17,12 @@ namespace UUIDNext.Generator
                 return false;
             }
 
-            SwitchByteOrderIfNeeded(bytes);
+            SwitchByteOrder(bytes);
             return true;
         }
 
-        private static void SwitchByteOrderIfNeeded(Span<byte> bigEndianBytes)
+        private static void SwitchByteOrder(Span<byte> bigEndianBytes)
         {
-            if (!BitConverter.IsLittleEndian)
-            {
-                // On Big Endian architecture everything is in network byte order so we don't need to switch
-                return;
-            }
-
             Permut(bigEndianBytes, 0, 3);
             Permut(bigEndianBytes, 1, 2);
 
