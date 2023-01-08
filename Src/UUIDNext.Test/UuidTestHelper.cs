@@ -52,29 +52,5 @@ namespace UUIDNext.Test
                 yield return (i + offset, generator.New(date));
             }
         }
-
-        /// <summary>
-        /// Generate a script to test if the generated UUIDs are correctly sorted in a database
-        /// </summary>
-        public static string GenerateTestSetSqlInsertionScript(string tableName, IEnumerable<(int expectedPosition, Guid uuid)> tableData)
-        {
-            var insertValues = string.Join(",\n", tableData.OrderBy(d => d.expectedPosition).Select(d => $"({d.expectedPosition}, '{d.uuid}')"));
-
-            return
-@$"CREATE TABLE {tableName} (
-    ExpectedPosition int,
-    UUID uniqueidentifier
-);
-
-INSERT INTO {tableName}
-VALUES
-{insertValues};
-
-SELECT * FROM {tableName} ORDER BY UUID;
-
-
-DROP TABLE {tableName};
-";
-        }
     }
 }

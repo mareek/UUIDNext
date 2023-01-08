@@ -43,8 +43,6 @@ namespace UUIDNext.Test.Generator
                 var currentValue = testSetWithSqlGuid[i];
                 Check.That(currentValue.expectedPosition).IsStrictlyGreaterThan(previousValue.expectedPosition);
             }
-
-            var sqlCript = UuidTestHelper.GenerateTestSetSqlInsertionScript("#testing_uuids", testSet);
         }
     }
 }

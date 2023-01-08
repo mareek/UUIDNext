@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>9</LangVersion>
-    <Version>1.1.1</Version>
+    <Version>2.0.0</Version>
     <Authors>Matthieu Mourisson</Authors>
     <PackageId>UUIDNext</PackageId>
     <PackageLicenseExpression>WTFPL</PackageLicenseExpression>
-    <PackageTags>UUID;GUID;UUID5;UUIDV5;UUID6;UUIDV6;UUID7;UUIDV7</PackageTags>
+    <PackageTags>UUID;GUID;UUID5;UUIDV5;UUID6;UUIDV6;UUID7;UUIDV7;UUID8;UUIDV8</PackageTags>
     <RepositoryUrl>https://github.com/mareek/UUIDNext</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Description>A fast and modern .NET library to generate UUID/GUID that are either sequential and database friendly (versions 7), name based (versions  5) or random (version 4).</Description>
