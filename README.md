@@ -1,6 +1,6 @@
 # UUIDNext
 
-A fast and modern .NET library to generate UUID/GUID that are either sequential and database friendly (versions 7), name based (versions  5) or random (version 4).
+A fast and modern .NET library to generate UUID/GUID that are either sequential and database friendly (versions 7 & 8), name based (versions  5) or random (version 4).
 
 ## How to Install
 
@@ -13,7 +13,7 @@ using System;
 using UUIDNext;
 
 // Creating a database friendly UUID (version 7)
-Guid sequentialUuid = Uuid.NewDatabaseFriendly();
+Guid sequentialUuid = Uuid.NewDatabaseFriendly(Database.SQLite);
 Console.WriteLine($"This is a database friendly UUID : {sequentialUuid}");
 
 
@@ -30,7 +30,7 @@ The traditional GUID (a.k.a UUID Version 4) is fine and works really well for it
 
 UUID Version 3 and 5 are name-based UUIDs. They take a namespace and a name as input and produce a hash-like UUID. Usage of Version 3 is discouraged as it is based on the obsolete MD5 hash function.
 
-UUID Version 6 and 7 are intended to be used as a primary key in a database. The randomness of UUID V4 has a negative impact on performance when used as a key in a database and UUID V1 exposed the MAC address of the machine where it was created. UUID V6 & 7 aims to take the best of both worlds without their drawbacks. They are currently at the draft stage so their structure and implementation may change.
+UUID Version 7 and 8 are intended to be used as a primary key in a database. The randomness of UUID V4 has a negative impact on performance when used as a key in a database and UUID V1 exposed the MAC address of the machine where it was created. UUID V7 & 8 aims to take the best of both worlds without their drawbacks. They are currently at the draft stage so their structure and implementation may change.
 
 ## Why creating a new Library ? is there a problem with Guid.NewGuid() ?
 
