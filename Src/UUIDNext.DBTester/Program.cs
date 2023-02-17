@@ -2,30 +2,31 @@
 
 #region SQLite
 /* SQLite configuration 
-const string dbmsName = "SQLite"; // Name of the DBMS being tested
-const bool manageDatabase = false; // Tells the program if it should create a new database or not
-const string databaseName = ""; // Name of the temporary database created for the test (if manageDatabase is set to true)
+ */
+const string dbmsName = "SQLite";         // Name of the DBMS being tested
+const bool manageDatabase = false;        // Tells the program if it should create a new database or not
+const string databaseName = "";           // Name of the temporary database created for the test (if manageDatabase is set to true)
 const string tableName = "uuidTestTable"; // Name of the temporary table created for the tests
-const string positionType = "INTEGER"; // Type of the column where 
-const string uuidType = "BLOB"; // Type of the column where the UUID wiil be stored
+const string positionType = "INTEGER";    // Type of the column where the position in the array is stored
+const string uuidType = "BLOB";           // Type of the column where the UUID wiil be stored
 
 var connectionString = "Data Source=:memory:";
 using DbConnection connection = new Microsoft.Data.Sqlite.SqliteConnection(connectionString);
- */
 #endregion
 
 #region MSSQL
-/* SQL Server configuration */
-const string dbmsName = "MS SQL Server"; // Name of the DBMS being tested
-const bool manageDatabase = true; // Tells the program if it should create a new database or not
-const string databaseName = "uuidTestDb"; // Name of the temporary database created for the test (if manageDatabase is set to true)
-const string tableName = "#uuidTestTable"; // Name of the temporary table created for the tests
-const string positionType = "int"; // Type of the column where 
+/* SQL Server configuration
+const string dbmsName = "MS SQL Server";    // Name of the DBMS being tested
+const bool manageDatabase = true;           // Tells the program if it should create a new database or not
+const string databaseName = "uuidTestDb";   // Name of the temporary database created for the test (if manageDatabase is set to true)
+const string tableName = "#uuidTestTable";  // Name of the temporary table created for the tests
+const string positionType = "int";          // Type of the column where the position in the array is stored
 const string uuidType = "uniqueIdentifier"; // Type of the column where the UUID wiil be stored
 
 
 var connectionString = "Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;";
 using DbConnection connection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
+ */
 #endregion
 
 try
