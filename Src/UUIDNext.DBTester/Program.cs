@@ -1,6 +1,5 @@
 ﻿using System.Data.Common;
 
-#region SQLite
 /* SQLite configuration 
  */
 const string dbmsName = "SQLite";         // Name of the DBMS being tested
@@ -12,9 +11,7 @@ const string uuidType = "BLOB";           // Type of the column where the UUID w
 
 var connectionString = "Data Source=:memory:";
 using DbConnection connection = new Microsoft.Data.Sqlite.SqliteConnection(connectionString);
-#endregion
 
-#region MSSQL
 /* SQL Server configuration
 const string dbmsName = "MS SQL Server";    // Name of the DBMS being tested
 const bool manageDatabase = true;           // Tells the program if it should create a new database or not
@@ -27,7 +24,6 @@ const string uuidType = "uniqueIdentifier"; // Type of the column where the UUID
 var connectionString = "Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;";
 using DbConnection connection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
  */
-#endregion
 
 try
 {
