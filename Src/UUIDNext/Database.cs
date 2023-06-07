@@ -5,5 +5,6 @@
         Other = 0,
         SqlServer,
         SQLite,
+        PostgreSql
     }
 }

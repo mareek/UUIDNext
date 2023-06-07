@@ -11,9 +11,14 @@ namespace UUIDNext
         private static readonly UuidV8SqlServerGenerator _v8SqlServerGenerator = new();
 
         /// <summary>
-        /// A read-only instance of the System.Guid structure whose value is all ones (FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF).
+        /// The Max UUID is special form of UUID that is specified to have all 128 bits set to 1.
         /// </summary>
         public static readonly Guid Max = new("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
+
+        /// <summary>
+        /// The Nil UUID is special form of UUID that is specified to have all 128 bits set to zero.
+        /// </summary>
+        public static readonly Guid Nil = new("00000000-0000-0000-0000-000000000000");
 
         /// <summary>
         /// Create a new UUID Version 7
@@ -31,7 +36,8 @@ namespace UUIDNext
             => database switch
             {
                 Database.SqlServer => _v8SqlServerGenerator.New(),
-                Database.SQLite=> _v7Generator.New(),
+                Database.SQLite => _v7Generator.New(),
+                Database.PostgreSql => _v7Generator.New(),
                 _ => _v7Generator.New(),
             };
 

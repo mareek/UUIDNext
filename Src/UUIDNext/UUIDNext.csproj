@@ -7,7 +7,7 @@
     <Authors>Matthieu Mourisson</Authors>
     <PackageId>UUIDNext</PackageId>
     <PackageLicenseExpression>WTFPL</PackageLicenseExpression>
-    <PackageTags>UUID;GUID;UUID5;UUIDV5;UUID6;UUIDV6;UUID7;UUIDV7;UUID8;UUIDV8</PackageTags>
+    <PackageTags>UUID;GUID;UUID5;UUID7;UUID8</PackageTags>
     <RepositoryUrl>https://github.com/mareek/UUIDNext</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Description>A fast and modern .NET library to generate UUID/GUID that are either sequential and database friendly (versions 7), name based (versions  5) or random (version 4).</Description>
