@@ -2,7 +2,7 @@
 
 namespace UUIDNext.Generator
 {
-    public static class GuidHelper
+    internal static class GuidHelper
     {
         public static Guid FromBigEndianBytes(Span<byte> bytes)
         {

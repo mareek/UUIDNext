@@ -11,9 +11,12 @@ namespace UUIDNext.Test.Generator
     {
         protected abstract byte Version { get; }
         protected abstract TimeSpan TimestampGranularity { get; }
-        protected abstract UuidTimestampGeneratorBase GetNewGenerator();
+
+        protected abstract object GeneratorBuidler();
 
         protected abstract (long timestamp, int sequence) DecodeUuid(Guid uuid);
+
+        private UuidTimestampGeneratorBase GetNewGenerator() => (UuidTimestampGeneratorBase)GeneratorBuidler();
 
         [Fact]
         public void DumbTest()

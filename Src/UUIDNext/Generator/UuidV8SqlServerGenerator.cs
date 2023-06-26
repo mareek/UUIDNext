@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace UUIDNext.Generator
 {
-    public class UuidV8SqlServerGenerator : UuidTimestampGeneratorBase
+    internal class UuidV8SqlServerGenerator : UuidTimestampGeneratorBase
     {
         protected override byte Version => 8;
 

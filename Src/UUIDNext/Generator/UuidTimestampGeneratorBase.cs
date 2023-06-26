@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace UUIDNext.Generator
 {
-    public abstract class UuidTimestampGeneratorBase : UuidGeneratorBase
+    internal abstract class UuidTimestampGeneratorBase : UuidGeneratorBase
     {
         private readonly int _sequenceMaxValue;
 

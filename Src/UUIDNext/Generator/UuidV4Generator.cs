@@ -6,7 +6,7 @@ namespace UUIDNext.Generator
     /// <summary>
     /// Generate a UUID version 4 based on RFC 4122
     /// </summary>
-    public class UuidV4Generator : UuidGeneratorBase
+    internal class UuidV4Generator : UuidGeneratorBase
     {
         protected override byte Version => 4;
 

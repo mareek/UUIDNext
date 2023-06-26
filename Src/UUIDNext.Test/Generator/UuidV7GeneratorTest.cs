@@ -13,7 +13,7 @@ namespace UUIDNext.Test.Generator
         protected override byte Version => 7;
         protected override TimeSpan TimestampGranularity => TimeSpan.FromMilliseconds(1);
 
-        protected override UuidTimestampGeneratorBase GetNewGenerator() => new UuidV7Generator();
+        protected override object GeneratorBuidler() => new UuidV7Generator();
 
         protected override (long timestamp, int sequence) DecodeUuid(Guid uuid) => UuidV7Generator.Decode(uuid);
 

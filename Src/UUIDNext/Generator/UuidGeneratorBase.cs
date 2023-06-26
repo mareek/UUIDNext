@@ -2,7 +2,7 @@
 
 namespace UUIDNext.Generator
 {
-    public abstract class UuidGeneratorBase
+    internal abstract class UuidGeneratorBase
     {
         protected abstract byte Version { get; }
 

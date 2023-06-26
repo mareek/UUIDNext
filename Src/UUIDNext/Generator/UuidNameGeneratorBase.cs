@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace UUIDNext.Generator
 {
-    public abstract class UuidNameGeneratorBase : UuidGeneratorBase
+    internal abstract class UuidNameGeneratorBase : UuidGeneratorBase
     {
         protected abstract ThreadLocal<HashAlgorithm> HashAlgorithm { get; }
 
