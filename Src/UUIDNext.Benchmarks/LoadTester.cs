@@ -41,13 +41,11 @@ internal class LoadTester
     private static Func<Guid> GetFuncUnderTest(string version)
     {
         Guid urlNamespaceId = Guid.Parse("6ba7b811-9dad-11d1-80b4-00c04fd430c8");
-        Generator.UuidV6Generator uuidV6Generator = new();
 
         return version switch
         {
             "4" or "U4" or "u4" => Uuid.NewRandom,
             "5" or "U5" or "u5" => () => Uuid.NewNameBased(urlNamespaceId, "http://www.example.com"),
-            "6" or "U6" or "u6" => uuidV6Generator.New,
             "7" or "U7" or "u7" => Uuid.NewSequential,
             "g" or "G" or "guid" or "GUID" => Guid.NewGuid,
             _ => Uuid.NewSequential,
