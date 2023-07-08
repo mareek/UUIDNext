@@ -4,6 +4,9 @@ using System.Security.Cryptography;
 
 namespace UUIDNext.Generator
 {
+    /// <summary>
+    /// Generate a UUID version 8 based on RFC draft at https://github.com/ietf-wg-uuidrev/rfc4122bis
+    /// </summary>
     internal class UuidV8SqlServerGenerator : UuidTimestampGeneratorBase
     {
         protected override byte Version => 8;
@@ -61,6 +64,5 @@ namespace UUIDNext.Generator
 
             return (timestampMs, sequence);
         }
-
     }
 }

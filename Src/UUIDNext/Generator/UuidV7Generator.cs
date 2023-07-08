@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 namespace UUIDNext.Generator
 {
     /// <summary>
-    /// Generate a UUID version 7 based on RFC draft at https://github.com/uuid6/uuid6-ietf-draft/
+    /// Generate a UUID version 7 based on RFC draft at https://github.com/ietf-wg-uuidrev/rfc4122bis
     /// </summary>
     internal class UuidV7Generator : UuidTimestampGeneratorBase
     {
