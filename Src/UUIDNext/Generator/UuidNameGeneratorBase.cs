@@ -18,7 +18,7 @@ namespace UUIDNext.Generator
 
             //put the name space ID in network byte order.
             Span<byte> namespaceBytes = stackalloc byte[16];
-            GuidHelper.TryWriteBigEndianBytes(namespaceId, namespaceBytes);
+            namespaceId.TryWriteBytes(namespaceBytes, bigEndian: true, out var _);
 
             //Compute the hash of the name space ID concatenated with the name.
             int bytesToHashCount = namespaceBytes.Length + utf8NameBytes.Length;

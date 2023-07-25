@@ -51,7 +51,7 @@ namespace UUIDNext.Generator
         public static (long timestampMs, short sequence) Decode(Guid guid)
         {
             Span<byte> bytes = stackalloc byte[16];
-            GuidHelper.TryWriteBigEndianBytes(guid, bytes);
+            guid.TryWriteBytes(bytes, bigEndian: true, out var _);
 
             Span<byte> timestampBytes = stackalloc byte[8];
             bytes[0..6].CopyTo(timestampBytes[2..8]);

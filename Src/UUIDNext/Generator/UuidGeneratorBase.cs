@@ -10,7 +10,7 @@ namespace UUIDNext.Generator
         {
             SetVersion(bigEndianBytes);
             SetVariant(bigEndianBytes);
-            return GuidHelper.FromBigEndianBytes(bigEndianBytes);
+            return GuidHelper.FromBytes(bigEndianBytes, bigEndian: true);
         }
 
         private void SetVersion(Span<byte> bigEndianBytes)
