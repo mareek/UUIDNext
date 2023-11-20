@@ -19,7 +19,9 @@ namespace UUIDNext.Test
 
         public static Guid New(this UuidTimestampGeneratorBase generator, DateTime date)
         {
-            var tryGenerateNewMethod = generator.GetType().GetMethod("New", BindingFlags.Instance | BindingFlags.NonPublic);
+            var tryGenerateNewMethod = generator.GetType()
+                                                .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
+                                                .Single(m => m.Name == "New" && m.GetParameters().Length == 1);
             object[] parameters = { date };
             return (Guid)tryGenerateNewMethod.Invoke(generator, parameters);
         }

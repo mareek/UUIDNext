@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers.Binary;
 using System.Security.Cryptography;
+using UUIDNext.Tools;
 
 namespace UUIDNext.Generator
 {
@@ -48,21 +49,7 @@ namespace UUIDNext.Generator
             timestampInMillisecondsBytes[2..8].CopyTo(bytes);
         }
 
-        public static (long timestampMs, short sequence) Decode(Guid guid)
-        {
-            Span<byte> bytes = stackalloc byte[16];
-            guid.TryWriteBytes(bytes, bigEndian: true, out var _);
-
-            Span<byte> timestampBytes = stackalloc byte[8];
-            bytes[10..16].CopyTo(timestampBytes[2..8]);
-            long timestampMs = BinaryPrimitives.ReadInt64BigEndian(timestampBytes);
-
-            var sequenceBytes = bytes[8..10];
-            //remove variant information
-            sequenceBytes[0] &= 0b0011_1111;
-            short sequence = BinaryPrimitives.ReadInt16BigEndian(sequenceBytes);
-
-            return (timestampMs, sequence);
-        }
+        [Obsolete("Use UuidDecoder.DecodeUuidV8ForSqlServer instead. This function will be removed in the next version")]
+        public static (long timestampMs, short sequence) Decode(Guid guid) => UuidDecoder.DecodeUuidV8ForSqlServer(guid);
     }
 }

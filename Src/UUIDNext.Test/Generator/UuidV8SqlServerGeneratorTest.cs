@@ -1,31 +1,21 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Data.SqlTypes;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Threading.Tasks;
 using NFluent;
 using UUIDNext.Generator;
+using UUIDNext.Tools;
 using Xunit;
 
 namespace UUIDNext.Test.Generator
 {
-    public class UuidV8SqlServerGeneratorTest
+    public class UuidV8SqlServerGeneratorTest : UuidTimestampGeneratorBaseTest<UuidV8SqlServerGenerator>
     {
-        [Fact]
-        public void DumbTest()
-        {
-            var generator = new UuidV8SqlServerGenerator();
-            ConcurrentBag<Guid> generatedUuids = new();
-            Parallel.For(0, 1000, _ => generatedUuids.Add(generator.New()));
+        protected override byte Version => 8;
 
-            Check.That(generatedUuids).ContainsNoDuplicateItem();
+        protected override TimeSpan TimestampGranularity => TimeSpan.FromMilliseconds(1);
 
-            foreach (var uuid in generatedUuids)
-            {
-                UuidTestHelper.CheckVersionAndVariant(uuid, 8);
-            }
-        }
+        protected override (long timestamp, int sequence) DecodeUuid(Guid uuid)
+            => UuidDecoder.DecodeUuidV8ForSqlServer(uuid);
 
         [Fact]
         public void TestOrderWithSqlGuid()
