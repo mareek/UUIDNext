@@ -13,10 +13,12 @@
 		<Description>A fast and modern .NET library to generate UUID/GUID that are either sequential and database friendly (versions 7), name based (versions  5) or random (version 4).</Description>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>Logo_128.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+		<None Include="..\..\Images\Logo_128.png" Pack="true" PackagePath="\"/>
 		<InternalsVisibleTo Include="UUIDNext.Test" />
 		<InternalsVisibleTo Include="UUIDNext.Benchmarks" />
 	</ItemGroup>
