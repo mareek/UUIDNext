@@ -1,5 +1,10 @@
 # Version History
 
+## 3.0.0 (TBD)
+
+* Reduced the public surface of the library (this might cause breaking changes)
+* Added a logo
+
 ## 2.0.2 (2023-06-08)
 
 * Added PostgreSQL to the list of supported databases
