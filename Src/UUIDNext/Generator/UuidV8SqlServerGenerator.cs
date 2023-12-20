@@ -8,6 +8,11 @@ namespace UUIDNext.Generator
     /// <summary>
     /// Generate a UUID version 8 based on RFC draft at https://github.com/ietf-wg-uuidrev/rfc4122bis
     /// </summary>
+    /// <remarks>
+    /// In SQL Server UUIDs stored in a column of type uniqueidentifier are not sorted in the order of the bytes (see #2).
+    /// This class generate UUID similar to UUID v7 but with a different byte order so that the UUIDs are sorted
+    /// when used in a uniqueidentifier typed column in SQL Sever
+    /// </remarks>
     public class UuidV8SqlServerGenerator : UuidTimestampGeneratorBase
     {
         protected override byte Version => 8;
