@@ -24,4 +24,8 @@
 		<InternalsVisibleTo Include="UUIDNext.Test" />
 		<InternalsVisibleTo Include="UUIDNext.Benchmarks" />
 	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+	</ItemGroup>
 </Project>
