@@ -26,4 +26,4 @@ jobs:
     - name: Pack nugets
       run: dotnet pack "./UUIDNext/UUIDNext.csproj" -c Release --no-build --output .
     - name: Push to NuGet
-      run: dotnet nuget push "UUIDNext.*.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "UUIDNext.*.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate --source https://api.nuget.org/v3/index.json
