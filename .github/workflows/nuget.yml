@@ -1,8 +1,6 @@
 name: Publish to NuGet
 
-on:
-    release:
-      types: [published]
+on: workflow_dispatch 
 
 defaults:
   run:
@@ -26,6 +24,6 @@ jobs:
     - name: Test
       run: dotnet test -c Release --no-build
     - name: Pack nugets
-      run: dotnet pack -c Release --no-build --output .
+      run: dotnet pack "./UUIDNext/UUIDNext.csproj" -c Release --no-build --output .
     - name: Push to NuGet
-      run: dotnet nuget push "UUIDNext.*.nupkg" --api-key ${{secrets.NUGET_H1_2024_KEY}} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "UUIDNext.*.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
