@@ -13,7 +13,7 @@ namespace UUIDNext.Test.DatabaseSupport
         const string tableName = "#uuidTestTable";
 
         [Fact]
-        public void TestSQLiteWithString()
+        public void TestSQLServerOnLocalDb()
         {
             using (var connection = new SqlConnection("Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;"))
             {
@@ -21,9 +21,9 @@ namespace UUIDNext.Test.DatabaseSupport
                 {
                     connection.Open();
                 }
-                catch (SqlException)
+                catch
                 {
-                    // localdb not installed on this computer
+                    // localdb is not available on this computer
                     return;
                 }
 
