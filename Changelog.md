@@ -4,6 +4,7 @@
 
 * Reduced the public surface of the library (this might cause breaking changes)
 * Added a logo
+* Enabled SourceLink
 
 ## 2.0.2 (2023-06-08)
 
