@@ -21,13 +21,6 @@ namespace UUIDNext
         public static readonly Guid Nil = new("00000000-0000-0000-0000-000000000000");
 
         /// <summary>
-        /// Create a new UUID Version 7
-        /// </summary>
-        [Obsolete("You should use the overload that specifies the database used. "
-                + "Every database has its way of storing UUID and UUID V7 might not be suited for your database.")]
-        public static Guid NewDatabaseFriendly() => _v7Generator.New();
-
-        /// <summary>
         /// Create a new UUID best suited for the selected database
         /// </summary>
         /// <param name="database">The database where the UUID will be stored</param>
