@@ -4,7 +4,7 @@ using System.Threading;
 namespace UUIDNext.Generator
 {
     /// <summary>
-    /// Generate a UUID version 5 based on RFC 4122
+    /// Generate a UUID version 5 based on RFC 9562
     /// </summary>
     internal class UuidV5Generator : UuidNameGeneratorBase
     {

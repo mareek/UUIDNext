@@ -6,7 +6,7 @@ using UUIDNext.Tools;
 namespace UUIDNext.Generator
 {
     /// <summary>
-    /// Generate a UUID version 8 based on RFC draft at https://github.com/ietf-wg-uuidrev/rfc4122bis
+    /// Generate a UUID version 8 based on RFC 9562
     /// </summary>
     /// <remarks>
     /// In SQL Server UUIDs stored in a column of type uniqueidentifier are not sorted in the order of the bytes (see #2).
