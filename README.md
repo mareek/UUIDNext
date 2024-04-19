@@ -38,6 +38,4 @@ As I said, UUIDs V4 produced by Guid.NewGuid() are fine when they are not used i
 
 ## Resources
 
-[RFC 4122](https://datatracker.ietf.org/doc/html/rfc4122) : The original standard for UUID Version 1 to 5.
-
-[Draft new UUID RFC](https://github.com/ietf-wg-uuidrev/rfc4122bis) : The proposed updated standard that include UUID Version 6 to 8
+[RFC 9562](https://www.rfc-editor.org/rfc/rfc9562) : The new standard for UUID Version 1 to 8.

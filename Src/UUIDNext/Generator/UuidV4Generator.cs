@@ -4,7 +4,7 @@ using UUIDNext.Tools;
 namespace UUIDNext.Generator
 {
     /// <summary>
-    /// Generate a UUID version 4 based on RFC 4122
+    /// Generate a UUID version 4 based on RFC 9562
     /// </summary>
     internal class UuidV4Generator : UuidGeneratorBase
     {
