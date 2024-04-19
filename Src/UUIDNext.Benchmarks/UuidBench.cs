@@ -25,6 +25,8 @@ public class UuidBench
 
     [Benchmark]
     public Guid NewUuidV7Simple() => Uuid.NewSequential_simple();
+    [Benchmark]
+    public Guid NewUuidV7SkipInit() => Uuid.NewSequential_skipInit();
 
     [Benchmark]
     public Guid NewUuidV8() => uuidV8Generator.New();

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.1</TargetFramework>
+		<TargetFramework>net8</TargetFramework>
 		<LangVersion>9</LangVersion>
 		<Version>3.0.0-beta2</Version>
 		<Authors>Matthieu Mourisson</Authors>
@@ -20,11 +20,12 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>Logo_128.png</PackageIcon>
 		<PackageReleaseNotes>See https://github.com/mareek/UUIDNext/blob/main/Changelog.md</PackageReleaseNotes>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="..\..\README.md" Pack="true" PackagePath="\"/>
-		<None Include="..\..\Images\Logo_128.png" Pack="true" PackagePath="\"/>
+		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
+		<None Include="..\..\Images\Logo_128.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -33,7 +34,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
