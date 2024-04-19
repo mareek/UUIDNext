@@ -11,6 +11,7 @@ namespace UUIDNext
         private static readonly UuidV8SqlServerGenerator _v8SqlServerGenerator = new();
 
         private static readonly Uuidv7SimpleGenerator _v7SimpleGenerator = new();
+        private static readonly Uuidv7SkipInitGenerator _v7SkipInitGenerator = new();
 
         /// <summary>
         /// The Max UUID is special form of UUID that is specified to have all 128 bits set to 1.
@@ -54,5 +55,6 @@ namespace UUIDNext
         public static Guid NewSequential() => _v7Generator.New();
         public static Guid NewSequential_static() => Uuidv7StaticGenerator.New();
         public static Guid NewSequential_simple() => _v7SimpleGenerator.New();
+        public static Guid NewSequential_skipInit() => _v7SkipInitGenerator.New();
     }
 }
