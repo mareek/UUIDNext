@@ -5,7 +5,7 @@ using UUIDNext.Tools;
 namespace UUIDNext.Generator
 {
     /// <summary>
-    /// Generate a UUID version 7 based on RFC draft at https://github.com/ietf-wg-uuidrev/rfc4122bis
+    /// Generate a UUID version 7 based on RFC 9562
     /// </summary>
     public class UuidV7Generator : UuidTimestampGeneratorBase
     {
