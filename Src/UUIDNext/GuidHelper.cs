@@ -7,13 +7,21 @@ namespace UUIDNext
         public static Guid FromBytes(Span<byte> bytes, bool bigEndian)
         {
             if (!bigEndian)
+#if NETSTANDARD2_0
+                return new(bytes.ToArray());
+#else
                 return new(bytes);
+#endif
 
             Span<byte> localBytes = stackalloc byte[bytes.Length];
             
             bytes.CopyTo(localBytes);
             SwitchByteOrder(localBytes);
+#if NETSTANDARD2_0
+            return new(localBytes.ToArray());
+#else
             return new(localBytes);
+#endif
         }
 
         public static byte[] ToByteArray(this Guid guid, bool bigEndian)
@@ -28,11 +36,22 @@ namespace UUIDNext
 
         public static bool TryWriteBytes(this Guid guid, Span<byte> bytes, bool bigEndian, out int bytesWritten)
         {
+#if NETSTANDARD2_0
+            if (bytes.Length < 16)
+            {
+                bytesWritten = 0;
+                return false;
+            }
+
+            var tempBytes = guid.ToByteArray();
+            tempBytes.CopyTo(bytes);
+#else
             if (bytes.Length < 16 || !guid.TryWriteBytes(bytes))
             {
                 bytesWritten = 0;
                 return false;
             }
+#endif
 
             if (bigEndian)
                 SwitchByteOrder(bytes);

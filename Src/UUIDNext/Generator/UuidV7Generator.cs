@@ -32,12 +32,12 @@ namespace UUIDNext.Generator
 
             Span<byte> bytes = stackalloc byte[16];
 
-            TimeSpan unixTimeStamp = date - DateTime.UnixEpoch;
-            long timestampInMs = Convert.ToInt64(Math.Floor(unixTimeStamp.TotalMilliseconds));
+            
+            long timestampInMs = ((DateTimeOffset)date).ToUnixTimeMilliseconds();
 
-            SetSequence(bytes[6..8], ref timestampInMs);
-            SetTimestamp(bytes[0..6], timestampInMs);
-            RandomNumberGenerator.Fill(bytes[8..16]);
+            SetSequence(bytes.Slice(6,2), ref timestampInMs);
+            SetTimestamp(bytes.Slice(0, 6), timestampInMs);
+            bytes.Slice(8, 8).FillWithRandom();
 
             return CreateGuidFromBigEndianBytes(bytes);
         }
@@ -46,7 +46,7 @@ namespace UUIDNext.Generator
         {
             Span<byte> timestampInMillisecondsBytes = stackalloc byte[8];
             BinaryPrimitives.TryWriteInt64BigEndian(timestampInMillisecondsBytes, timestampInMs);
-            timestampInMillisecondsBytes[2..8].CopyTo(bytes);
+            timestampInMillisecondsBytes.Slice(2, 6).CopyTo(bytes);
         }
 
         [Obsolete("Use UuidDecoder.DecodeUuidV7 instead. This function will be removed in the next version")]
