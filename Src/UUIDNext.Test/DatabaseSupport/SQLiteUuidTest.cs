@@ -11,6 +11,11 @@ namespace UUIDNext.Test.DatabaseSupport
     {
         const string tableName = "uuidTestTable";
 
+        public SQLiteUuidTest()
+        {
+            SQLitePCL.Batteries.Init();
+        }
+
         [Fact]
         public void TestSQLiteWithString()
         {
