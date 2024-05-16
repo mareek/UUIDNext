@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers.Binary;
-using System.Security.Cryptography;
 using UUIDNext.Tools;
 
 namespace UUIDNext.Generator
