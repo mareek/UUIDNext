@@ -7,7 +7,7 @@ namespace UUIDNext
         public static Guid FromBytes(Span<byte> bytes, bool bigEndian)
         {
             if (!bigEndian)
-#if NETSTANDARD2_0
+#if NET472_OR_GREATER
                 return new(bytes.ToArray());
 #else
                 return new(bytes);
@@ -17,7 +17,7 @@ namespace UUIDNext
             
             bytes.CopyTo(localBytes);
             SwitchByteOrder(localBytes);
-#if NETSTANDARD2_0
+#if NET472_OR_GREATER
             return new(localBytes.ToArray());
 #else
             return new(localBytes);
@@ -36,7 +36,7 @@ namespace UUIDNext
 
         public static bool TryWriteBytes(this Guid guid, Span<byte> bytes, bool bigEndian, out int bytesWritten)
         {
-#if NETSTANDARD2_0
+#if NET472_OR_GREATER
             if (bytes.Length < 16)
             {
                 bytesWritten = 0;

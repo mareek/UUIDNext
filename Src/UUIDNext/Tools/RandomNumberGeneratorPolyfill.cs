@@ -9,7 +9,7 @@ namespace UUIDNext.Tools
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FillWithRandom(this Span<byte> span)
         {
-#if NETSTANDARD2_0
+#if NET472_OR_GREATER
             using var rng = RandomNumberGenerator.Create();
             var tempBytes = new byte[span.Length];
             rng.GetBytes(tempBytes);
