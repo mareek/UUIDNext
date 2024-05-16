@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.1;net472;net48</TargetFrameworks>
         <LangVersion>9</LangVersion>
-        <Version>3.0.0-beta2</Version>
+        <Version>3.0.0-beta3</Version>
         <Authors>Matthieu Mourisson</Authors>
         <PackageId>UUIDNext</PackageId>
         <PackageLicenseExpression>0BSD</PackageLicenseExpression>

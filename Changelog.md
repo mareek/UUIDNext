@@ -2,6 +2,7 @@
 
 ## 3.0.0 (TBD)
 
+* Added support for .NET Framework 4.7+
 * Reduced the public surface of the library (this might cause breaking changes)
 * Added a logo
 * Enabled SourceLink
