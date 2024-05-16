@@ -13,7 +13,7 @@ namespace UUIDNext.Generator
         public Guid New()
         {
             Span<byte> bytes = stackalloc byte[16];
-            bytes.FillWithRandom();
+            RandomNumberGeneratorPolyfill.Fill(bytes);
             return CreateGuidFromBigEndianBytes(bytes);
         }
     }

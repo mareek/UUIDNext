@@ -36,7 +36,7 @@ namespace UUIDNext.Generator
 
             SetSequence(bytes.Slice(6,2), ref timestampInMs);
             SetTimestamp(bytes.Slice(0, 6), timestampInMs);
-            bytes.Slice(8, 8).FillWithRandom();
+            RandomNumberGeneratorPolyfill.Fill(bytes.Slice(8, 8));
 
             return CreateGuidFromBigEndianBytes(bytes);
         }

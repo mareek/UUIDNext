@@ -90,7 +90,7 @@ namespace UUIDNext.Generator
         {
             // following section 6.2 on "Fixed-Length Dedicated Counter Seeding", the initial value of the sequence is randomized
             Span<byte> buffer = stackalloc byte[2];
-            buffer.FillWithRandom();
+            RandomNumberGeneratorPolyfill.Fill(buffer);
             // Setting the highest bit to 0 mitigate the risk of a sequence overflow (see section 6.2)
             buffer[0] &= 0b0000_0111;
             return BinaryPrimitives.ReadUInt16BigEndian(buffer);
