@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Security.Cryptography;
+using UUIDNext.Tools;
 
 namespace UUIDNext.Generator
 {
@@ -13,7 +13,7 @@ namespace UUIDNext.Generator
         public Guid New()
         {
             Span<byte> bytes = stackalloc byte[16];
-            RandomNumberGenerator.Fill(bytes);
+            bytes.FillWithRandom();
             return CreateGuidFromBigEndianBytes(bytes);
         }
     }

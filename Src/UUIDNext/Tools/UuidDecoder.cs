@@ -11,10 +11,10 @@ namespace UUIDNext.Tools
             guid.TryWriteBytes(bytes, bigEndian: true, out var _);
 
             Span<byte> timestampBytes = stackalloc byte[8];
-            bytes[0..6].CopyTo(timestampBytes[2..8]);
+            bytes.Slice(0, 6).CopyTo(timestampBytes.Slice(2, 6));
             long timestampMs = BinaryPrimitives.ReadInt64BigEndian(timestampBytes);
 
-            var sequenceBytes = bytes[6..8];
+            var sequenceBytes = bytes.Slice(6, 2);
             //remove version information
             sequenceBytes[0] &= 0b0000_1111;
             short sequence = BinaryPrimitives.ReadInt16BigEndian(sequenceBytes);
@@ -28,10 +28,10 @@ namespace UUIDNext.Tools
             guid.TryWriteBytes(bytes, bigEndian: true, out var _);
 
             Span<byte> timestampBytes = stackalloc byte[8];
-            bytes[10..16].CopyTo(timestampBytes[2..8]);
+            bytes.Slice(10, 6).CopyTo(timestampBytes.Slice(2, 6));
             long timestampMs = BinaryPrimitives.ReadInt64BigEndian(timestampBytes);
 
-            var sequenceBytes = bytes[8..10];
+            var sequenceBytes = bytes.Slice(8, 2);
             //remove variant information
             sequenceBytes[0] &= 0b0011_1111;
             short sequence = BinaryPrimitives.ReadInt16BigEndian(sequenceBytes);

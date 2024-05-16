@@ -37,12 +37,11 @@ namespace UUIDNext.Generator
 
             Span<byte> bytes = stackalloc byte[16];
 
-            TimeSpan unixTimeStamp = date - DateTime.UnixEpoch;
-            long timestampInMs = Convert.ToInt64(Math.Floor(unixTimeStamp.TotalMilliseconds));
+            long timestampInMs = ((DateTimeOffset)date).ToUnixTimeMilliseconds();
 
-            SetSequence(bytes[8..10], ref timestampInMs);
-            SetTimestamp(bytes[10..16], timestampInMs);
-            RandomNumberGenerator.Fill(bytes[0..8]);
+            SetSequence(bytes.Slice(8,2), ref timestampInMs);
+            SetTimestamp(bytes.Slice(10, 6), timestampInMs);
+            bytes.Slice(0, 8).FillWithRandom();
 
             return CreateGuidFromBigEndianBytes(bytes);
         }
@@ -51,7 +50,7 @@ namespace UUIDNext.Generator
         {
             Span<byte> timestampInMillisecondsBytes = stackalloc byte[8];
             BinaryPrimitives.TryWriteInt64BigEndian(timestampInMillisecondsBytes, timestampInMs);
-            timestampInMillisecondsBytes[2..8].CopyTo(bytes);
+            timestampInMillisecondsBytes.Slice(2, 6).CopyTo(bytes);
         }
 
         [Obsolete("Use UuidDecoder.DecodeUuidV8ForSqlServer instead. This function will be removed in the next version")]

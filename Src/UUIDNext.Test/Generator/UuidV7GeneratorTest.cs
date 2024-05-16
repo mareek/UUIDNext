@@ -81,7 +81,7 @@ namespace UUIDNext.Test.Generator
         public void TestSequence()
         {
             UuidV7Generator generator = new();
-            var date = DateTime.UnixEpoch.AddMilliseconds(1789);
+            var date = DateTimeOffset.FromUnixTimeMilliseconds(0).AddMilliseconds(1789).UtcDateTime;
 
             var guido = generator.New(date);
             var (timestampMsO, sequenceO) = UuidDecoder.DecodeUuidV7(guido);

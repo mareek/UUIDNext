@@ -1,42 +1,48 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>netstandard2.1</TargetFramework>
-		<LangVersion>9</LangVersion>
-		<Version>3.0.0-beta2</Version>
-		<Authors>Matthieu Mourisson</Authors>
-		<PackageId>UUIDNext</PackageId>
-		<PackageLicenseExpression>0BSD</PackageLicenseExpression>
-		<PackageTags>UUID;GUID;UUIDv5;UUIDv7;UUIDv8;</PackageTags>
-		<PackageProjectUrl>https://github.com/mareek/UUIDNext</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/mareek/UUIDNext</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<EmbedUntrackedSources>true</EmbedUntrackedSources>
-		<Description>A fast and modern .NET library to generate UUID/GUID that are either sequential and database friendly (versions 7), name based (versions  5) or random (version 4).</Description>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageIcon>Logo_128.png</PackageIcon>
-		<PackageReleaseNotes>See https://github.com/mareek/UUIDNext/blob/main/Changelog.md</PackageReleaseNotes>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.1;net472;net48</TargetFrameworks>
+        <LangVersion>9</LangVersion>
+        <Version>3.0.0-beta2</Version>
+        <Authors>Matthieu Mourisson</Authors>
+        <PackageId>UUIDNext</PackageId>
+        <PackageLicenseExpression>0BSD</PackageLicenseExpression>
+        <PackageTags>UUID;GUID;UUIDv5;UUIDv7;UUIDv8;</PackageTags>
+        <PackageProjectUrl>https://github.com/mareek/UUIDNext</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mareek/UUIDNext</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <Description>A fast and modern .NET library to generate UUID/GUID that are either sequential and database friendly (versions 7), name based (versions 5) or random (version 4).</Description>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>Logo_128.png</PackageIcon>
+        <PackageReleaseNotes>See https://github.com/mareek/UUIDNext/blob/main/Changelog.md</PackageReleaseNotes>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<None Include="..\..\README.md" Pack="true" PackagePath="\"/>
-		<None Include="..\..\Images\Logo_128.png" Pack="true" PackagePath="\"/>
-	</ItemGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+        <DefineConstants>TRACE;SUPPORTS_RANGE;</DefineConstants>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<InternalsVisibleTo Include="UUIDNext.Test" />
-		<InternalsVisibleTo Include="UUIDNext.Benchmarks" />
-	</ItemGroup>
+    <ItemGroup>
+        <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+        <None Include="..\..\Images\Logo_128.png" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
-	</ItemGroup>
+    <ItemGroup>
+        <InternalsVisibleTo Include="UUIDNext.Test"/>
+        <InternalsVisibleTo Include="UUIDNext.Benchmarks"/>
+    </ItemGroup>
 
-	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-	</PropertyGroup>
+    <ItemGroup>
+        <PackageReference Condition="('$(TargetFramework)' == 'net472') OR ('$(TargetFramework)' == 'net48')"
+                          Include="System.Memory" Version="4.5.5"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+    </ItemGroup>
+
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup>
 </Project>
