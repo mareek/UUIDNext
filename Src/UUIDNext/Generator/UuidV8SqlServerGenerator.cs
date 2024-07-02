@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers.Binary;
-using System.Security.Cryptography;
 using UUIDNext.Tools;
 
 namespace UUIDNext.Generator
@@ -39,7 +38,7 @@ namespace UUIDNext.Generator
 
             long timestampInMs = ((DateTimeOffset)date).ToUnixTimeMilliseconds();
 
-            SetSequence(bytes.Slice(8,2), ref timestampInMs);
+            SetSequence(bytes.Slice(8, 2), ref timestampInMs);
             SetTimestamp(bytes.Slice(10, 6), timestampInMs);
             RandomNumberGeneratorPolyfill.Fill(bytes.Slice(0, 8));
 
