@@ -1,6 +1,6 @@
 # Version History
 
-## 3.0.0 (TBD)
+## 3.0.0 (2024-07-02)
 
 * Added support for .NET Framework 4.7+
 * Reduced the public surface of the library (this might cause breaking changes)
