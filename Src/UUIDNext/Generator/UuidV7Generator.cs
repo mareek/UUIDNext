@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using UUIDNext.Tools;
 
 namespace UUIDNext.Generator
@@ -29,23 +30,25 @@ namespace UUIDNext.Generator
              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
              */
 
-            Span<byte> bytes = stackalloc byte[16];
+            // Extra 2 bytes in front to prepend timestamp data.
+            Span<byte> buffer = stackalloc byte[18];
 
-            
+            // Offset to the bytes that are used in UUIDv7.
+            var bytes = buffer[2..];
+
             long timestampInMs = ((DateTimeOffset)date).ToUnixTimeMilliseconds();
 
             SetSequence(bytes.Slice(6,2), ref timestampInMs);
-            SetTimestamp(bytes.Slice(0, 6), timestampInMs);
+            SetTimestamp(buffer[..8], timestampInMs);
             RandomNumberGeneratorPolyfill.Fill(bytes.Slice(8, 8));
 
             return CreateGuidFromBigEndianBytes(bytes);
         }
 
-        private void SetTimestamp(Span<byte> bytes, long timestampInMs)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void SetTimestamp(Span<byte> bytes, long timestampInMs)
         {
-            Span<byte> timestampInMillisecondsBytes = stackalloc byte[8];
-            BinaryPrimitives.TryWriteInt64BigEndian(timestampInMillisecondsBytes, timestampInMs);
-            timestampInMillisecondsBytes.Slice(2, 6).CopyTo(bytes);
+            BinaryPrimitives.TryWriteInt64BigEndian(bytes, timestampInMs);
         }
 
         [Obsolete("Use UuidDecoder.DecodeUuidV7 instead. This function will be removed in the next version")]
