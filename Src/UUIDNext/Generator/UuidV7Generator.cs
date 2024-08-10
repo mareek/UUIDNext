@@ -34,12 +34,12 @@ namespace UUIDNext.Generator
             Span<byte> buffer = stackalloc byte[18];
 
             // Offset to the bytes that are used in UUIDv7.
-            var bytes = buffer[2..];
+            var bytes = buffer.Slice(2);
 
             long timestampInMs = ((DateTimeOffset)date).ToUnixTimeMilliseconds();
 
             SetSequence(bytes.Slice(6,2), ref timestampInMs);
-            SetTimestamp(buffer[..8], timestampInMs);
+            SetTimestamp(buffer.Slice(0, 8), timestampInMs);
             RandomNumberGeneratorPolyfill.Fill(bytes.Slice(8, 8));
 
             return CreateGuidFromBigEndianBytes(bytes);
