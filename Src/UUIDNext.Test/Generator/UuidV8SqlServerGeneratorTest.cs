@@ -14,8 +14,12 @@ namespace UUIDNext.Test.Generator
 
         protected override TimeSpan TimestampGranularity => TimeSpan.FromMilliseconds(1);
 
+        protected override int SequenceBitSize => 14;
+
         protected override (long timestamp, int sequence) DecodeUuid(Guid uuid)
             => UuidDecoder.DecodeUuidV8ForSqlServer(uuid);
+
+        protected override Guid NewUuid(UuidV8SqlServerGenerator generator) => generator.New();
 
         [Fact]
         public void TestOrderWithSqlGuid()

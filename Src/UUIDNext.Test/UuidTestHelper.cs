@@ -17,7 +17,7 @@ namespace UUIDNext.Test
             Check.That(strUuid[19]).IsOneOf('8', '9', 'a', 'b', 'A', 'B');
         }
 
-        public static Guid New(this UuidTimestampGeneratorBase generator, DateTime date)
+        public static Guid New(this UuidGeneratorBase generator, DateTime date)
         {
             var tryGenerateNewMethod = generator.GetType()
                                                 .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
@@ -26,14 +26,7 @@ namespace UUIDNext.Test
             return (Guid)tryGenerateNewMethod.Invoke(generator, parameters);
         }
 
-        public static int GetSequenceMaxValue(this UuidTimestampGeneratorBase generator)
-        {
-            var sequenceBitSizeProperty = generator.GetType().GetProperty("SequenceBitSize", BindingFlags.Instance | BindingFlags.NonPublic);
-            int sequenceBitSize = (int)sequenceBitSizeProperty.GetValue(generator, null);
-            return (1 << sequenceBitSize) - 1;
-        }
-
-        public static IEnumerable<(int expectedPosition, Guid uuid)> GetDatabaseTestSet(this UuidTimestampGeneratorBase generator, int stepSize = 10)
+        public static IEnumerable<(int expectedPosition, Guid uuid)> GetDatabaseTestSet(this UuidGeneratorBase generator, int stepSize = 10)
         {
             DateTime date = new(2023, 1, 1);
 
@@ -47,7 +40,7 @@ namespace UUIDNext.Test
                             .Concat(generator.GenerateTestSet(date.AddYears(50), 7 * stepSize, stepSize));
         }
 
-        private static IEnumerable<(int expectedPosition, Guid uuid)> GenerateTestSet(this UuidTimestampGeneratorBase generator, DateTime date, int offset, int setSize)
+        private static IEnumerable<(int expectedPosition, Guid uuid)> GenerateTestSet(this UuidGeneratorBase generator, DateTime date, int offset, int setSize)
         {
             for (int i = 0; i < setSize; i++)
             {
