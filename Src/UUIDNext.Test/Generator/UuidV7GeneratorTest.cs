@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Threading.Tasks;
 using NFluent;
 using UUIDNext.Generator;
@@ -16,7 +15,11 @@ namespace UUIDNext.Test.Generator
 
         protected override TimeSpan TimestampGranularity => TimeSpan.FromMilliseconds(1);
 
+        protected override int SequenceBitSize => 12;
+
         protected override (long timestamp, int sequence) DecodeUuid(Guid uuid) => UuidDecoder.DecodeUuidV7(uuid);
+
+        protected override Guid NewUuid(UuidV7Generator generator) => generator.New();
 
         [Fact]
         public void OrderTest()

@@ -12,13 +12,15 @@ namespace UUIDNext.Generator
     /// This class generate UUID similar to UUID v7 but with a different byte order so that the UUIDs are sorted
     /// when used in a uniqueidentifier typed column in SQL Sever
     /// </remarks>
-    public class UuidV8SqlServerGenerator : UuidTimestampGeneratorBase
+    public class UuidV8SqlServerGenerator : UuidGeneratorBase
     {
         protected override byte Version => 8;
 
-        protected override int SequenceBitSize => 14;
+        private readonly MonotonicityHandler _monotonicityHandler = new(sequenceBitSize: 14);
 
-        protected override Guid New(DateTime date)
+        internal Guid New() => New(DateTime.UtcNow);
+
+        private Guid New(DateTime date)
         {
             /* This structure should produce ordered UUIDs in SQL Server
               0                   1                   2                   3
@@ -34,22 +36,17 @@ namespace UUIDNext.Generator
              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
              */
 
+            var (timestamp, sequence) = _monotonicityHandler.GetTimestampAndSequence(date);
+
             Span<byte> bytes = stackalloc byte[16];
+            // We only use 48 bits of the timestamp so we can wrtie it on 64 bits and then
+            // erase the 16 most significant bytes with the sequence to save some buffer allocation and copy
+            BinaryPrimitives.TryWriteInt64BigEndian(bytes.Slice(8, 8), timestamp);
+            BinaryPrimitives.TryWriteUInt16BigEndian(bytes.Slice(8, 2), sequence);
 
-            long timestampInMs = ((DateTimeOffset)date).ToUnixTimeMilliseconds();
-
-            SetSequence(bytes.Slice(8, 2), ref timestampInMs);
-            SetTimestamp(bytes.Slice(10, 6), timestampInMs);
             RandomNumberGeneratorPolyfill.Fill(bytes.Slice(0, 8));
 
             return CreateGuidFromBigEndianBytes(bytes);
-        }
-
-        private void SetTimestamp(Span<byte> bytes, long timestampInMs)
-        {
-            Span<byte> timestampInMillisecondsBytes = stackalloc byte[8];
-            BinaryPrimitives.TryWriteInt64BigEndian(timestampInMillisecondsBytes, timestampInMs);
-            timestampInMillisecondsBytes.Slice(2, 6).CopyTo(bytes);
         }
 
         [Obsolete("Use UuidDecoder.DecodeUuidV8ForSqlServer instead. This function will be removed in the next version")]

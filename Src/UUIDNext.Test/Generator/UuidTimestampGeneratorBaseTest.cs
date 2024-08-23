@@ -8,20 +8,26 @@ using Xunit;
 namespace UUIDNext.Test.Generator
 {
     public abstract class UuidTimestampGeneratorBaseTest<TGenerator>
-        where TGenerator : UuidTimestampGeneratorBase, new()
+        where TGenerator : UuidGeneratorBase, new()
     {
         protected abstract byte Version { get; }
 
         protected abstract TimeSpan TimestampGranularity { get; }
 
+        protected abstract int SequenceBitSize { get; }
+
         protected abstract (long timestamp, int sequence) DecodeUuid(Guid uuid);
+
+        protected abstract Guid NewUuid(TGenerator generator);
+
+        private int GetSequenceMaxValue() => (1 << SequenceBitSize) - 1;
 
         [Fact]
         public void DumbTest()
         {
             var generator = new TGenerator();
             ConcurrentBag<Guid> generatedUuids = new();
-            Parallel.For(0, 100, _ => generatedUuids.Add(generator.New()));
+            Parallel.For(0, 100, _ => generatedUuids.Add(NewUuid(generator)));
 
             Check.That(generatedUuids).ContainsNoDuplicateItem();
 
@@ -36,7 +42,7 @@ namespace UUIDNext.Test.Generator
         {
             var generator = new TGenerator();
             var date = DateTime.UtcNow.Date;
-            int sequenceMaxValue = generator.GetSequenceMaxValue();
+            int sequenceMaxValue = GetSequenceMaxValue();
 
             var firstUuid = generator.New(date);
             var (firstTimestamp, firstSequenceNumber) = DecodeUuid(firstUuid);
@@ -56,7 +62,7 @@ namespace UUIDNext.Test.Generator
         {
             var generator = new TGenerator();
             var date = DateTime.UtcNow.Date;
-            int sequenceMaxValue = generator.GetSequenceMaxValue();
+            int sequenceMaxValue = GetSequenceMaxValue();
 
             //setup an offset by generating an uuid into the future
             generator.New(date.AddSeconds(1));
