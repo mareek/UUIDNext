@@ -39,8 +39,8 @@ namespace UUIDNext.Generator
             var (timestamp, sequence) = _monotonicityHandler.GetTimestampAndSequence(date);
 
             Span<byte> bytes = stackalloc byte[16];
-            // We only use 48 bits of the timestamp so we can wrtie it on 64 bits and then
-            // erase the 16 most significant bytes with the sequence to save some buffer allocation and copy
+            // We only use 48 bits of the timestamp so we can write it on 64 bits and then
+            // erase the 16 most significant bits with the sequence to save some buffer allocation and copy
             BinaryPrimitives.TryWriteInt64BigEndian(bytes.Slice(8, 8), timestamp);
             BinaryPrimitives.TryWriteUInt16BigEndian(bytes.Slice(8, 2), sequence);
 
