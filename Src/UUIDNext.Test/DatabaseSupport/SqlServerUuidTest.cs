@@ -44,7 +44,7 @@ namespace UUIDNext.Test.DatabaseSupport
 
                     var generator = new UuidV8SqlServerGenerator();
                     var insertCommand = connection.CreateCommand();
-                    InitInsertCommand(insertCommand, generator.GetDatabaseTestSet(10).ToArray());
+                    InitInsertCommand(insertCommand, UuidTestHelper.GetDatabaseTestSet(generator, 10).ToArray());
                     insertCommand.ExecuteNonQuery();
 
                     var selectCommand = connection.CreateCommand();

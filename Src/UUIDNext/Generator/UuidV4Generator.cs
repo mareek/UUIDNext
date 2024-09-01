@@ -1,20 +1,16 @@
-﻿using System;
-using UUIDNext.Tools;
+﻿using UUIDNext.Tools;
 
-namespace UUIDNext.Generator
+namespace UUIDNext.Generator;
+
+/// <summary>
+/// Generate a UUID version 4 based on RFC 9562
+/// </summary>
+internal class UuidV4Generator
 {
-    /// <summary>
-    /// Generate a UUID version 4 based on RFC 9562
-    /// </summary>
-    internal class UuidV4Generator : UuidGeneratorBase
+    public Guid New()
     {
-        protected override byte Version => 4;
-
-        public Guid New()
-        {
-            Span<byte> bytes = stackalloc byte[16];
-            RandomNumberGeneratorPolyfill.Fill(bytes);
-            return CreateGuidFromBigEndianBytes(bytes);
-        }
+        Span<byte> bytes = stackalloc byte[16];
+        RandomNumberGeneratorPolyfill.Fill(bytes);
+        return UuidToolkit.CreateGuidFromBigEndianBytes(bytes, 4);
     }
 }

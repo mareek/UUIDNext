@@ -43,7 +43,7 @@ namespace UUIDNext.Test.DatabaseSupport
                 try
                 {
                     var generator = new UuidV7Generator();
-                    ExecuteNonQuery(connection, DatabaseTestHelper.GenerateSqlInsertionQuery(tableName, generator.GetDatabaseTestSet(100)));
+                    ExecuteNonQuery(connection, DatabaseTestHelper.GenerateSqlInsertionQuery(tableName, UuidTestHelper.GetDatabaseTestSet(generator, 100)));
 
                     var command = connection.CreateCommand();
                     command.CommandText = @$"SELECT * FROM {tableName} ORDER BY UUID;";
@@ -80,7 +80,7 @@ namespace UUIDNext.Test.DatabaseSupport
                     var generator = new UuidV7Generator();
 
                     var insertCommand = connection.CreateCommand();
-                    InitInsertCommand(insertCommand, generator.GetDatabaseTestSet(10).ToArray());
+                    InitInsertCommand(insertCommand, UuidTestHelper.GetDatabaseTestSet(generator, 10).ToArray());
                     insertCommand.ExecuteNonQuery();
 
                     var selectCommand = connection.CreateCommand();

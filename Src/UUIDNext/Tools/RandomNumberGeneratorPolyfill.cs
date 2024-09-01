@@ -1,24 +1,21 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
-using System.Threading;
 
-namespace UUIDNext.Tools
+namespace UUIDNext.Tools;
+
+internal static class RandomNumberGeneratorPolyfill
 {
-    internal static class RandomNumberGeneratorPolyfill
-    {
 #if NET472_OR_GREATER
-        private static readonly ThreadLocal<RandomNumberGenerator> _rng = new(RandomNumberGenerator.Create);
+    private static readonly ThreadLocal<RandomNumberGenerator> _rng = new(RandomNumberGenerator.Create);
 
-        public static void Fill(Span<byte> span)
-        {
-            var tempBytes = new byte[span.Length];
-            _rng.Value.GetBytes(tempBytes);
-            tempBytes.CopyTo(span);
-        }
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Fill(Span<byte> span) => RandomNumberGenerator.Fill(span);
-#endif
+    public static void Fill(Span<byte> span)
+    {
+        var tempBytes = new byte[span.Length];
+        _rng.Value.GetBytes(tempBytes);
+        tempBytes.CopyTo(span);
     }
+#else
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Fill(Span<byte> span) => RandomNumberGenerator.Fill(span);
+#endif
 }

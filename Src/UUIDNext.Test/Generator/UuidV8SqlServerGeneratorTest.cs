@@ -25,7 +25,7 @@ namespace UUIDNext.Test.Generator
         public void TestOrderWithSqlGuid()
         {
             var generator = new UuidV8SqlServerGenerator();
-            var testSet = generator.GetDatabaseTestSet(100);
+            var testSet = UuidTestHelper.GetDatabaseTestSet(generator, 100);
 
             var testSetWithSqlGuid = testSet.Select(s => (s.expectedPosition, sqlUuid: new SqlGuid(s.uuid)))
                                             .OrderBy(s => s.sqlUuid)
