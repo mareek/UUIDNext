@@ -1,15 +1,16 @@
 ﻿using System.Security.Cryptography;
-using System.Threading;
+using UUIDNext.Tools;
 
-namespace UUIDNext.Generator
+namespace UUIDNext.Generator;
+
+/// <summary>
+/// Generate a UUID version 5 based on RFC 9562
+/// </summary>
+internal class UuidV5Generator
 {
-    /// <summary>
-    /// Generate a UUID version 5 based on RFC 9562
-    /// </summary>
-    internal class UuidV5Generator : UuidNameGeneratorBase
-    {
-        protected override ThreadLocal<HashAlgorithm> HashAlgorithm { get; } = new(SHA1.Create);
+    private readonly ThreadLocal<HashAlgorithm> _sha1HashAlgorithm = new(SHA1.Create);
 
-        protected override byte Version => 5;
-    }
+    public Guid New(Guid namespaceId, string name)
+        => UuidToolkit.CreateUuidFromName(namespaceId, name, _sha1HashAlgorithm.Value, 5);
+
 }

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NFluent;
-using UUIDNext.Generator;
 
 namespace UUIDNext.Test
 {
     internal static class UuidTestHelper
     {
         public const string LoremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt";
+
         public static void CheckVersionAndVariant(Guid uuid, byte version)
         {
             var strUuid = uuid.ToString();
@@ -17,7 +17,7 @@ namespace UUIDNext.Test
             Check.That(strUuid[19]).IsOneOf('8', '9', 'a', 'b', 'A', 'B');
         }
 
-        public static Guid New(this UuidGeneratorBase generator, DateTime date)
+        public static Guid New(object generator, DateTime date)
         {
             var tryGenerateNewMethod = generator.GetType()
                                                 .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
@@ -26,25 +26,25 @@ namespace UUIDNext.Test
             return (Guid)tryGenerateNewMethod.Invoke(generator, parameters);
         }
 
-        public static IEnumerable<(int expectedPosition, Guid uuid)> GetDatabaseTestSet(this UuidGeneratorBase generator, int stepSize = 10)
+        public static IEnumerable<(int expectedPosition, Guid uuid)> GetDatabaseTestSet(object generator, int stepSize = 10)
         {
             DateTime date = new(2023, 1, 1);
 
-            return generator.GenerateTestSet(date, 0, stepSize)
-                            .Concat(generator.GenerateTestSet(date.AddMilliseconds(1), stepSize, stepSize))
-                            .Concat(generator.GenerateTestSet(date.AddSeconds(2), 2 * stepSize, stepSize))
-                            .Concat(generator.GenerateTestSet(date.AddMinutes(3), 3 * stepSize, stepSize))
-                            .Concat(generator.GenerateTestSet(date.AddHours(4), 4 * stepSize, stepSize))
-                            .Concat(generator.GenerateTestSet(date.AddDays(5), 5 * stepSize, stepSize))
-                            .Concat(generator.GenerateTestSet(date.AddYears(6), 6 * stepSize, stepSize))
-                            .Concat(generator.GenerateTestSet(date.AddYears(50), 7 * stepSize, stepSize));
+            return GenerateTestSet(generator, date, 0, stepSize)
+                    .Concat(GenerateTestSet(generator, date.AddMilliseconds(1), stepSize, stepSize))
+                    .Concat(GenerateTestSet(generator, date.AddSeconds(2), 2 * stepSize, stepSize))
+                    .Concat(GenerateTestSet(generator, date.AddMinutes(3), 3 * stepSize, stepSize))
+                    .Concat(GenerateTestSet(generator, date.AddHours(4), 4 * stepSize, stepSize))
+                    .Concat(GenerateTestSet(generator, date.AddDays(5), 5 * stepSize, stepSize))
+                    .Concat(GenerateTestSet(generator, date.AddYears(6), 6 * stepSize, stepSize))
+                    .Concat(GenerateTestSet(generator, date.AddYears(50), 7 * stepSize, stepSize));
         }
 
-        private static IEnumerable<(int expectedPosition, Guid uuid)> GenerateTestSet(this UuidGeneratorBase generator, DateTime date, int offset, int setSize)
+        private static IEnumerable<(int expectedPosition, Guid uuid)> GenerateTestSet(object generator, DateTime date, int offset, int setSize)
         {
             for (int i = 0; i < setSize; i++)
             {
-                yield return (i + offset, generator.New(date));
+                yield return (i + offset, New(generator, date));
             }
         }
     }
