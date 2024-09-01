@@ -12,6 +12,9 @@ public class UuidBench
     public Guid NewGuid() => Guid.NewGuid();
 
     [Benchmark]
+    public Guid CreateVersion7() => Guid.CreateVersion7();
+
+    [Benchmark]
     public Guid NewUuidV4() => Uuid.NewRandom();
 
     [Benchmark]
