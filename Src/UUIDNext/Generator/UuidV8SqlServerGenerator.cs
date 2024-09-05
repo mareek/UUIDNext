@@ -15,9 +15,9 @@ public class UuidV8SqlServerGenerator
 {
     private readonly MonotonicityHandler _monotonicityHandler = new(sequenceBitSize: 14);
 
-    internal Guid New() => New(DateTime.UtcNow);
+    internal Guid New() => New(DateTimeOffset.UtcNow);
 
-    private Guid New(DateTime date)
+    private Guid New(DateTimeOffset date)
     {
         /* This structure should produce ordered UUIDs in SQL Server
           0                   1                   2                   3
