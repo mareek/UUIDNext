@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Buffers.Binary;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace UUIDNext.Tools;
@@ -70,5 +71,54 @@ internal static class UuidToolkit
 
         return CreateGuidFromBigEndianBytes(hash[0..16], version);
 #endif
+    }
+
+    /// <summary>
+    /// Create an UUID version 7 with the given timestamp and bytes of  otherBytes, filling the rest with random data
+    /// </summary>
+    /// <remarks>
+    /// Here is the bit layout of the UUID Version 7 created
+    ///  0                   1                   2                   3
+    ///  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    /// |                           timestamp                           |
+    /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    /// |           timestamp           |  ver  |      otherBytes       |
+    /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    /// |var|                      otherBytes                           |
+    /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    /// |                          otherBytes                           |
+    /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    /// </remarks>
+    /// <param name="timestamp">A unix epoch timestamp in ms</param>
+    /// <param name="followingBytes">
+    /// A series of 0 to 10 bytes used to fill the rest of the UUID. 
+    /// Be careful: some bits will be overxritten by the version and variant of the UUID (see remarks)
+    /// </param>
+    /// <returns>A UUID Version 7</returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static Guid CreateUuidV7(long timestamp, Span<byte> followingBytes)
+    {
+        if (followingBytes.Length > 10)
+            throw new ArgumentException($"argument {nameof(followingBytes)} should have a size of 10 bytes or less", nameof(followingBytes));
+
+        // Extra 2 bytes in front to prepend timestamp data.
+        Span<byte> buffer = stackalloc byte[18];
+
+        // write the timestamp
+        Span<byte> timestampBytes = buffer.Slice(0, 8);
+        BinaryPrimitives.TryWriteInt64BigEndian(timestampBytes, timestamp);
+
+        // write the data provided by the caller
+        Span<byte> followingUuidBytes = buffer.Slice(8, followingBytes.Length);
+        followingBytes.CopyTo(followingUuidBytes);
+
+        // fill the remaining bytes with random data
+        Span<byte> randomBytes = buffer.Slice(8 + followingBytes.Length);
+        RandomNumberGeneratorPolyfill.Fill(randomBytes);
+
+        // cut the 2 highest bytes of the timestamp to keep only 48bits (see bit layout) and create the UUID
+        Span<byte> uuidBytes = buffer.Slice(2);
+        return CreateGuidFromBigEndianBytes(uuidBytes, 7);
     }
 }

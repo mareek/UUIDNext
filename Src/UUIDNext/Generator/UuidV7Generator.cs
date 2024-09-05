@@ -1,5 +1,4 @@
-﻿using System;
-using System.Buffers.Binary;
+﻿using System.Buffers.Binary;
 using UUIDNext.Tools;
 
 namespace UUIDNext.Generator;
@@ -11,37 +10,30 @@ public class UuidV7Generator
 {
     private readonly MonotonicityHandler _monotonicityHandler = new(sequenceBitSize: 12);
 
-    internal Guid New() => New(DateTime.UtcNow);
+    internal Guid New() => New(DateTimeOffset.UtcNow);
 
-    private Guid New(DateTime date)
+    private Guid New(DateTimeOffset date)
     {
-        /* We implement the first example given in section 4.4.4.1 of the RFC
+        /* We implement the following bit layout as per section 5.7 of the RFC
           0                   1                   2                   3
           0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-         |                           unix_ts_ms                          |
+         |                            timestamp                          |
          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-         |          unix_ts_ms           |  ver  |       rand_a          |
+         |           timestamp           |  ver  |       sequence        |
          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-         |var|                        rand_b                             |
+         |var|                        random                             |
          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-         |                            rand_b                             |
+         |                            random                             |
          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
          */
 
-        // Extra 2 bytes in front to prepend timestamp data.
-        Span<byte> buffer = stackalloc byte[18];
-        Span<byte> timestampBytes = buffer.Slice(0, 8);
-        Span<byte> uuidBytes = buffer.Slice(2);
-
         var (timestamp, sequence) = _monotonicityHandler.GetTimestampAndSequence(date);
 
-        BinaryPrimitives.TryWriteInt64BigEndian(timestampBytes, timestamp);
-        BinaryPrimitives.TryWriteUInt16BigEndian(uuidBytes.Slice(6, 2), sequence);
+        Span<byte> sequenceBytes = stackalloc byte[2];
+        BinaryPrimitives.TryWriteUInt16BigEndian(sequenceBytes, sequence);
 
-        RandomNumberGeneratorPolyfill.Fill(uuidBytes.Slice(8, 8));
-
-        return UuidToolkit.CreateGuidFromBigEndianBytes(uuidBytes, 7);
+        return UuidToolkit.CreateUuidV7(timestamp, sequenceBytes);
     }
 
     [Obsolete("Use UuidDecoder.DecodeUuidV7 instead. This function will be removed in the next version")]
