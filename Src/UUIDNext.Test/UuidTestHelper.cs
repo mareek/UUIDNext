@@ -17,7 +17,7 @@ namespace UUIDNext.Test
             Check.That(strUuid[19]).IsOneOf('8', '9', 'a', 'b', 'A', 'B');
         }
 
-        public static Guid New(object generator, DateTime date)
+        public static Guid New(object generator, DateTimeOffset date)
         {
             var tryGenerateNewMethod = generator.GetType()
                                                 .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
@@ -28,7 +28,7 @@ namespace UUIDNext.Test
 
         public static IEnumerable<(int expectedPosition, Guid uuid)> GetDatabaseTestSet(object generator, int stepSize = 10)
         {
-            DateTime date = new(2023, 1, 1);
+            DateTimeOffset date = new(new(2023, 1, 1));
 
             return GenerateTestSet(generator, date, 0, stepSize)
                     .Concat(GenerateTestSet(generator, date.AddMilliseconds(1), stepSize, stepSize))
@@ -40,7 +40,7 @@ namespace UUIDNext.Test
                     .Concat(GenerateTestSet(generator, date.AddYears(50), 7 * stepSize, stepSize));
         }
 
-        private static IEnumerable<(int expectedPosition, Guid uuid)> GenerateTestSet(object generator, DateTime date, int offset, int setSize)
+        private static IEnumerable<(int expectedPosition, Guid uuid)> GenerateTestSet(object generator, DateTimeOffset date, int offset, int setSize)
         {
             for (int i = 0; i < setSize; i++)
             {
