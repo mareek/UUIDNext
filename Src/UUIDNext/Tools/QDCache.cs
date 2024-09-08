@@ -1,30 +1,45 @@
 ﻿namespace UUIDNext.Tools;
 
+/// <summary>
+/// A quick and dirty cache
+/// </summary>
 internal class QDCache<TKey, TValue>(int capacity)
 {
+#if NET9_OR_GREATER
+    private readonly System.Threading.Lock _lock = new();
+#else
+    private readonly object _lock = new();
+#endif  
+
     // a sorted array of the cache's key/value where the first item is the most recently asked one
     private readonly KeyValue[] _store = new KeyValue[capacity];
     private int _firstAvailableSlot = 0;
 
     public TValue GetOrAdd(TKey key, Func<TKey, TValue> factory)
     {
-        if (TryFindKey(key, out var index))
-            UpdateStoreOrder(index);
-        else
-            AddValue(key, factory(key));
+        lock (_lock)
+        {
+            if (TryFindKey(key, out var index))
+                UpdateStoreOrder(index);
+            else
+                AddValue(key, factory(key));
 
-        return _store[0].Value;
+            return _store[0].Value;
+        }
     }
 
     public void Set(TKey key, TValue value)
     {
-        if (TryFindKey(key, out var index))
+        lock (_lock)
         {
-            _store[index]= new(key, value);
-            UpdateStoreOrder(index);
+            if (TryFindKey(key, out var index))
+            {
+                _store[index] = new(key, value);
+                UpdateStoreOrder(index);
+            }
+            else
+                AddValue(key, value);
         }
-        else
-            AddValue(key, value);
     }
 
     private void AddValue(TKey key, TValue value)
