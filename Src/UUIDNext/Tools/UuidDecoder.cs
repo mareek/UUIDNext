@@ -4,6 +4,13 @@ namespace UUIDNext.Tools;
 
 public static class UuidDecoder
 {
+    public static int GetVersion(Guid guid)
+    {
+        Span<byte> bytes = stackalloc byte[16];
+        guid.TryWriteBytes(bytes, bigEndian: true, out var _);
+        return bytes[6] >> 4;
+    }
+
     public static (long timestampMs, short sequence) DecodeUuidV7(Guid guid)
     {
         Span<byte> bytes = stackalloc byte[16];
