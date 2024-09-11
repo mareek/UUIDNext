@@ -6,22 +6,13 @@ namespace UUIDNext.Generator;
 /// <summary>
 /// This class implement the "Fixed Bit-Length Dedicated Counter" described in the section 6.2 of the RFC
 /// </summary>
-internal class MonotonicityHandler
+internal class MonotonicityHandler(int sequenceBitSize)
 {
-    private readonly int _sequenceMaxValue;
+    private readonly int _sequenceMaxValue = (1 << sequenceBitSize) - 1;
 
-    private long _lastUsedTimestamp;
-    private long _timestampOffset;
-    private ushort _monotonicSequence;
-
-    public MonotonicityHandler(int sequenceBitSize)
-    {
-        _sequenceMaxValue = (1 << sequenceBitSize) - 1;
-
-        _lastUsedTimestamp = 0;
-        _timestampOffset = 0;
-        _monotonicSequence = 0;
-    }
+    private long _lastUsedTimestamp = 0;
+    private long _timestampOffset = 0;
+    private ushort _monotonicSequence = 0;
 
     public (long timestamp, ushort sequence) GetTimestampAndSequence(DateTimeOffset date)
     {

@@ -9,10 +9,18 @@ namespace UUIDNext.Generator;
 /// <remarks>
 /// To give the best possible UUID given an arbitrary date we can't rely on UuidV7Generator because it has some 
 /// mechanism to ensure that every UUID generated is greater then the previous one.
+/// This generator try to find the best compromise between these three pillars:
+/// * The timestamp part should always represent the date parameter. period.
+/// * We should stay as close as possible to the "spirit" of UUID V7 and provide incresing value for a given date
+/// * This library should be as lightweight as possible
+/// The first point implies that there shouldn't be overflow preventing mechanism like in UuidV7Generator. The second
+/// point implies that we should keep track of the monotonicity of multiple timestamps in parallel. The third point 
+/// implies that the number of timestamps we keep track of should be limited.
 /// </remarks>
 internal class UuidV7FromArbitraryDateGenerator
 {
-    private QDCache<long, MonotonicityHandler> _monotonicityHandlerByTimestamp = new(100);
+    // From the few bench I've done this cache should consume 15KB of memory at most with a capacity of 256
+    private QDCache<long, MonotonicityHandler> _monotonicityHandlerByTimestamp = new(256);
 
     /// <summary>
     /// Create a UUID version 7 where the timestamp part represent the given date
