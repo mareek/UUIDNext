@@ -56,8 +56,7 @@ internal class QDCache<TKey, TValue>(int capacity)
     {
         for (int i = 0; i < _firstAvailableSlot; i++)
         {
-            var itemKey = _store[i].Key;
-            if ((key == null && itemKey == null) || (key.Equals(itemKey)))
+            if (EqualityComparer<TKey>.Default.Equals(key, _store[i].Key))
             {
                 index = i;
                 return true;
@@ -81,7 +80,7 @@ internal class QDCache<TKey, TValue>(int capacity)
 
     private struct KeyValue(TKey key, TValue value)
     {
-        public TKey Key => key;
-        public TValue Value => value;
+        public TKey Key { get; } = key;
+        public TValue Value { get; } = value;
     }
 }
