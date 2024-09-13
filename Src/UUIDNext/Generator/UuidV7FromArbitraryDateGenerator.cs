@@ -16,12 +16,15 @@ namespace UUIDNext.Generator;
 /// The first point implies that there shouldn't be overflow preventing mechanism like in UuidV7Generator. The second
 /// point implies that we should keep track of the monotonicity of multiple timestamps in parallel. The third point 
 /// implies that the number of timestamps we keep track of should be limited.
+/// After some benchmarks, I chose a cache size of 256 entries. The cache has a memory footprint of only a few KB and 
+/// has a reasonable worst case performance
 /// </remarks>
-internal class UuidV7FromArbitraryDateGenerator
+internal class UuidV7FromArbitraryDateGenerator(int cacheSize = 256)
 {
-    // From the few bench I've done this cache should consume 15KB of memory at most with a capacity of 256
-    private QDCache<long, MonotonicityHandler> _monotonicityHandlerByTimestamp = new(256);
+    private const ushort SequenceMaxValue = 0b1111_1111_1111;
 
+    private QDCache<long, ushort> _sequenceByTimestamp = new(cacheSize);
+    
     /// <summary>
     /// Create a UUID version 7 where the timestamp part represent the given date
     /// </summary>
@@ -29,24 +32,34 @@ internal class UuidV7FromArbitraryDateGenerator
     /// <returns>A UUID version 7</returns>
     public Guid New(DateTimeOffset date)
     {
-        var dateTimeStamp = date.ToUnixTimeMilliseconds();
-        var monotonicityHandler = _monotonicityHandlerByTimestamp.GetOrAdd(dateTimeStamp, CreateV7Handler);
-        var (computedTimestamp, sequence) = monotonicityHandler.GetTimestampAndSequence(date);
-
-        // if the timestamp given by the monotonicityHandler is greater than the the date parameter that means that 
-        // the sequence have overflowed so we reset the sequence by creating a new monotonicityHandler
-        if (computedTimestamp > dateTimeStamp)
-        {
-            monotonicityHandler = CreateV7Handler(default);
-            _monotonicityHandlerByTimestamp.Set(dateTimeStamp, monotonicityHandler);
-            (computedTimestamp, sequence) = monotonicityHandler.GetTimestampAndSequence(date);
-        }
+        var timestamp = date.ToUnixTimeMilliseconds();
+        ushort sequence = ComputeSequence(timestamp);
 
         Span<byte> sequenceBytes = stackalloc byte[2];
         BinaryPrimitives.TryWriteUInt16BigEndian(sequenceBytes, sequence);
 
-        return UuidToolkit.CreateUuidV7(computedTimestamp, sequenceBytes);
+        return UuidToolkit.CreateUuidV7(timestamp, sequenceBytes);
+    }
 
-        static MonotonicityHandler CreateV7Handler(long _) => new(sequenceBitSize: 12);
+    private ushort ComputeSequence(long timestamp)
+    {
+        var sequence = _sequenceByTimestamp.GetOrAdd(timestamp, GetSequenceSeed);
+        if (sequence < SequenceMaxValue)
+            sequence += 1;
+        else
+            sequence = GetSequenceSeed(default);
+
+        _sequenceByTimestamp.Set(timestamp, sequence);
+        return sequence;
+
+        static ushort GetSequenceSeed(long _)
+        {
+            // following section 6.2 on "Fixed-Length Dedicated Counter Seeding", the initial value of the sequence is randomized
+            Span<byte> buffer = stackalloc byte[2];
+            RandomNumberGeneratorPolyfill.Fill(buffer);
+            // Setting the highest bit to 0 mitigate the risk of a sequence overflow (see section 6.2)
+            buffer[0] &= 0b0000_0111;
+            return BinaryPrimitives.ReadUInt16BigEndian(buffer);
+        }
     }
 }
