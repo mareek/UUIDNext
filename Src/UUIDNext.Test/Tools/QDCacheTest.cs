@@ -70,4 +70,21 @@ public class QDCacheTest
 
         Check.That(factoryCount).Is(11);
     }
+
+    [Fact]
+    public void EnsureAddOrUpdateMethodWorks()
+    {
+        QDCache<string, int> cache = new(5);
+
+        for (int i = 0; i < 10; i++)
+        {
+            var other = cache.AddOrUpdate($"{i}", _ => 0, (_, v) => v + 1);
+            Check.That(other).Is(0);
+            var second = cache.AddOrUpdate("second", _ => 0, (_, v) => v + 1);
+            Check.That(second).Is(i);
+        }
+        
+        var first = cache.AddOrUpdate("0", _ => 0, (_, v) => v + 1);
+        Check.That(first).Is(0);
+    }
 }

@@ -24,7 +24,7 @@ internal class UuidV7FromArbitraryDateGenerator(int cacheSize = 256)
     private const ushort SequenceMaxValue = 0b1111_1111_1111;
 
     private QDCache<long, ushort> _sequenceByTimestamp = new(cacheSize);
-    
+
     /// <summary>
     /// Create a UUID version 7 where the timestamp part represent the given date
     /// </summary>
@@ -43,14 +43,11 @@ internal class UuidV7FromArbitraryDateGenerator(int cacheSize = 256)
 
     private ushort ComputeSequence(long timestamp)
     {
-        var sequence = _sequenceByTimestamp.GetOrAdd(timestamp, GetSequenceSeed);
-        if (sequence < SequenceMaxValue)
-            sequence += 1;
-        else
-            sequence = GetSequenceSeed(default);
+        return _sequenceByTimestamp.AddOrUpdate(timestamp, GetSequenceSeed, UpdateSequence);
 
-        _sequenceByTimestamp.Set(timestamp, sequence);
-        return sequence;
+        static ushort UpdateSequence(long _, ushort sequence) 
+            => sequence < SequenceMaxValue ? (ushort)(sequence + 1) 
+                                           : GetSequenceSeed(default);
 
         static ushort GetSequenceSeed(long _)
         {

@@ -15,6 +15,26 @@ internal class QDCache<TKey, TValue>(int capacity)
     private readonly KeyValue[] _store = new KeyValue[capacity];
     private int _firstAvailableSlot = 0;
 
+    public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
+    {
+        lock (_lock)
+        {
+            TValue value;
+            if (TryFindKey(key, out var index))
+            {
+                value = updateValueFactory(key, _store[index].Value);
+                UpdateStore(index, key, value);
+            }
+            else
+            {
+                value = addValueFactory(key);
+                AddValue(key, value);
+            }
+
+            return value;
+        }
+    }
+
     public TValue GetOrAdd(TKey key, Func<TKey, TValue> factory)
     {
         lock (_lock)
@@ -33,10 +53,7 @@ internal class QDCache<TKey, TValue>(int capacity)
         lock (_lock)
         {
             if (TryFindKey(key, out var index))
-            {
-                _store[index] = new(key, value);
-                UpdateStoreOrder(index);
-            }
+                UpdateStore(index, key, value);
             else
                 AddValue(key, value);
         }
@@ -48,6 +65,11 @@ internal class QDCache<TKey, TValue>(int capacity)
         // if not, the new item will be added at the first available slot
         int index = _firstAvailableSlot < capacity ? _firstAvailableSlot++ : capacity - 1;
 
+        UpdateStore(index, key, value);
+    }
+
+    private void UpdateStore(int index, TKey key, TValue value)
+    {
         _store[index] = new(key, value);
         UpdateStoreOrder(index);
     }
