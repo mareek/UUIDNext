@@ -1,11 +1,14 @@
 ﻿using System.Buffers.Binary;
 using System.Security.Cryptography;
 using System.Text;
+using UUIDNext.Generator;
 
 namespace UUIDNext.Tools;
 
-internal static class UuidToolkit
+public static class UuidToolkit
 {
+    private static readonly UuidV7FromSpecificDateGenerator _v7Generator = new();
+
     public static Guid CreateGuidFromBigEndianBytes(Span<byte> bigEndianBytes, byte version)
     {
         SetVersion(bigEndianBytes, version);
@@ -74,7 +77,7 @@ internal static class UuidToolkit
     }
 
     /// <summary>
-    /// Create an UUID version 7 with the given timestamp and bytes of  otherBytes, filling the rest with random data
+    /// Create a new UUID version 7 with the given timestamp and bytes of otherBytes, filling the rest with random data
     /// </summary>
     /// <remarks>
     /// Here is the bit layout of the UUID Version 7 created
@@ -120,5 +123,27 @@ internal static class UuidToolkit
         // cut the 2 highest bytes of the timestamp to keep only 48bits (see bit layout) and create the UUID
         Span<byte> uuidBytes = buffer.Slice(2);
         return CreateGuidFromBigEndianBytes(uuidBytes, 7);
+    }
+
+    /// <summary>
+    /// Create a new UUID version 7 with the given date as timestamp 
+    /// </summary>
+    public static Guid CreateUuidV7FromSpecificDate(DateTimeOffset date)
+    {
+        // if the date argument is equal or close enough to DateTimeOffset.UtcNow we consider that 
+        // the API consumer just wanted a UUID Version 7 without specifieng the date and called the
+        // wrong method so we're forwarding the call to Uuid.NewSequential to keep consistency accross 
+        // different calls
+
+        const long tickThreshold = 10; // 1 µs
+        var now = DateTimeOffset.UtcNow;
+
+        if (date.ToUnixTimeMilliseconds() == now.ToUnixTimeMilliseconds())
+            return Uuid.NewSequential();
+
+        if (Math.Abs(date.UtcTicks - now.UtcTicks) < tickThreshold)
+            return Uuid.NewSequential();
+
+        return _v7Generator.New(date);
     }
 }

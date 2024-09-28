@@ -19,7 +19,7 @@ namespace UUIDNext.Generator;
 /// After some benchmarks, I chose a cache size of 256 entries. The cache has a memory footprint of only a few KB and 
 /// has a reasonable worst case performance
 /// </remarks>
-internal class UuidV7FromArbitraryDateGenerator(int cacheSize = 256)
+internal class UuidV7FromSpecificDateGenerator(int cacheSize = 256)
 {
     private const ushort SequenceMaxValue = 0b1111_1111_1111;
 
@@ -32,7 +32,10 @@ internal class UuidV7FromArbitraryDateGenerator(int cacheSize = 256)
     /// <returns>A UUID version 7</returns>
     public Guid New(DateTimeOffset date)
     {
-        var timestamp = date.ToUnixTimeMilliseconds();
+        long timestamp = date.ToUnixTimeMilliseconds();
+        if (timestamp < 0) 
+            throw new ArgumentOutOfRangeException(nameof(date), "Dates before 1970-01-01 are not supported");
+
         ushort sequence = ComputeSequence(timestamp);
 
         Span<byte> sequenceBytes = stackalloc byte[2];

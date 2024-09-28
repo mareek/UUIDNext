@@ -6,15 +6,26 @@ using Xunit;
 
 namespace UUIDNext.Test.Generator;
 
-public class UuidV7FromArbitraryDateGeneratorTest
+public class UuidV7FromSpecificDateGeneratorTest
 {
     GuidComparer _comparer = new();
+
+    [Theory]
+    [MemberData(nameof(InvalidDates))]
+    public void CheckThatDateBeforeUnixEpochAreRejected(DateTimeOffset date)
+    {
+        UuidV7FromSpecificDateGenerator generator = new();
+        Check.ThatCode(() => generator.New(date)).Throws<ArgumentOutOfRangeException>();
+    }
+
+    public static object[][] InvalidDates
+        => [[new DateTimeOffset(new(1900, 1, 1))], [DateTimeOffset.FromUnixTimeMilliseconds(-1)], [DateTimeOffset.MinValue]];
 
     [Fact]
     public void EnsureTimestampAndVersionAreAlwaysCorrect()
     {
         DateTimeOffset date = new(new(2020, 1, 1));
-        UuidV7FromArbitraryDateGenerator generator = new();
+        UuidV7FromSpecificDateGenerator generator = new();
 
         int overflowCount = 0;
         Guid previousUuid = Uuid.Nil;
@@ -41,7 +52,7 @@ public class UuidV7FromArbitraryDateGeneratorTest
     public void EnsureThatUuidsFromTheSameTimestampAreIncreasing()
     {
         DateTimeOffset date = new(new(2020, 1, 1));
-        UuidV7FromArbitraryDateGenerator generator = new();
+        UuidV7FromSpecificDateGenerator generator = new();
         Guid previousUuid = Uuid.Nil;
         for (int i = 0; i < 100; i++)
         {
@@ -58,7 +69,7 @@ public class UuidV7FromArbitraryDateGeneratorTest
         DateTimeOffset dateA = new(new(2010, 5, 1));
         DateTimeOffset dateS = new(new(2017, 11, 24));
 
-        UuidV7FromArbitraryDateGenerator generator = new();
+        UuidV7FromSpecificDateGenerator generator = new();
 
         Guid previousUuidT = Uuid.Nil;
         Guid previousUuidA = Uuid.Nil;

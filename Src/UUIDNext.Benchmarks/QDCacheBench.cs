@@ -12,7 +12,7 @@ public class QDCacheBench
     [Benchmark]
     public void BestCase()
     {
-        Generator.UuidV7FromArbitraryDateGenerator uuidV7Generator = new(CacheSize);
+        Generator.UuidV7FromSpecificDateGenerator uuidV7Generator = new(CacheSize);
         DateTimeOffset date = new(new(2000, 1, 1));
         for (int i = 0; i < 16384; i++)
         {
@@ -23,7 +23,7 @@ public class QDCacheBench
     [Benchmark]
     public void InBetweenCase()
     {
-        Generator.UuidV7FromArbitraryDateGenerator uuidV7Generator = new(CacheSize);
+        Generator.UuidV7FromSpecificDateGenerator uuidV7Generator = new(CacheSize);
         DateTimeOffset date = new(new(2000, 1, 1));
         for (int i = 0; i < 16384; i++)
         {
@@ -34,7 +34,7 @@ public class QDCacheBench
     [Benchmark]
     public void WorstCase()
     {
-        Generator.UuidV7FromArbitraryDateGenerator uuidV7Generator = new(CacheSize);
+        Generator.UuidV7FromSpecificDateGenerator uuidV7Generator = new(CacheSize);
         DateTimeOffset date = new(new(2000, 1, 1));
         for (int i = 0; i < 16384; i++)
         {

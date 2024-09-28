@@ -7,7 +7,7 @@ public class UuidBench
 {
     private static readonly Guid urlNamespaceId = Guid.Parse("6ba7b811-9dad-11d1-80b4-00c04fd430c8");
     private static readonly Generator.UuidV8SqlServerGenerator uuidV8Generator = new();
-    private static readonly Generator.UuidV7FromArbitraryDateGenerator uuidV7Generator = new();
+    private static readonly Generator.UuidV7FromSpecificDateGenerator uuidV7Generator = new();
 
     [Benchmark]
     public Guid NewGuid() => Guid.NewGuid();
