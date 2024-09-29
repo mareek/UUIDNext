@@ -81,7 +81,8 @@ internal class MonotonicityHandler(int sequenceBitSize)
         Span<byte> buffer = stackalloc byte[2];
         RandomNumberGeneratorPolyfill.Fill(buffer);
         // Setting the highest bit to 0 mitigate the risk of a sequence overflow (see section 6.2)
-        buffer[0] &= 0b0000_0111;
+        var seedHighByteMask = (byte)((1 << (sequenceBitSize - 8 - 1)) - 1);
+        buffer[0] &= seedHighByteMask;
         return BinaryPrimitives.ReadUInt16BigEndian(buffer);
     }
 }
