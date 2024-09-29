@@ -48,17 +48,6 @@ internal class QDCache<TKey, TValue>(int capacity)
         }
     }
 
-    public void Set(TKey key, TValue value)
-    {
-        lock (_lock)
-        {
-            if (TryFindKey(key, out var index))
-                UpdateStore(index, key, value);
-            else
-                AddValue(key, value);
-        }
-    }
-
     private void AddValue(TKey key, TValue value)
     {
         // if the store is full, the new item will replace the least recently asked item of the store
