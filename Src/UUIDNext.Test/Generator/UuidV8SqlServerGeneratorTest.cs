@@ -9,7 +9,7 @@ using Xunit;
 
 namespace UUIDNext.Test.Generator
 {
-    public class UuidV8SqlServerGeneratorTest : UuidTimestampGeneratorBaseTest<UuidV8SqlServerGenerator>
+    public class UuidV8SqlServerGeneratorTest : UuidTimestampGeneratorBaseTest
     {
         protected override byte Version => 8;
 
@@ -20,7 +20,9 @@ namespace UUIDNext.Test.Generator
         protected override (long timestamp, int sequence) DecodeUuid(Guid uuid)
             => UuidDecoder.DecodeUuidV8ForSqlServer(uuid);
 
-        protected override Guid NewUuid(UuidV8SqlServerGenerator generator) => generator.New();
+        protected override Guid NewUuid(object generator) => ((UuidV8SqlServerGenerator)generator).New();
+
+        protected override object NewGenerator() => new UuidV8SqlServerGenerator();
 
         [Fact]
         public void TestOrderWithSqlGuid()
