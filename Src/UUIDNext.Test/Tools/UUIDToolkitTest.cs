@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using NFluent;
-using UUIDNext.Generator;
 using UUIDNext.Tools;
 using Xunit;
 

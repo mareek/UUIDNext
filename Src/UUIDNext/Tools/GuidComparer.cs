@@ -1,4 +1,4 @@
-﻿namespace UUIDNext.Generator;
+﻿namespace UUIDNext.Tools;
 
 public class GuidComparer : IComparer<Guid>
 {
