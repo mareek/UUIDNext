@@ -2,13 +2,11 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using NFluent;
-using UUIDNext.Generator;
 using Xunit;
 
 namespace UUIDNext.Test.Generator
 {
-    public abstract class UuidTimestampGeneratorBaseTest<TGenerator>
-        where TGenerator : new()
+    public abstract class UuidTimestampGeneratorBaseTest
     {
         protected abstract byte Version { get; }
 
@@ -18,14 +16,16 @@ namespace UUIDNext.Test.Generator
 
         protected abstract (long timestamp, int sequence) DecodeUuid(Guid uuid);
 
-        protected abstract Guid NewUuid(TGenerator generator);
+        protected abstract Guid NewUuid(object generator);
+
+        protected abstract object NewGenerator();
 
         private int GetSequenceMaxValue() => (1 << SequenceBitSize) - 1;
 
         [Fact]
         public void DumbTest()
         {
-            var generator = new TGenerator();
+            var generator = NewGenerator();
             ConcurrentBag<Guid> generatedUuids = new();
             Parallel.For(0, 100, _ => generatedUuids.Add(NewUuid(generator)));
 
@@ -40,7 +40,7 @@ namespace UUIDNext.Test.Generator
         [Fact]
         public void TestSequenceOverflow()
         {
-            var generator = new TGenerator();
+            var generator = NewGenerator();
             var date = DateTime.UtcNow.Date;
             int sequenceMaxValue = GetSequenceMaxValue();
 
@@ -60,7 +60,7 @@ namespace UUIDNext.Test.Generator
         [Fact]
         public void TestSequenceOverflowWithOffset()
         {
-            var generator = new TGenerator();
+            var generator = NewGenerator();
             var date = DateTime.UtcNow.Date;
             int sequenceMaxValue = GetSequenceMaxValue();
 

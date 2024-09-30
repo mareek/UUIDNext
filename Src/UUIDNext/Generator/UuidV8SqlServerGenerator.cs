@@ -11,11 +11,11 @@ namespace UUIDNext.Generator;
 /// This class generate UUID similar to UUID v7 but with a different byte order so that the UUIDs are sorted
 /// when used in a uniqueidentifier typed column in SQL Sever
 /// </remarks>
-public class UuidV8SqlServerGenerator
+internal class UuidV8SqlServerGenerator
 {
     private readonly MonotonicityHandler _monotonicityHandler = new(sequenceBitSize: 14);
 
-    internal Guid New() => New(DateTimeOffset.UtcNow);
+    public Guid New() => New(DateTimeOffset.UtcNow);
 
     private Guid New(DateTimeOffset date)
     {
@@ -45,7 +45,4 @@ public class UuidV8SqlServerGenerator
 
         return UuidToolkit.CreateGuidFromBigEndianBytes(bytes, 8);
     }
-
-    [Obsolete("Use UuidDecoder.DecodeUuidV8ForSqlServer instead. This function will be removed in the next version")]
-    public static (long timestampMs, short sequence) Decode(Guid guid) => UuidDecoder.DecodeUuidV8ForSqlServer(guid);
 }
