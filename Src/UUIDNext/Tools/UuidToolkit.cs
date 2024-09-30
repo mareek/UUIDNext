@@ -9,7 +9,32 @@ public static class UuidToolkit
 {
     private static readonly UuidV7FromSpecificDateGenerator _v7Generator = new();
 
-    public static Guid CreateGuidFromBigEndianBytes(Span<byte> bigEndianBytes, byte version)
+    /// <summary>
+    /// Create new UUID version 8 with the provided bytes with the variant and version bits set
+    /// </summary>
+    /// <param name="bigEndianBytes">the bytes that will populate the UUID in big endian order</param>
+    /// <returns>a UUID version 8</returns>
+    /// <remarks>
+    /// Here is the bit layout of the UUID Version 8 created :
+    ///  0                   1                   2                   3
+    ///  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    /// |                        bigEndianBytes                         |
+    /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    /// |       bigEndianBytes          |  ver  |    bigEndianBytes     |
+    /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    /// |var|                    bigEndianBytes                         |
+    /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    /// |                        bigEndianBytes                         |
+    /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+     
+    /// </remarks>
+    public static Guid CreateGuidFromBigEndianBytes(Span<byte> bigEndianBytes)
+        => CreateGuidFromBigEndianBytes(bigEndianBytes, 8);
+
+    /// <summary>
+    /// This Function is kept internal so that UUIDNext can only be used to produce RFC Compliant UUIDs
+    /// </summary>
+    internal static Guid CreateGuidFromBigEndianBytes(Span<byte> bigEndianBytes, byte version)
     {
         SetVersion(bigEndianBytes, version);
         SetVariant(bigEndianBytes);
@@ -34,7 +59,20 @@ public static class UuidToolkit
         bigEndianBytes[variantByte] |= 0b1000_0000;
     }
 
-    public static Guid CreateUuidFromName(Guid namespaceId, string name, HashAlgorithm hashAlgorithm, byte version)
+    /// <summary>
+    /// Create a new name based UUID version 8 according to section 6.5 of the RFC
+    /// </summary>
+    /// <param name="namespaceId">the namespace where the name belongs</param>
+    /// <param name="name">the name to be hashed</param>
+    /// <param name="hashAlgorithm">the hash algorithm used to compute the UUID (MD5, SHA-256, etc.)</param>
+    /// <returns>A UUID version 8</returns>
+    public static Guid CreateUuidFromName(Guid namespaceId, string name, HashAlgorithm hashAlgorithm)
+        => CreateUuidFromName(namespaceId, name, hashAlgorithm, 8);
+
+    /// <summary>
+    /// This Function is kept internal so that UUIDNext can only be used to produce RFC Compliant UUIDs
+    /// </summary>
+    internal static Guid CreateUuidFromName(Guid namespaceId, string name, HashAlgorithm hashAlgorithm, byte version)
     {
         //Convert the name to a canonical sequence of octets (as defined by the standards or conventions of its name space);
         var utf8NameByteCount = Encoding.UTF8.GetByteCount(name.Normalize(NormalizationForm.FormC));
