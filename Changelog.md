@@ -1,5 +1,10 @@
 # Version History
 
+## 4.0.0 (TBD)
+
+* Added UuidToolkit for advanced UUID generation
+* Removed obsolete methods (this might cause breaking changes)
+
 ## 3.0.0 (2024-07-02)
 
 * Added support for .NET Framework 4.7+
