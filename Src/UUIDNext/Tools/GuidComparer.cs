@@ -1,7 +1,13 @@
 ﻿namespace UUIDNext.Tools;
 
+/// <summary>
+/// Compares two Guids
+/// </summary>
 public class GuidComparer : IComparer<Guid>
 {
+    /// <summary>
+    /// Compares two Guids and returns an indication of their relative sort order.
+    /// </summary>
     public int Compare(Guid x, Guid y)
     {
         Span<byte> xBytes = stackalloc byte[16];

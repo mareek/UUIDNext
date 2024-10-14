@@ -21,6 +21,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageIcon>Logo_128.png</PackageIcon>
         <PackageReleaseNotes>See https://github.com/mareek/UUIDNext/blob/main/Changelog.md</PackageReleaseNotes>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
@@ -28,19 +29,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
-        <None Include="..\..\Images\Logo_128.png" Pack="true" PackagePath="\"/>
+        <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+        <None Include="..\..\Images\Logo_128.png" Pack="true" PackagePath="\" />
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="UUIDNext.Test"/>
-        <InternalsVisibleTo Include="UUIDNext.Benchmarks"/>
+        <InternalsVisibleTo Include="UUIDNext.Test" />
+        <InternalsVisibleTo Include="UUIDNext.Benchmarks" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Condition="('$(TargetFramework)' == 'net472') OR ('$(TargetFramework)' == 'net48')"
-                          Include="System.Memory" Version="4.5.5"/>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+        <PackageReference Condition="('$(TargetFramework)' == 'net472') OR ('$(TargetFramework)' == 'net48')" Include="System.Memory" Version="4.5.5" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     </ItemGroup>
 
     <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
