@@ -1,7 +1,13 @@
 ﻿namespace UUIDNext;
 
+/// <summary>
+/// Provite a set of static and extensions methods that brings .NET8+ features to .NET Standard 2.1 and .NET framework
+/// </summary>
 public static class GuidHelper
 {
+    /// <summary>
+    /// Creates a new guid from a span of bytes.
+    /// </summary>
     public static Guid FromBytes(Span<byte> bytes, bool bigEndian)
     {
         if (!bigEndian)
@@ -22,6 +28,9 @@ public static class GuidHelper
 #endif
     }
 
+    /// <summary>
+    /// Returns an unsigned byte array containing the GUID.
+    /// </summary>
     public static byte[] ToByteArray(this Guid guid, bool bigEndian)
     {
         if (!bigEndian)
@@ -32,6 +41,9 @@ public static class GuidHelper
         return result;
     }
 
+    /// <summary>
+    /// Returns whether bytes are successfully written to given span.
+    /// </summary>
     public static bool TryWriteBytes(this Guid guid, Span<byte> bytes, bool bigEndian, out int bytesWritten)
     {
 #if NET472_OR_GREATER

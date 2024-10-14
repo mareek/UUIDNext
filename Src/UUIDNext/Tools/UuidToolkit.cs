@@ -5,6 +5,9 @@ using UUIDNext.Generator;
 
 namespace UUIDNext.Tools;
 
+/// <summary>
+/// Provite a set of static methods for generating custom UUIDs
+/// </summary>
 public static class UuidToolkit
 {
     private static readonly UuidV7FromSpecificDateGenerator _v7Generator = new();

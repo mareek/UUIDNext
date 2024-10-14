@@ -2,6 +2,9 @@
 
 namespace UUIDNext;
 
+/// <summary>
+/// Provite a set of static methods for generating UUIDs
+/// </summary>
 public static class Uuid
 {
     private static readonly UuidV7Generator _v7Generator = new();

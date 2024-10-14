@@ -1,5 +1,8 @@
 ﻿namespace UUIDNext;
 
+/// <summary>
+/// The Database where the UUID will be stored
+/// </summary>
 public enum Database
 {
     /// <summary>
