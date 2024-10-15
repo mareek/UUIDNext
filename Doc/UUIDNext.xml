@@ -1,0 +1,286 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>UUIDNext</name>
+    </assembly>
+    <members>
+        <member name="T:UUIDNext.Database">
+            <summary>
+            The Database where the UUID will be stored
+            </summary>
+        </member>
+        <member name="F:UUIDNext.Database.Other">
+            <summary>
+            Any other Database (MySQL, Oracle, MongoDB, etc.)
+            </summary>
+        </member>
+        <member name="F:UUIDNext.Database.SqlServer">
+            <summary>
+            Microsoft SQL Server (uniqueidentifier Type)
+            </summary>
+        </member>
+        <member name="F:UUIDNext.Database.SQLite">
+            <summary>
+            SQLite (BLOB or TEXT Type)
+            </summary>
+        </member>
+        <member name="F:UUIDNext.Database.PostgreSql">
+            <summary>
+            PostgreSQL (UUID Type)
+            </summary>
+        </member>
+        <member name="T:UUIDNext.Generator.MonotonicityHandler">
+            <summary>
+            This class implement the "Fixed Bit-Length Dedicated Counter" described in the section 6.2 of the RFC
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Generator.MonotonicityHandler.#ctor(System.Int32)">
+            <summary>
+            This class implement the "Fixed Bit-Length Dedicated Counter" described in the section 6.2 of the RFC
+            </summary>
+        </member>
+        <member name="T:UUIDNext.Generator.UuidV4Generator">
+            <summary>
+            Generate a UUID version 4 based on RFC 9562
+            </summary>
+        </member>
+        <member name="T:UUIDNext.Generator.UuidV5Generator">
+            <summary>
+            Generate a UUID version 5 based on RFC 9562
+            </summary>
+        </member>
+        <member name="T:UUIDNext.Generator.UuidV7FromSpecificDateGenerator">
+            <summary>
+            Generate a UUID version 7 given an arbitrary date
+            </summary>
+            <remarks>
+            To give the best possible UUID given an arbitrary date we can't rely on UuidV7Generator because it has some 
+            mechanism to ensure that every UUID generated is greater then the previous one.
+            This generator try to find the best compromise between these three pillars:
+            * The timestamp part should always represent the date parameter. period.
+            * We should stay as close as possible to the "spirit" of UUID V7 and provide incresing value for a given date
+            * This library should be as lightweight as possible
+            The first point implies that there shouldn't be overflow preventing mechanism like in UuidV7Generator. The second
+            point implies that we should keep track of the monotonicity of multiple timestamps in parallel. The third point 
+            implies that the number of timestamps we keep track of should be limited.
+            After some benchmarks, I chose a cache size of 256 entries. The cache has a memory footprint of only a few KB and 
+            has a reasonable worst case performance
+            </remarks>
+        </member>
+        <member name="M:UUIDNext.Generator.UuidV7FromSpecificDateGenerator.#ctor(System.Int32)">
+            <summary>
+            Generate a UUID version 7 given an arbitrary date
+            </summary>
+            <remarks>
+            To give the best possible UUID given an arbitrary date we can't rely on UuidV7Generator because it has some 
+            mechanism to ensure that every UUID generated is greater then the previous one.
+            This generator try to find the best compromise between these three pillars:
+            * The timestamp part should always represent the date parameter. period.
+            * We should stay as close as possible to the "spirit" of UUID V7 and provide incresing value for a given date
+            * This library should be as lightweight as possible
+            The first point implies that there shouldn't be overflow preventing mechanism like in UuidV7Generator. The second
+            point implies that we should keep track of the monotonicity of multiple timestamps in parallel. The third point 
+            implies that the number of timestamps we keep track of should be limited.
+            After some benchmarks, I chose a cache size of 256 entries. The cache has a memory footprint of only a few KB and 
+            has a reasonable worst case performance
+            </remarks>
+        </member>
+        <member name="M:UUIDNext.Generator.UuidV7FromSpecificDateGenerator.New(System.DateTimeOffset)">
+            <summary>
+            Create a UUID version 7 where the timestamp part represent the given date
+            </summary>
+            <param name="date">The date that will provide the timestamp par of the UUID</param>
+            <returns>A UUID version 7</returns>
+        </member>
+        <member name="T:UUIDNext.Generator.UuidV7Generator">
+            <summary>
+            Generate a UUID version 7 based on RFC 9562
+            </summary>
+        </member>
+        <member name="T:UUIDNext.Generator.UuidV8SqlServerGenerator">
+            <summary>
+            Generate a UUID version 8 based on RFC 9562
+            </summary>
+            <remarks>
+            In SQL Server UUIDs stored in a column of type uniqueidentifier are not sorted in the order of the bytes (see #2).
+            This class generate UUID similar to UUID v7 but with a different byte order so that the UUIDs are sorted
+            when used in a uniqueidentifier typed column in SQL Sever
+            </remarks>
+        </member>
+        <member name="T:UUIDNext.GuidHelper">
+            <summary>
+            Provite a set of static and extensions methods that brings .NET8+ features to .NET Standard 2.1 and .NET framework
+            </summary>
+        </member>
+        <member name="M:UUIDNext.GuidHelper.FromBytes(System.Span{System.Byte},System.Boolean)">
+            <summary>
+            Creates a new guid from a span of bytes.
+            </summary>
+        </member>
+        <member name="M:UUIDNext.GuidHelper.ToByteArray(System.Guid,System.Boolean)">
+            <summary>
+            Returns an unsigned byte array containing the GUID.
+            </summary>
+        </member>
+        <member name="M:UUIDNext.GuidHelper.TryWriteBytes(System.Guid,System.Span{System.Byte},System.Boolean,System.Int32@)">
+            <summary>
+            Returns whether bytes are successfully written to given span.
+            </summary>
+        </member>
+        <member name="T:UUIDNext.Tools.GuidComparer">
+            <summary>
+            Compares two Guids
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Tools.GuidComparer.Compare(System.Guid,System.Guid)">
+            <summary>
+            Compares two Guids and returns an indication of their relative sort order.
+            </summary>
+        </member>
+        <member name="T:UUIDNext.Tools.QDCache`2">
+            <summary>
+            A quick and dirty cache
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Tools.QDCache`2.#ctor(System.Int32)">
+            <summary>
+            A quick and dirty cache
+            </summary>
+        </member>
+        <member name="T:UUIDNext.Tools.UuidDecoder">
+            <summary>
+            Provite a set of static methods for decoding UUIDs
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Tools.UuidDecoder.GetVersion(System.Guid)">
+            <summary>
+            Returns the version of the UUID
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Tools.UuidDecoder.DecodeUuidV7(System.Guid)">
+            <summary>
+            Returns the timestamp and the sequence number of a UUID version 7
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Tools.UuidDecoder.DecodeUuidV8ForSqlServer(System.Guid)">
+            <summary>
+            Returns the timestamp and the sequence number of a UUID version 8 for SQL Server
+            </summary>
+        </member>
+        <member name="T:UUIDNext.Tools.UuidToolkit">
+            <summary>
+            Provite a set of static methods for generating custom UUIDs
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Tools.UuidToolkit.CreateGuidFromBigEndianBytes(System.Span{System.Byte})">
+            <summary>
+            Create new UUID version 8 with the provided bytes with the variant and version bits set
+            </summary>
+            <param name="bigEndianBytes">the bytes that will populate the UUID in big endian order</param>
+            <returns>a UUID version 8</returns>
+            <remarks>
+            Here is the bit layout of the UUID Version 8 created :
+             0                   1                   2                   3
+             0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                        bigEndianBytes                         |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |       bigEndianBytes          |  ver  |    bigEndianBytes     |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |var|                    bigEndianBytes                         |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                        bigEndianBytes                         |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+     
+            </remarks>
+        </member>
+        <member name="M:UUIDNext.Tools.UuidToolkit.CreateGuidFromBigEndianBytes(System.Span{System.Byte},System.Byte)">
+            <summary>
+            This Function is kept internal so that UUIDNext can only be used to produce RFC Compliant UUIDs
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Tools.UuidToolkit.CreateUuidFromName(System.Guid,System.String,System.Security.Cryptography.HashAlgorithm)">
+            <summary>
+            Create a new name based UUID version 8 according to section 6.5 of the RFC
+            </summary>
+            <param name="namespaceId">the namespace where the name belongs</param>
+            <param name="name">the name to be hashed</param>
+            <param name="hashAlgorithm">the hash algorithm used to compute the UUID (MD5, SHA-256, etc.)</param>
+            <returns>A UUID version 8</returns>
+        </member>
+        <member name="M:UUIDNext.Tools.UuidToolkit.CreateUuidFromName(System.Guid,System.String,System.Security.Cryptography.HashAlgorithm,System.Byte)">
+            <summary>
+            This Function is kept internal so that UUIDNext can only be used to produce RFC Compliant UUIDs
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Tools.UuidToolkit.CreateUuidV7(System.Int64,System.Span{System.Byte})">
+            <summary>
+            Create a new UUID version 7 with the given timestamp and bytes of otherBytes, filling the rest with random data
+            </summary>
+            <remarks>
+            Here is the bit layout of the UUID Version 7 created
+             0                   1                   2                   3
+             0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                           timestamp                           |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |           timestamp           |  ver  |      otherBytes       |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |var|                      otherBytes                           |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                          otherBytes                           |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            </remarks>
+            <param name="timestamp">A unix epoch timestamp in ms</param>
+            <param name="followingBytes">
+            A series of 0 to 10 bytes used to fill the rest of the UUID. 
+            Be careful: some bits will be overxritten by the version and variant of the UUID (see remarks)
+            </param>
+            <returns>A UUID Version 7</returns>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:UUIDNext.Tools.UuidToolkit.CreateUuidV7FromSpecificDate(System.DateTimeOffset)">
+            <summary>
+            Create a new UUID version 7 with the given date as timestamp 
+            </summary>
+        </member>
+        <member name="T:UUIDNext.Uuid">
+            <summary>
+            Provite a set of static methods for generating UUIDs
+            </summary>
+        </member>
+        <member name="F:UUIDNext.Uuid.Max">
+            <summary>
+            The Max UUID is special form of UUID that is specified to have all 128 bits set to 1.
+            </summary>
+        </member>
+        <member name="F:UUIDNext.Uuid.Nil">
+            <summary>
+            The Nil UUID is special form of UUID that is specified to have all 128 bits set to zero.
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Uuid.NewDatabaseFriendly(UUIDNext.Database)">
+            <summary>
+            Create a new UUID best suited for the selected database
+            </summary>
+            <param name="database">The database where the UUID will be stored</param>
+            <returns></returns>
+        </member>
+        <member name="M:UUIDNext.Uuid.NewNameBased(System.Guid,System.String)">
+            <summary>
+            Create a new UUID Version 5
+            </summary>
+            <param name="namespaceId">the name space ID</param>
+            <param name="name">the name from which to generate the UUID</param>
+        </member>
+        <member name="M:UUIDNext.Uuid.NewRandom">
+            <summary>
+            Create a new UUID Version 4
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Uuid.NewSequential">
+            <summary>
+            Create a new UUID Version 7
+            </summary>
+        </member>
+    </members>
+</doc>
