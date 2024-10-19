@@ -10,8 +10,6 @@ namespace UUIDNext.Test.Generator
     {
         protected abstract byte Version { get; }
 
-        protected abstract TimeSpan TimestampGranularity { get; }
-
         protected abstract int SequenceBitSize { get; }
 
         protected abstract (long timestamp, int sequence) DecodeUuid(Guid uuid);

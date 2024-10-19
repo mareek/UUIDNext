@@ -13,8 +13,6 @@ namespace UUIDNext.Test.Generator
     {
         protected override byte Version => 7;
 
-        protected override TimeSpan TimestampGranularity => TimeSpan.FromMilliseconds(1);
-
         protected override int SequenceBitSize => 12;
 
         protected override (long timestamp, int sequence) DecodeUuid(Guid uuid) => UuidDecoder.DecodeUuidV7(uuid);
@@ -65,7 +63,7 @@ namespace UUIDNext.Test.Generator
         {
             var date = DateTime.UtcNow.Date;
             var pastDate = date.AddSeconds(-5);
-            var futureDate = date.Add(TimestampGranularity);
+            var futureDate = date.AddMilliseconds(1);
 
             var generator = new UuidV7Generator();
             var guid1 = UuidTestHelper.New(generator, date);
