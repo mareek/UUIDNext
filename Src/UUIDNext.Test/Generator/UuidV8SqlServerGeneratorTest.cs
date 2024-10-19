@@ -13,8 +13,6 @@ namespace UUIDNext.Test.Generator
     {
         protected override byte Version => 8;
 
-        protected override TimeSpan TimestampGranularity => TimeSpan.FromMilliseconds(1);
-
         protected override int SequenceBitSize => 14;
 
         protected override (long timestamp, int sequence) DecodeUuid(Guid uuid)
