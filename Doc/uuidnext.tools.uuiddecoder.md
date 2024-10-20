@@ -28,20 +28,20 @@ public static int GetVersion(Guid guid)
 
 [Int32](https://docs.microsoft.com/en-us/dotnet/api/system.int32)<br>
 
-### **TryGetTimestamp(Guid, Int64&)**
+### **TryDecodeTimestamp(Guid, DateTime&)**
 
 Try to retrieve the Unix timestamp from a Guid.
  Currently work for UUIDv6, UUIDv7 and UUIDv8 (if the UUIDv8 is a sequential UUID for SQL Server)
 
 ```csharp
-public static bool TryGetTimestamp(Guid guid, Int64& timestamp)
+public static bool TryDecodeTimestamp(Guid guid, DateTime& date)
 ```
 
 #### Parameters
 
 `guid` [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid)<br>
 
-`timestamp` [Int64&](https://docs.microsoft.com/en-us/dotnet/api/system.int64&)<br>
+`date` [DateTime&](https://docs.microsoft.com/en-us/dotnet/api/system.datetime&)<br>
 
 #### Returns
 
