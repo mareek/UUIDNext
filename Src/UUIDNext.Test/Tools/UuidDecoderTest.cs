@@ -35,30 +35,25 @@ public class UuidDecoderTest
     [Fact]
     public void TestTimestampOfGeneratedUuids()
     {
-        var nowTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var now = DateTime.UtcNow;
         Guid uuidv7 = Uuid.NewSequential();
-        Check.That(UuidDecoder.TryGetTimestamp(uuidv7, out long v7Timestamp)).IsTrue();
-        CheckThatIsCloseTo(nowTimestamp, v7Timestamp, 10);
+        Check.That(UuidDecoder.TryDecodeTimestamp(uuidv7, out var v7Date)).IsTrue();
+        Check.That(v7Date).IsCloseTo(now, TimeSpan.FromMilliseconds(20));
 
-        nowTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        now = DateTime.UtcNow;
         Guid uuidv8 = Uuid.NewDatabaseFriendly(Database.SqlServer);
-        Check.That(UuidDecoder.TryGetTimestamp(uuidv8, out long v8Timestamp)).IsTrue();
-        CheckThatIsCloseTo(nowTimestamp, v8Timestamp, 10);
+        Check.That(UuidDecoder.TryDecodeTimestamp(uuidv8, out var v8Date)).IsTrue();
+        Check.That(v8Date).IsCloseTo(now, TimeSpan.FromMilliseconds(20));
 
-        var now = DateTimeOffset.UtcNow;
-        nowTimestamp = now.ToUnixTimeMilliseconds();
+        var nowTimestamp = new DateTimeOffset(now).ToUnixTimeMilliseconds();
         uuidv7 = UuidToolkit.CreateUuidV7(nowTimestamp, []);
-        Check.That(UuidDecoder.TryGetTimestamp(uuidv7, out v7Timestamp)).IsTrue();
-        CheckThatIsCloseTo(nowTimestamp, v7Timestamp);
+        Check.That(UuidDecoder.TryDecodeTimestamp(uuidv7, out v7Date)).IsTrue();
+        Check.That(v7Date).IsCloseTo(now, TimeSpan.FromMilliseconds(1));
 
         uuidv7 = UuidToolkit.CreateUuidV7FromSpecificDate(now);
-        Check.That(UuidDecoder.TryGetTimestamp(uuidv7, out v7Timestamp)).IsTrue();
-        CheckThatIsCloseTo(nowTimestamp, v7Timestamp);
+        Check.That(UuidDecoder.TryDecodeTimestamp(uuidv7, out v7Date)).IsTrue();
+        Check.That(v7Date).IsCloseTo(now, TimeSpan.FromMilliseconds(1));
     }
-
-    private static void CheckThatIsCloseTo(long nowTimestamp, long v7Timestamp, long margin = 0)
-        => Check.That(v7Timestamp).IsGreaterOrEqualThan(nowTimestamp - margin)
-                              .And.IsLessOrEqualThan(nowTimestamp + margin);
 
     [Theory]
     //[InlineData("c232ab00-9414-11ec-b3c8-9f6bdeced846", true)] // I need to sleep before I implement v1 decoding
@@ -72,8 +67,12 @@ public class UuidDecoderTest
     public void TestTimestamp(string strGuid, bool hasTimestamp, long? expectedTimestamp = null)
     {
         var guid = Guid.Parse(strGuid);
-        Check.That(UuidDecoder.TryGetTimestamp(guid, out long actualTimestamp)).Is(hasTimestamp);
+        Check.That(UuidDecoder.TryDecodeTimestamp(guid, out DateTime date)).Is(hasTimestamp);
         if (hasTimestamp)
-            Check.That(actualTimestamp).Is(expectedTimestamp.Value);
+        {
+            DateTime epoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var epectedDate = epoch.AddMilliseconds(expectedTimestamp.Value);
+            Check.That(date).Is(epectedDate);
+        }
     }
 }

@@ -7,8 +7,11 @@ namespace UUIDNext.Tools;
 /// </summary>
 public static class UuidDecoder
 {
-    private static readonly long GregorianCalendarStart = new DateTime(1582, 10, 15, 0, 0, 0, DateTimeKind.Utc).Ticks;
-  
+    private static readonly DateTime GregorianCalendarStart = new(1582, 10, 15, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime Epoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime JanuaryFirst2020 = new(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime JanuaryFirst2100 = new(2100, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
     /// <summary>
     /// Returns the version of the UUID
     /// </summary>
@@ -23,13 +26,12 @@ public static class UuidDecoder
     /// Try to retrieve the Unix timestamp from a Guid.
     /// Currently work for UUIDv6, UUIDv7 and UUIDv8 (if the UUIDv8 is a sequential UUID for SQL Server)
     /// </summary>
-    public static bool TryGetTimestamp(Guid guid, out long timestamp)
+    public static bool TryDecodeTimestamp(Guid guid, out DateTime date)
     {
-        const long januaryFirst2020 = 1577833200000;
-        const long januaryFirst2100 = 4102441200000;
-
         Span<byte> bytes = stackalloc byte[16];
         guid.TryWriteBytes(bytes, bigEndian: true, out var _);
+
+        long timestamp;
 
         var version = GetVersion(bytes);
         switch (version)
@@ -37,11 +39,11 @@ public static class UuidDecoder
             case 6:
                 // UUID v6 and v1 use a timestamp based on the start of the gregorian calendar (see RFC 9562 - Section 5.1)
                 var v6Timestamp = GetUuidV6TimestampInTicksFromGegorianCalendar(bytes);
-                var date = new DateTimeOffset(GregorianCalendarStart + v6Timestamp, TimeSpan.Zero);
-                timestamp = date.ToUnixTimeMilliseconds();
+                date = GregorianCalendarStart.AddTicks(v6Timestamp);
                 return true;
             case 7:
                 timestamp = readTimestamp(bytes, 0);
+                date = Epoch.AddMilliseconds(timestamp);
                 return true;
             case 8:
                 timestamp = readTimestamp(bytes, 10);
@@ -51,9 +53,10 @@ public static class UuidDecoder
                 // If you're the person debugging that code in the year 2100, hello from the past
                 // and sorry for that, I didn't think that my code would live so long
                 // If the person debugging that code is ME, congratulation for living so long ! You're about to beat Jeanne Calment !
-                return januaryFirst2020 < timestamp && timestamp < januaryFirst2100;
+                date = Epoch.AddMilliseconds(timestamp);
+                return JanuaryFirst2020 < date && date < JanuaryFirst2100;
             default:
-                timestamp = 0;
+                date = default;
                 return false;
         }
     }
