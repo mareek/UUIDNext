@@ -23,8 +23,7 @@ public static class UuidDecoder
     }
 
     /// <summary>
-    /// Try to retrieve the Unix timestamp from a Guid.
-    /// Currently work for UUIDv6, UUIDv7 and UUIDv8 (if the UUIDv8 is a sequential UUID for SQL Server)
+    /// Try to retrieve the date part a UUID v1, v6, v7 or V8 (if the UUIDv8 is a sequential UUID for SQL Server)
     /// </summary>
     public static bool TryDecodeTimestamp(Guid guid, out DateTime date)
     {
@@ -69,7 +68,7 @@ public static class UuidDecoder
     /// <summary>
     /// Returns the timestamp and the sequence number of a UUID version 7
     /// </summary>
-    public static (long timestampMs, short sequence) DecodeUuidV7(Guid guid)
+    internal static (long timestampMs, short sequence) DecodeUuidV7(Guid guid)
     {
         Span<byte> bytes = stackalloc byte[16];
         guid.TryWriteBytes(bytes, bigEndian: true, out var _);
@@ -87,7 +86,7 @@ public static class UuidDecoder
     /// <summary>
     /// Returns the timestamp and the sequence number of a UUID version 8 for SQL Server
     /// </summary>
-    public static (long timestampMs, short sequence) DecodeUuidV8ForSqlServer(Guid guid)
+    internal static (long timestampMs, short sequence) DecodeUuidV8ForSqlServer(Guid guid)
     {
         Span<byte> bytes = stackalloc byte[16];
         guid.TryWriteBytes(bytes, bigEndian: true, out var _);
