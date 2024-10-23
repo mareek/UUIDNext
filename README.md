@@ -12,9 +12,12 @@ UUIDNext is [available on nuget.org](https://www.nuget.org/packages/UUIDNext/)
 using System;
 using UUIDNext;
 
-// Creating a database friendly UUID (version 7)
-Guid sequentialUuid = Uuid.NewDatabaseFriendly(Database.SQLite);
-Console.WriteLine($"This is a database friendly UUID : {sequentialUuid}");
+// Creating a database friendly UUID for PostgreSQL (version 7) or MS SQL Server (Version 8)
+Guid sequentialUuid = Uuid.NewDatabaseFriendly(Database.PostgreSQL);
+Console.WriteLine($"This is a PostgreSQL friendly UUID : {sequentialUuid}");
+
+Guid sequentialUuid = Uuid.NewDatabaseFriendly(Database.SqlServer);
+Console.WriteLine($"This is a SQL Server friendly UUID : {sequentialUuid}");
 
 
 
@@ -36,6 +39,13 @@ UUID Version 7 and 8 are intended to be used as a primary key in a database. The
 
 As I said, UUIDs V4 produced by Guid.NewGuid() are fine when they are not used in the scenarios described above and there's no reason to stop using them. But if you find yourself in a position where UUID V4 is suboptimal, this library is for you.
 
+## But wait, there's more!
+
+If you have some special needs, the [UuidToolkit class](https://github.com/mareek/UUIDNext/blob/main/Doc/uuidnext.tools.uuidtoolkit.md) offers a variety of helper methods To create custom UUIDs.
+If you want to retrieve some information from a UUID like its version or the date when it as created, check the [UuidDecoder class](https://github.com/mareek/UUIDNext/blob/master/Doc/uuidnext.tools.uuiddecoder.md).
+
 ## Resources
+
+[Documentation](https://github.com/mareek/UUIDNext/tree/main/Doc/index.md).
 
 [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562) : The new standard for UUID Version 1 to 8.
