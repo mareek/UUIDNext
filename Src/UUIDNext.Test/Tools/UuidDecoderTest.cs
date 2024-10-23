@@ -56,13 +56,13 @@ public class UuidDecoderTest
     }
 
     [Theory]
-    //[InlineData("c232ab00-9414-11ec-b3c8-9f6bdeced846", true)] // I need to sleep before I implement v1 decoding
+    [InlineData("c232ab00-9414-11ec-b3c8-9f6bdeced846", true, 1645557742000)]
     [InlineData("5df41881-3aed-3515-88a7-2f4a814cf09e", false)]
     [InlineData("919108f7-52d1-4320-9bac-f847db4148a8", false)]
     [InlineData("2ed6657d-e927-568b-95e1-2665a8aea6a2", false)]
-    [InlineData("1c80415d-efe2-6100-811e-2ac60686f88e", true, 616415336208)]
-    [InlineData("011ceeaa-6cd8-71ec-ae27-d9621b04ada3", true, 1223774858456)]
-    [InlineData("45f98020-66e7-871d-9641-0170e4be4d77", true, 1584385641847)]
+    [InlineData("1ec9414c-232a-6b00-b3c8-9f6bdeced846", true, 1645557742000)]
+    [InlineData("017f22e2-79b0-7cc3-98c4-dc0c0c07398f", true, 1645557742000)]
+    [InlineData("c2ff3d1f-e3b1-8dad-8361-017f22e279b0", true, 1645557742000)]
     [InlineData("5c146b14-3c52-8afd-938a-375d0df1fbf6", false)]
     public void TestTimestamp(string strGuid, bool hasTimestamp, long? expectedTimestamp = null)
     {
@@ -70,9 +70,8 @@ public class UuidDecoderTest
         Check.That(UuidDecoder.TryDecodeTimestamp(guid, out DateTime date)).Is(hasTimestamp);
         if (hasTimestamp)
         {
-            DateTime epoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            var epectedDate = epoch.AddMilliseconds(expectedTimestamp.Value);
-            Check.That(date).Is(epectedDate);
+            var actualTimestamp = new DateTimeOffset(date).ToUnixTimeMilliseconds();
+            Check.That(actualTimestamp).Is(expectedTimestamp.Value);
         }
     }
 }
