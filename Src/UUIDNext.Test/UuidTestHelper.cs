@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NFluent;
+using UUIDNext.Tools;
 
 namespace UUIDNext.Test
 {
@@ -24,6 +25,18 @@ namespace UUIDNext.Test
                                                 .Single(m => m.Name == "New" && m.GetParameters().Length == 1);
             object[] parameters = { date };
             return (Guid)tryGenerateNewMethod.Invoke(generator, parameters);
+        }
+
+        public static short DecodeSequence(Guid uuid)
+        {
+            Check.That(UuidDecoder.TryDecodeSequence(uuid, out var sequence)).IsTrue();
+            return sequence;
+        }
+
+        public static DateTime DecodeDate(Guid uuid)
+        {
+            Check.That(UuidDecoder.TryDecodeTimestamp(uuid, out var date)).IsTrue();
+            return date;
         }
 
         public static IEnumerable<(int expectedPosition, Guid uuid)> GetDatabaseTestSet(object generator, int stepSize = 10)
