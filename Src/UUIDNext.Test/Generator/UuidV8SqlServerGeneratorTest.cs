@@ -4,7 +4,6 @@ using System.Data.SqlTypes;
 using System.Linq;
 using NFluent;
 using UUIDNext.Generator;
-using UUIDNext.Tools;
 using Xunit;
 
 namespace UUIDNext.Test.Generator
@@ -14,9 +13,6 @@ namespace UUIDNext.Test.Generator
         protected override byte Version => 8;
 
         protected override int SequenceBitSize => 14;
-
-        protected override (long timestamp, int sequence) DecodeUuid(Guid uuid)
-            => UuidDecoder.DecodeUuidV8ForSqlServer(uuid);
 
         protected override Guid NewUuid(object generator) => ((UuidV8SqlServerGenerator)generator).New();
 

@@ -35,13 +35,13 @@ public static class UuidDecoder
         {
             case 1:
                 // UUID v6 and v1 use a timestamp based on the start of the gregorian calendar (see RFC 9562 - Section 5.1)
-                var v1Timestamp = GetUuidV1TimestampInTicksFromGegorianCalendar(bytes);
-                date = GregorianCalendarStart.AddTicks(v1Timestamp);
+                timestamp = GetUuidV1TimestampInTicksFromGegorianCalendar(bytes);
+                date = GregorianCalendarStart.AddTicks(timestamp);
                 return true;
             case 6:
                 // UUID v6 and v1 use a timestamp based on the start of the gregorian calendar (see RFC 9562 - Section 5.1)
-                var v6Timestamp = GetUuidV6TimestampInTicksFromGegorianCalendar(bytes);
-                date = GregorianCalendarStart.AddTicks(v6Timestamp);
+                timestamp = GetUuidV6TimestampInTicksFromGegorianCalendar(bytes);
+                date = GregorianCalendarStart.AddTicks(timestamp);
                 return true;
             case 7:
                 timestamp = ReadUnixTimestamp(bytes, 0);
@@ -85,42 +85,6 @@ public static class UuidDecoder
         sequenceBytes[0] &= (byte)(255 >> bitsToClear);
         sequence = BinaryPrimitives.ReadInt16BigEndian(sequenceBytes);
         return true;
-    }
-
-    /// <summary>
-    /// Returns the timestamp and the sequence number of a UUID version 7
-    /// </summary>
-    internal static (long timestampMs, short sequence) DecodeUuidV7(Guid guid)
-    {
-        Span<byte> bytes = stackalloc byte[16];
-        guid.TryWriteBytes(bytes, bigEndian: true, out var _);
-
-        long timestampMs = ReadUnixTimestamp(bytes, 0);
-
-        var sequenceBytes = bytes.Slice(6, 2);
-        //remove version information
-        sequenceBytes[0] &= 0b0000_1111;
-        short sequence = BinaryPrimitives.ReadInt16BigEndian(sequenceBytes);
-
-        return (timestampMs, sequence);
-    }
-
-    /// <summary>
-    /// Returns the timestamp and the sequence number of a UUID version 8 for SQL Server
-    /// </summary>
-    internal static (long timestampMs, short sequence) DecodeUuidV8ForSqlServer(Guid guid)
-    {
-        Span<byte> bytes = stackalloc byte[16];
-        guid.TryWriteBytes(bytes, bigEndian: true, out var _);
-
-        long timestampMs = ReadUnixTimestamp(bytes, 10);
-
-        var sequenceBytes = bytes.Slice(8, 2);
-        //remove variant information
-        sequenceBytes[0] &= 0b0011_1111;
-        short sequence = BinaryPrimitives.ReadInt16BigEndian(sequenceBytes);
-
-        return (timestampMs, sequence);
     }
 
     private static int GetVersion(Span<byte> uuidBytes) => uuidBytes[6] >> 4;

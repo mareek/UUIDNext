@@ -12,13 +12,13 @@ namespace UUIDNext.Test.Generator
 
         protected abstract int SequenceBitSize { get; }
 
-        protected abstract (long timestamp, int sequence) DecodeUuid(Guid uuid);
-
         protected abstract Guid NewUuid(object generator);
 
         protected abstract object NewGenerator();
 
         private int GetSequenceMaxValue() => (1 << SequenceBitSize) - 1;
+
+        private short GetSeedMaxValue() => (short)((GetSequenceMaxValue() + 1) / 2 - 1);
 
         [Fact]
         public void DumbTest()
@@ -40,19 +40,20 @@ namespace UUIDNext.Test.Generator
         {
             var generator = NewGenerator();
             var date = DateTime.UtcNow.Date;
-            int sequenceMaxValue = GetSequenceMaxValue();
 
             var firstUuid = UuidTestHelper.New(generator, date);
-            var (firstTimestamp, firstSequenceNumber) = DecodeUuid(firstUuid);
+            var firstDate = UuidTestHelper.DecodeDate(firstUuid);
+            var firstSequence = UuidTestHelper.DecodeSequence(firstUuid);
 
-            Check.That(firstSequenceNumber).IsStrictlyLessThan((sequenceMaxValue + 1) / 2);
+            Check.That(firstSequence).IsLessOrEqualThan(GetSeedMaxValue());
 
-            Parallel.For(0, sequenceMaxValue - firstSequenceNumber, _ => UuidTestHelper.New(generator, date));
+            Parallel.For(0, GetSequenceMaxValue() - firstSequence, _ => UuidTestHelper.New(generator, date));
 
             var lastUuid = UuidTestHelper.New(generator, date);
-            var (lastTimestamp, lastSequenceNumber) = DecodeUuid(lastUuid);
-            Check.That(lastSequenceNumber).IsStrictlyLessThan((sequenceMaxValue + 1) / 2);
-            Check.That(lastTimestamp).IsEqualTo(firstTimestamp + 1);
+            var lastDate = UuidTestHelper.DecodeDate(lastUuid);
+            var lastSequence = UuidTestHelper.DecodeSequence(lastUuid);
+            Check.That(lastSequence).IsLessOrEqualThan(GetSeedMaxValue());
+            Check.That(lastDate).IsEqualTo(firstDate.AddMilliseconds(1));
         }
 
         [Fact]
@@ -60,22 +61,23 @@ namespace UUIDNext.Test.Generator
         {
             var generator = NewGenerator();
             var date = DateTime.UtcNow.Date;
-            int sequenceMaxValue = GetSequenceMaxValue();
 
             //setup an offset by generating an uuid into the future
             UuidTestHelper.New(generator, date.AddSeconds(1));
 
             var firstUuid = UuidTestHelper.New(generator, date);
-            var (firstTimestamp, firstSequenceNumber) = DecodeUuid(firstUuid);
+            var firstDate = UuidTestHelper.DecodeDate(firstUuid);
+            var firstSequence = UuidTestHelper.DecodeSequence(firstUuid);
 
-            Check.That(firstSequenceNumber).IsStrictlyLessThan((sequenceMaxValue + 1) / 2);
+            Check.That(firstSequence).IsLessOrEqualThan(GetSeedMaxValue());
 
-            Parallel.For(0, sequenceMaxValue - firstSequenceNumber, _ => UuidTestHelper.New(generator, date));
+            Parallel.For(0, GetSequenceMaxValue() - firstSequence, _ => UuidTestHelper.New(generator, date));
 
             var lastUuid = UuidTestHelper.New(generator, date);
-            var (lastTimestamp, lastSequenceNumber) = DecodeUuid(lastUuid);
-            Check.That(lastSequenceNumber).IsStrictlyLessThan((sequenceMaxValue + 1) / 2);
-            Check.That(lastTimestamp).IsEqualTo(firstTimestamp + 1);
+            var lastDate = UuidTestHelper.DecodeDate(lastUuid);
+            var lastSequence = UuidTestHelper.DecodeSequence(lastUuid);
+            Check.That(lastSequence).IsLessOrEqualThan(GetSeedMaxValue());
+            Check.That(lastDate).IsEqualTo(firstDate.AddMilliseconds(1));
         }
     }
 }

@@ -15,8 +15,6 @@ namespace UUIDNext.Test.Generator
 
         protected override int SequenceBitSize => 12;
 
-        protected override (long timestamp, int sequence) DecodeUuid(Guid uuid) => UuidDecoder.DecodeUuidV7(uuid);
-
         protected override Guid NewUuid(object generator) => ((UuidV7Generator)generator).New();
 
         protected override object NewGenerator() => new UuidV7Generator();
@@ -66,19 +64,24 @@ namespace UUIDNext.Test.Generator
             var futureDate = date.AddMilliseconds(1);
 
             var generator = new UuidV7Generator();
+
             var guid1 = UuidTestHelper.New(generator, date);
-            var (timestamp1, sequence1) = DecodeUuid(guid1);
+            var date1 = UuidTestHelper.DecodeDate(guid1);
+            var sequence1 = UuidTestHelper.DecodeSequence(guid1);
 
             var guid2 = UuidTestHelper.New(generator, pastDate);
-            var (timestamp2, sequence2) = DecodeUuid(guid2);
+            var date2 = UuidTestHelper.DecodeDate(guid2);
+            var sequence2 = UuidTestHelper.DecodeSequence(guid2);
+
             Check.That(guid1.ToString()).IsBefore(guid2.ToString());
-            Check.That(timestamp2).IsEqualTo(timestamp1);
+            Check.That(date2).IsEqualTo(date1);
             Check.That(sequence2).IsStrictlyGreaterThan(sequence1);
 
             var guid3 = UuidTestHelper.New(generator, futureDate);
-            var (timestamp3, _) = DecodeUuid(guid3);
+            var date3 = UuidTestHelper.DecodeDate(guid3);
+
             Check.That(guid2.ToString()).IsBefore(guid3.ToString());
-            Check.That(timestamp3).IsEqualTo(timestamp1 + 1);
+            Check.That(date3).IsEqualTo(date.AddMilliseconds(1));
         }
 
         [Fact]
@@ -88,30 +91,34 @@ namespace UUIDNext.Test.Generator
             var date = DateTimeOffset.FromUnixTimeMilliseconds(0).AddMilliseconds(1789).UtcDateTime;
 
             var guido = UuidTestHelper.New(generator, date);
-            var (timestampMsO, sequenceO) = UuidDecoder.DecodeUuidV7(guido);
+            var dateO = UuidTestHelper.DecodeDate(guido);
+            var sequenceO = UuidTestHelper.DecodeSequence(guido);
 
-            Check.That(timestampMsO).IsEqualTo(1789);
+            Check.That(dateO).IsEqualTo(date);
 
             //check that sequence initial value is randomized
             Check.That(sequenceO).IsStrictlyGreaterThan(0);
             Check.That(sequenceO).IsStrictlyLessThan(2048);
 
             var guida = UuidTestHelper.New(generator, date);
-            var (timestampMsA, sequenceA) = UuidDecoder.DecodeUuidV7(guida);
+            var dateA = UuidTestHelper.DecodeDate(guida);
+            var sequenceA = UuidTestHelper.DecodeSequence(guida);
 
-            Check.That(timestampMsA).IsEqualTo(timestampMsO);
+            Check.That(dateA).IsEqualTo(dateO);
             Check.That(sequenceA).IsEqualTo(sequenceO + 1);
 
             var guidu = UuidTestHelper.New(generator, date.AddTicks(1));
-            var (timestampMsU, sequenceU) = UuidDecoder.DecodeUuidV7(guidu);
+            var dateU = UuidTestHelper.DecodeDate(guidu);
+            var sequenceU = UuidTestHelper.DecodeSequence(guidu);
 
-            Check.That(timestampMsU).IsEqualTo(timestampMsO);
+            Check.That(dateU).IsEqualTo(dateO);
             Check.That(sequenceU).IsEqualTo(sequenceA + 1);
 
             var guidi = UuidTestHelper.New(generator, date.AddMilliseconds(1));
-            var (timestampMsI, sequenceI) = UuidDecoder.DecodeUuidV7(guidi);
+            var dateI = UuidTestHelper.DecodeDate(guidi);
+            var sequenceI = UuidTestHelper.DecodeSequence(guidi);
 
-            Check.That(timestampMsI).IsNotEqualTo(timestampMsO);
+            Check.That(dateI).IsNotEqualTo(dateO);
             Check.That(sequenceI).IsNotEqualTo(sequenceA + 1);
             Check.That(sequenceI).IsStrictlyGreaterThan(0);
             Check.That(sequenceI).IsStrictlyLessThan(2048);
@@ -126,9 +133,8 @@ namespace UUIDNext.Test.Generator
             ConcurrentBag<Guid> generatedUuids = new();
             Parallel.For(0, 100, _ => generatedUuids.Add(UuidTestHelper.New(generator, date)));
 
-            var uuidsParts = generatedUuids.Select(u => UuidDecoder.DecodeUuidV7(u)).ToArray();
-            Check.That(uuidsParts.Select(x => x.sequence)).ContainsNoDuplicateItem();
-            Check.That(uuidsParts.Select(x => x.timestampMs).Distinct()).HasSize(1);
+            Check.That(generatedUuids.Select(UuidTestHelper.DecodeSequence)).ContainsNoDuplicateItem();
+            Check.That(generatedUuids.Select(UuidTestHelper.DecodeDate).Distinct()).HasSize(1);
         }
     }
 }

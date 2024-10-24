@@ -24,7 +24,7 @@ public class UuidV7FromSpecificDateGeneratorTest
     [Fact]
     public void EnsureTimestampAndVersionAreAlwaysCorrect()
     {
-        DateTimeOffset date = new(new(2020, 1, 1));
+        DateTime date = new(2020, 1, 1, 0,0,0, DateTimeKind.Utc);
         UuidV7FromSpecificDateGenerator generator = new();
 
         int overflowCount = 0;
@@ -36,8 +36,8 @@ public class UuidV7FromSpecificDateGeneratorTest
         {
             var uuid = generator.New(date);
             Check.That(UuidDecoder.GetVersion(uuid)).Is(7);
-            var (timestamp, sequence) = UuidDecoder.DecodeUuidV7(uuid);
-            Check.That(timestamp).Is(date.ToUnixTimeMilliseconds());
+            var uuidDate = UuidTestHelper.DecodeDate(uuid);
+            Check.That(uuidDate).Is(date);
 
             if (_comparer.Compare(previousUuid, uuid) > 0)
                 overflowCount++;
