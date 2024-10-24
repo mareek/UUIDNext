@@ -159,17 +159,12 @@
         </member>
         <member name="M:UUIDNext.Tools.UuidDecoder.TryDecodeTimestamp(System.Guid,System.DateTime@)">
             <summary>
-            Try to retrieve the date part a UUID v1, v6, v7 or V8 (if the UUIDv8 is a sequential UUID for SQL Server)
+            Try to retrieve the date part of a UUID v1, v6, v7 or V8 (if the UUIDv8 is a sequential UUID for SQL Server)
             </summary>
         </member>
-        <member name="M:UUIDNext.Tools.UuidDecoder.DecodeUuidV7(System.Guid)">
+        <member name="M:UUIDNext.Tools.UuidDecoder.TryDecodeSequence(System.Guid,System.Int16@)">
             <summary>
-            Returns the timestamp and the sequence number of a UUID version 7
-            </summary>
-        </member>
-        <member name="M:UUIDNext.Tools.UuidDecoder.DecodeUuidV8ForSqlServer(System.Guid)">
-            <summary>
-            Returns the timestamp and the sequence number of a UUID version 8 for SQL Server
+            Try to retrieve the sequence part of a UUID v1, v6, v7 or V8 (if the UUIDv8 is a sequential UUID for SQL Server)
             </summary>
         </member>
         <member name="T:UUIDNext.Tools.UuidToolkit">

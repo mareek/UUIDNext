@@ -30,7 +30,7 @@ public static int GetVersion(Guid guid)
 
 ### **TryDecodeTimestamp(Guid, DateTime&)**
 
-Try to retrieve the date part a UUID v1, v6, v7 or V8 (if the UUIDv8 is a sequential UUID for SQL Server)
+Try to retrieve the date part of a UUID v1, v6, v7 or V8 (if the UUIDv8 is a sequential UUID for SQL Server)
 
 ```csharp
 public static bool TryDecodeTimestamp(Guid guid, DateTime& date)
@@ -41,6 +41,24 @@ public static bool TryDecodeTimestamp(Guid guid, DateTime& date)
 `guid` [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid)<br>
 
 `date` [DateTime&](https://docs.microsoft.com/en-us/dotnet/api/system.datetime&)<br>
+
+#### Returns
+
+[Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean)<br>
+
+### **TryDecodeSequence(Guid, Int16&)**
+
+Try to retrieve the sequence part of a UUID v1, v6, v7 or V8 (if the UUIDv8 is a sequential UUID for SQL Server)
+
+```csharp
+public static bool TryDecodeSequence(Guid guid, Int16& sequence)
+```
+
+#### Parameters
+
+`guid` [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid)<br>
+
+`sequence` [Int16&](https://docs.microsoft.com/en-us/dotnet/api/system.int16&)<br>
 
 #### Returns
 
