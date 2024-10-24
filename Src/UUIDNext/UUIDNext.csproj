@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.1;net472;net48</TargetFrameworks>
         <LangVersion>12</LangVersion>
-        <Version>4.0.0-beta</Version>
+        <Version>4.0.0-beta2</Version>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Authors>Matthieu Mourisson</Authors>
         <PackageId>UUIDNext</PackageId>
