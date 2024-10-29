@@ -1,4 +1,6 @@
-﻿using UUIDNext;
+﻿using System.Text;
+using UUIDNext;
+using UUIDNext.Tools;
 
 const string Doc = """
         Description : 
@@ -12,8 +14,8 @@ const string Doc = """
             Sequential        Create a new UUID v7
             Database [dbName] Create a UUID to be used as a database primary key (v7 or v8 depending on the database)
                               dbName can be "PostgreSQL", "SqlServer", "SQLite", "Other" or empty
+            Decode   [UUID]   Decode the versioo of the UUID and optionally the timestamp an sequence number of UUID v1, 6, 7 and 8
         """;
-//Decode   [UUID]   Decode the versioo of the UUID and optionally the timestamp an sequence number of UUID v1, 6, 7 and 8
 
 
 if (args.Length == 0)
@@ -33,6 +35,8 @@ else
             OutputDatabaseUuid(args.ElementAtOrDefault(1));
             break;
         case "decode":
+            OutputDecode(args.ElementAtOrDefault(1));
+            break;
         default:
             Console.WriteLine($"Unkown command [{command}]");
             Console.WriteLine();
@@ -53,4 +57,28 @@ static void OutputDatabaseUuid(string? dbName)
     }
 
     Console.WriteLine($"{Uuid.NewDatabaseFriendly(db)}");
+}
+
+static void OutputDecode(string? strUuid)
+{
+    if (string.IsNullOrWhiteSpace(strUuid) || !Guid.TryParse(strUuid, out var parsedUuid))
+    {
+        Console.WriteLine($"The string [{strUuid}] is not a valid UUID");
+        return;
+    }
+
+    StringBuilder resultBuilder = new();
+    resultBuilder.Append("{ ");
+    
+    resultBuilder.Append($"Version: {UuidDecoder.GetVersion(parsedUuid)}");
+
+    if (UuidDecoder.TryDecodeTimestamp(parsedUuid, out var date))
+        resultBuilder.Append($", Timestamp: \"{date:O}\"");
+
+    if (UuidDecoder.TryDecodeSequence(parsedUuid, out var sequence))
+        resultBuilder.Append($", Sequence: {sequence}");
+
+    resultBuilder.Append(" }");
+
+    Console.WriteLine(resultBuilder.ToString());
 }
