@@ -50,7 +50,7 @@ static void OutputDatabaseUuid(string? dbName)
     Database db;
     if (string.IsNullOrWhiteSpace(dbName))
         db = Database.Other;
-    else if (!Enum.TryParse<Database>(dbName, ignoreCase: true, result: out db))
+    else if (!Enum.TryParse(dbName, ignoreCase: true, result: out db))
     {
         Console.WriteLine($"Unkown database [{dbName}]");
         return;
@@ -61,24 +61,27 @@ static void OutputDatabaseUuid(string? dbName)
 
 static void OutputDecode(string? strUuid)
 {
+    strUuid ??= Console.ReadLine();
     if (string.IsNullOrWhiteSpace(strUuid) || !Guid.TryParse(strUuid, out var parsedUuid))
-    {
         Console.WriteLine($"The string [{strUuid}] is not a valid UUID");
-        return;
+    else
+        Console.WriteLine(DecodeUuid(parsedUuid));
     }
 
+static string DecodeUuid(Guid uuid)
+{
     StringBuilder resultBuilder = new();
     resultBuilder.Append("{ ");
     
-    resultBuilder.Append($"Version: {UuidDecoder.GetVersion(parsedUuid)}");
+    resultBuilder.Append($"Version: {UuidDecoder.GetVersion(uuid)}");
 
-    if (UuidDecoder.TryDecodeTimestamp(parsedUuid, out var date))
+    if (UuidDecoder.TryDecodeTimestamp(uuid, out var date))
         resultBuilder.Append($", Timestamp: \"{date:O}\"");
 
-    if (UuidDecoder.TryDecodeSequence(parsedUuid, out var sequence))
+    if (UuidDecoder.TryDecodeSequence(uuid, out var sequence))
         resultBuilder.Append($", Sequence: {sequence}");
 
     resultBuilder.Append(" }");
 
-    Console.WriteLine(resultBuilder.ToString());
+    return resultBuilder.ToString();
 }
