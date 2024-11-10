@@ -1,4 +1,4 @@
-name: Publish to NuGet
+name: Publish UUIDNext to NuGet
 
 on: workflow_dispatch 
 
