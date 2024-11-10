@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using UUIDNext;
 using UUIDNext.Tools;
 
@@ -10,10 +11,10 @@ const string Doc = """
             uuidnext command [options]
         
         Commands : 
-            Random            Create a new UUID v4.
+            Random            Create a new UUID v4
             Sequential        Create a new UUID v7
             Database [dbName] Create a UUID to be used as a database primary key (v7 or v8 depending on the database)
-                              dbName can be "PostgreSQL", "SqlServer", "SQLite", "Other" or empty
+                              dbName can be "PostgreSQL", "SqlServer", "SQLite" or "Other"
             Decode   [UUID]   Decode the versioo of the UUID and optionally the timestamp an sequence number of UUID v1, 6, 7 and 8
         """;
 
@@ -47,12 +48,13 @@ else
 
 static void OutputDatabaseUuid(string? dbName)
 {
-    Database db;
-    if (string.IsNullOrWhiteSpace(dbName))
-        db = Database.Other;
-    else if (!Enum.TryParse(dbName, ignoreCase: true, result: out db))
+    if (!Enum.TryParse(dbName, ignoreCase: true, result: out Database db))
     {
-        Console.WriteLine($"Unkown database [{dbName}]");
+        var expectedValues = Enum.GetValues<Database>().ToList();
+        // Ensure that Database.Other is the last of the list
+        expectedValues.Remove(Database.Other);
+        expectedValues.Add(Database.Other);
+        Console.WriteLine($"Unkown dbName [{dbName}]. Expected dbName values are [{string.Join(", ", expectedValues)}]");
         return;
     }
 
@@ -62,17 +64,15 @@ static void OutputDatabaseUuid(string? dbName)
 static void OutputDecode(string? strUuid)
 {
     strUuid ??= Console.ReadLine();
-    if (string.IsNullOrWhiteSpace(strUuid) || !Guid.TryParse(strUuid, out var parsedUuid))
+    if (string.IsNullOrWhiteSpace(strUuid) || !Guid.TryParse(strUuid, out var uuid))
+    {
         Console.WriteLine($"The string [{strUuid}] is not a valid UUID");
-    else
-        Console.WriteLine(DecodeUuid(parsedUuid));
+        return;
     }
 
-static string DecodeUuid(Guid uuid)
-{
     StringBuilder resultBuilder = new();
     resultBuilder.Append("{ ");
-    
+
     resultBuilder.Append($"Version: {UuidDecoder.GetVersion(uuid)}");
 
     if (UuidDecoder.TryDecodeTimestamp(uuid, out var date))
@@ -83,5 +83,5 @@ static string DecodeUuid(Guid uuid)
 
     resultBuilder.Append(" }");
 
-    return resultBuilder.ToString();
+    Console.WriteLine((string?)resultBuilder.ToString());
 }
