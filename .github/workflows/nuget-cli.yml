@@ -1,0 +1,29 @@
+name: Publish UUIDNext.Cli to NuGet
+
+on: workflow_dispatch 
+
+defaults:
+  run:
+    working-directory: Src
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build -c Release --no-restore
+    - name: Test
+      run: dotnet test -c Release --no-build
+    - name: Pack nugets
+      run: dotnet pack "./UUIDNext/UUIDNext.Cli.csproj" -c Release --no-build --output .
+    - name: Push to NuGet
+      run: dotnet nuget push "UUIDNext.Cli.*.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate --source https://api.nuget.org/v3/index.json
