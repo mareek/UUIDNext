@@ -5,13 +5,14 @@ A command line tool to generate and decode UUID/GUID that are either sequential 
 ## How to Install
 
 UUIDNext.Cli is [available as a tool on nuget.org](https://www.nuget.org/packages/UUIDNext.Cli/)
-```
-dotnet tool install --global UUIDNext.Cli
+
+```text
+dotnet tool install --global UUIDNext.Cli --prerelease
 ```
 
 ## Command line documentation
 
-```
+```text
 Description : 
     Generate a new UUID
 

@@ -7,7 +7,7 @@ defaults:
     working-directory: Src
 
 jobs:
-  build:
+  publish:
 
     runs-on: ubuntu-latest
 
