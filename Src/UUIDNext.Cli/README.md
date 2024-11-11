@@ -10,7 +10,23 @@ UUIDNext.Cli is [available as a tool on nuget.org](https://www.nuget.org/package
 dotnet tool install --global UUIDNext.Cli --prerelease
 ```
 
-## Command line documentation
+## How to Use
+
+```bash
+# Creating a UUID Version 4
+uuidnext random
+
+# Creating a UUID Version 7
+uuidnext sequential
+
+# Creating a database friendly UUID for MS SQL Server (Version 8)
+uuidnext database sqlServer
+
+# Decoding version, timestamp and sequence from a UUID version 7
+uuidnext decode 017F22E2-79B0-7CC3-98C4-DC0C0C07398F
+```
+
+## Quick documentation
 
 ```text
 Description : 
