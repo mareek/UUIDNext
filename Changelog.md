@@ -5,6 +5,7 @@
 * Added UuidToolkit for advanced UUID generation
 * UuidDecoder can now read timestamp and sequence from every version that has timestamp and sequence
 * Added some documentation
+* Added a command line tool to generate and decode UUID
 * Removed obsolete methods (this might cause breaking changes)
 
 ## 3.0.0 (2024-07-02)

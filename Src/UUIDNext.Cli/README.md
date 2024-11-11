@@ -1,6 +1,6 @@
 # UUIDNext.Cli
 
-A command line tool to generate and decode UUID/GUID that are either sequential and database friendly (versions 7 & 8), name based (versions  5) or random (version 4).
+A command line tool to generate and decode UUID/GUID that are either sequential and database friendly (versions 7 & 8) or random (version 4).
 
 ## How to Install
 

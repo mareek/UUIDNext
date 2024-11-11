@@ -5,7 +5,7 @@ Namespace: UUIDNext.Tools
 Compares two Guids
 
 ```csharp
-public class GuidComparer : System.Collections.Generic.IComparer`1[[System.Guid, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
+public class GuidComparer : System.Collections.Generic.IComparer<System.Guid>
 ```
 
 Inheritance [Object](https://docs.microsoft.com/en-us/dotnet/api/system.object) → [GuidComparer](./uuidnext.tools.guidcomparer.md)<br>

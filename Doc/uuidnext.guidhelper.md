@@ -49,12 +49,12 @@ public static Byte[] ToByteArray(Guid guid, bool bigEndian)
 
 [Byte[]](https://docs.microsoft.com/en-us/dotnet/api/system.byte)<br>
 
-### **TryWriteBytes(Guid, Span&lt;Byte&gt;, Boolean, Int32&)**
+### **TryWriteBytes(Guid, Span&lt;Byte&gt;, Boolean, Int32)**
 
 Returns whether bytes are successfully written to given span.
 
 ```csharp
-public static bool TryWriteBytes(Guid guid, Span<byte> bytes, bool bigEndian, Int32& bytesWritten)
+public static bool TryWriteBytes(Guid guid, Span<byte> bytes, bool bigEndian, out int bytesWritten)
 ```
 
 #### Parameters
@@ -65,7 +65,7 @@ public static bool TryWriteBytes(Guid guid, Span<byte> bytes, bool bigEndian, In
 
 `bigEndian` [Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean)<br>
 
-`bytesWritten` [Int32&](https://docs.microsoft.com/en-us/dotnet/api/system.int32&)<br>
+`bytesWritten` [Int32](https://docs.microsoft.com/en-us/dotnet/api/system.int32)<br>
 
 #### Returns
 
