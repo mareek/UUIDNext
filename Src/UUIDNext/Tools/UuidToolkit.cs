@@ -79,7 +79,7 @@ public static class UuidToolkit
     {
         //Convert the name to a canonical sequence of octets (as defined by the standards or conventions of its name space);
         var utf8NameByteCount = Encoding.UTF8.GetByteCount(name.Normalize(NormalizationForm.FormC));
-#if NET472_OR_GREATER
+#if NETSTANDARD2_0
         byte[] utf8NameBytes = new byte[utf8NameByteCount];
         Encoding.UTF8.GetBytes(name, 0, name.Length, utf8NameBytes, 0);
 

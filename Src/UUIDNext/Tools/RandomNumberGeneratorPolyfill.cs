@@ -5,7 +5,7 @@ namespace UUIDNext.Tools;
 
 internal static class RandomNumberGeneratorPolyfill
 {
-#if NET472_OR_GREATER
+#if NETSTANDARD2_0
     private static readonly ThreadLocal<RandomNumberGenerator> _rng = new(RandomNumberGenerator.Create);
 
     public static void Fill(Span<byte> span)

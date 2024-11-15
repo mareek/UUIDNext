@@ -11,7 +11,7 @@ public static class GuidHelper
     public static Guid FromBytes(Span<byte> bytes, bool bigEndian)
     {
         if (!bigEndian)
-#if NET472_OR_GREATER
+#if NETSTANDARD2_0
             return new(bytes.ToArray());
 #else
             return new(bytes);
@@ -21,13 +21,14 @@ public static class GuidHelper
 
         bytes.CopyTo(localBytes);
         SwitchByteOrder(localBytes);
-#if NET472_OR_GREATER
+#if NETSTANDARD2_0
         return new(localBytes.ToArray());
 #else
         return new(localBytes);
 #endif
     }
 
+#if !NET8_0_OR_GREATER
     /// <summary>
     /// Returns an unsigned byte array containing the GUID.
     /// </summary>
@@ -46,7 +47,7 @@ public static class GuidHelper
     /// </summary>
     public static bool TryWriteBytes(this Guid guid, Span<byte> bytes, bool bigEndian, out int bytesWritten)
     {
-#if NET472_OR_GREATER
+#if NETSTANDARD2_0
         if (bytes.Length < 16)
         {
             bytesWritten = 0;
@@ -69,6 +70,7 @@ public static class GuidHelper
         bytesWritten = 16;
         return true;
     }
+#endif
 
     private static void SwitchByteOrder(Span<byte> bytes)
     {
