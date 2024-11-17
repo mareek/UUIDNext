@@ -9,7 +9,7 @@
 	<!--Nuget package information-->
 	<PropertyGroup>
 		<PackageId>UUIDNext.Cli</PackageId>
-		<Version>4.0.0-beta2</Version>
+		<Version>4.0.0-beta3</Version>
 		<Authors>Matthieu Mourisson</Authors>
 		<PackageLicenseExpression>0BSD</PackageLicenseExpression>
 		<PackageTags>UUID;GUID;UUIDv5;UUIDv7;UUIDv8</PackageTags>
@@ -32,6 +32,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="UUIDNext" Version="4.0.0-beta2" />
+		<PackageReference Include="UUIDNext" Version="4.0.0-beta3" />
 	</ItemGroup>
 </Project>
