@@ -16,7 +16,7 @@ public static class UuidDecoder
     public static int GetVersion(Guid guid)
     {
         Span<byte> bytes = stackalloc byte[16];
-        guid.TryWriteBytes(bytes, bigEndian: true, out var _);
+        guid.TryWriteBytes(bytes, bigEndian: true, out _);
         return GetVersion(bytes);
     }
 
@@ -26,7 +26,7 @@ public static class UuidDecoder
     public static bool TryDecodeTimestamp(Guid guid, out DateTime date)
     {
         Span<byte> bytes = stackalloc byte[16];
-        guid.TryWriteBytes(bytes, bigEndian: true, out var _);
+        guid.TryWriteBytes(bytes, bigEndian: true, out _);
 
         long timestamp;
 
@@ -63,7 +63,7 @@ public static class UuidDecoder
     public static bool TryDecodeSequence(Guid guid, out short sequence)
     {
         Span<byte> bytes = stackalloc byte[16];
-        guid.TryWriteBytes(bytes, bigEndian: true, out var _);
+        guid.TryWriteBytes(bytes, bigEndian: true, out _);
 
         var version = GetVersion(bytes);
 

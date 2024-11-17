@@ -85,7 +85,7 @@ public static class UuidToolkit
 
         //put the name space ID in network byte order.
         Span<byte> namespaceBytes = stackalloc byte[16];
-        namespaceId.TryWriteBytes(namespaceBytes, bigEndian: true, out var _);
+        namespaceId.TryWriteBytes(namespaceBytes, bigEndian: true, out _);
 
         //Compute the hash of the name space ID concatenated with the name.
         int bytesToHashCount = namespaceBytes.Length + utf8NameBytes.Length;
@@ -102,7 +102,7 @@ public static class UuidToolkit
 
         //put the name space ID in network byte order.
         Span<byte> namespaceBytes = stackalloc byte[16];
-        namespaceId.TryWriteBytes(namespaceBytes, bigEndian: true, out var _);
+        namespaceId.TryWriteBytes(namespaceBytes, bigEndian: true, out _);
 
         //Compute the hash of the name space ID concatenated with the name.
         int bytesToHashCount = namespaceBytes.Length + utf8NameBytes.Length;
@@ -111,7 +111,7 @@ public static class UuidToolkit
         utf8NameBytes.CopyTo(bytesToHash[namespaceBytes.Length..]);
 
         Span<byte> hash = stackalloc byte[hashAlgorithm.HashSize / 8];
-        hashAlgorithm.TryComputeHash(bytesToHash, hash, out var _);
+        hashAlgorithm.TryComputeHash(bytesToHash, hash, out _);
 
         return CreateGuidFromBigEndianBytes(hash[0..16], version);
 #endif

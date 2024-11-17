@@ -9,6 +9,9 @@ public static class GuidHelper
     /// Creates a new guid from a span of bytes.
     /// </summary>
     public static Guid FromBytes(Span<byte> bytes, bool bigEndian)
+#if NET8_0_OR_GREATER
+        => new(bytes, bigEndian);
+#else
     {
         if (!bigEndian)
 #if NETSTANDARD2_0
@@ -28,7 +31,6 @@ public static class GuidHelper
 #endif
     }
 
-#if !NET8_0_OR_GREATER
     /// <summary>
     /// Returns an unsigned byte array containing the GUID.
     /// </summary>
@@ -38,7 +40,7 @@ public static class GuidHelper
             return guid.ToByteArray();
 
         byte[] result = new byte[16];
-        guid.TryWriteBytes(result, true, out var _);
+        guid.TryWriteBytes(result, true, out _);
         return result;
     }
 
@@ -70,7 +72,6 @@ public static class GuidHelper
         bytesWritten = 16;
         return true;
     }
-#endif
 
     private static void SwitchByteOrder(Span<byte> bytes)
     {
@@ -86,4 +87,5 @@ public static class GuidHelper
             (array[indexSource], array[indexDest]) = (array[indexDest], array[indexSource]);
         }
     }
+#endif
 }
