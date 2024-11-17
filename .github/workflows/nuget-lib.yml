@@ -7,7 +7,7 @@ defaults:
     working-directory: Src
 
 jobs:
-  bublish:
+  publish:
 
     runs-on: ubuntu-latest
 
