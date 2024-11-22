@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Reflection;
 using System.Text;
 using UUIDNext;
 using UUIDNext.Tools;
@@ -16,8 +16,8 @@ const string Doc = """
             Database [dbName] Create a UUID to be used as a database primary key (v7 or v8 depending on the database)
                               dbName can be "PostgreSQL", "SqlServer", "SQLite" or "Other"
             Decode   [UUID]   Decode the versioo of the UUID and optionally the timestamp an sequence number of UUID v1, 6, 7 and 8
+            Version           Show the version
         """;
-
 
 if (args.Length == 0)
     Console.WriteLine(Doc);
@@ -37,6 +37,14 @@ else
             break;
         case "decode":
             OutputDecode(args.ElementAtOrDefault(1));
+            break;
+        case "version":
+            var assembly = Assembly.GetExecutingAssembly()!;
+            var versionAttribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!;
+            // This InformationalVersion contains the content of the <version> element in the csproj + the commit id
+            // See https://learn.microsoft.com/en-us/dotnet/api/system.reflection.assemblyinformationalversionattribute#remarks
+            var versionLabel = versionAttribute.InformationalVersion.Split("+")[0];
+            Console.WriteLine(versionLabel);
             break;
         default:
             Console.WriteLine($"Unkown command [{command}]");
