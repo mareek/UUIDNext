@@ -8,7 +8,7 @@ const string Doc = """
             Generate a new UUID
         
         Usage : 
-            uuidnext command [options]
+            uuidnext command [options] [--clipboard]
         
         Commands : 
             Random            Create a new UUID v4
@@ -17,26 +17,32 @@ const string Doc = """
                               dbName can be "PostgreSQL", "SqlServer", "SQLite" or "Other"
             Decode   [UUID]   Decode the versioo of the UUID and optionally the timestamp an sequence number of UUID v1, 6, 7 and 8
             Version           Show the version
+        
+        --clipboard : copy output to clipboard
         """;
 
+bool outputToClipboard = args.LastOrDefault() == "--clipboard";
+args = outputToClipboard ? args[..^1] : args;
 if (args.Length == 0)
     Console.WriteLine(Doc);
 else
 {
     var command = args[0].ToLowerInvariant();
+    var option = args.ElementAtOrDefault(1);
+    string output;
     switch (command)
     {
         case "random":
-            Console.WriteLine($"{Uuid.NewRandom()}");
+            output = $"{Uuid.NewRandom()}";
             break;
         case "sequential":
-            Console.WriteLine($"{Uuid.NewSequential()}");
+            output = $"{Uuid.NewSequential()}";
             break;
         case "database":
-            OutputDatabaseUuid(args.ElementAtOrDefault(1));
+            output = OutputDatabaseUuid(option);
             break;
         case "decode":
-            OutputDecode(args.ElementAtOrDefault(1));
+            output = OutputDecode(option);
             break;
         case "version":
             var assembly = Assembly.GetExecutingAssembly()!;
@@ -44,17 +50,22 @@ else
             // This InformationalVersion contains the content of the <version> element in the csproj + the commit id
             // See https://learn.microsoft.com/en-us/dotnet/api/system.reflection.assemblyinformationalversionattribute#remarks
             var versionLabel = versionAttribute.InformationalVersion.Split("+")[0];
-            Console.WriteLine(versionLabel);
+            output = versionLabel;
             break;
         default:
             Console.WriteLine($"Unkown command [{command}]");
             Console.WriteLine();
             Console.WriteLine(Doc);
-            break;
+            return;
     }
+
+    if (outputToClipboard)
+        TextCopy.ClipboardService.SetText(output);
+    else
+        Console.WriteLine(output);
 }
 
-static void OutputDatabaseUuid(string? dbName)
+static string OutputDatabaseUuid(string? dbName)
 {
     if (!Enum.TryParse(dbName, ignoreCase: true, result: out Database db))
     {
@@ -62,20 +73,18 @@ static void OutputDatabaseUuid(string? dbName)
         // Ensure that Database.Other is the last of the list
         expectedValues.Remove(Database.Other);
         expectedValues.Add(Database.Other);
-        Console.WriteLine($"Unkown dbName [{dbName}]. Expected dbName values are [{string.Join(", ", expectedValues)}]");
-        return;
+        return $"Unkown dbName [{dbName}]. Expected dbName values are [{string.Join(", ", expectedValues)}]";
     }
 
-    Console.WriteLine($"{Uuid.NewDatabaseFriendly(db)}");
+    return $"{Uuid.NewDatabaseFriendly(db)}";
 }
 
-static void OutputDecode(string? strUuid)
+static string OutputDecode(string? strUuid)
 {
     strUuid ??= Console.ReadLine();
     if (string.IsNullOrWhiteSpace(strUuid) || !Guid.TryParse(strUuid, out var uuid))
     {
-        Console.WriteLine($"The string [{strUuid}] is not a valid UUID");
-        return;
+        return $"The string [{strUuid}] is not a valid UUID";
     }
 
     StringBuilder resultBuilder = new();
@@ -91,5 +100,5 @@ static void OutputDecode(string? strUuid)
 
     resultBuilder.Append(" }");
 
-    Console.WriteLine((string?)resultBuilder.ToString());
+    return resultBuilder.ToString();
 }
