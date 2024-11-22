@@ -1,9 +1,12 @@
 ﻿using System.Reflection;
 using System.Text;
-using UUIDNext;
 using UUIDNext.Tools;
 
-const string Doc = """
+namespace UUIDNext.Cli;
+
+public static class Program
+{
+    private const string Doc = """
         Description : 
             Generate a new UUID
         
@@ -21,84 +24,82 @@ const string Doc = """
         --clipboard : copy output to clipboard
         """;
 
-bool outputToClipboard = args.LastOrDefault() == "--clipboard";
-args = outputToClipboard ? args[..^1] : args;
-if (args.Length == 0)
-    Console.WriteLine(Doc);
-else
-{
-    var command = args[0].ToLowerInvariant();
-    var option = args.ElementAtOrDefault(1);
-    string output;
-    switch (command)
+    public static void Main(string[] args)
     {
-        case "random":
-            output = $"{Uuid.NewRandom()}";
-            break;
-        case "sequential":
-            output = $"{Uuid.NewSequential()}";
-            break;
-        case "database":
-            output = OutputDatabaseUuid(option);
-            break;
-        case "decode":
-            output = OutputDecode(option);
-            break;
-        case "version":
-            var assembly = Assembly.GetExecutingAssembly()!;
-            var versionAttribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!;
-            // This InformationalVersion contains the content of the <version> element in the csproj + the commit id
-            // See https://learn.microsoft.com/en-us/dotnet/api/system.reflection.assemblyinformationalversionattribute#remarks
-            var versionLabel = versionAttribute.InformationalVersion.Split("+")[0];
-            output = versionLabel;
-            break;
-        default:
-            Console.WriteLine($"Unkown command [{command}]");
-            Console.WriteLine();
+        bool outputToClipboard = string.Equals(args.LastOrDefault(), "--clipboard", StringComparison.OrdinalIgnoreCase);
+        args = outputToClipboard ? args[..^1] : args;
+        if (args.Length == 0)
             Console.WriteLine(Doc);
-            return;
+        else
+        {
+            var command = args[0].ToLowerInvariant();
+            var option = args.ElementAtOrDefault(1);
+
+            string? output = command switch
+            {
+                "random" => $"{Uuid.NewRandom()}",
+                "sequential" => $"{Uuid.NewSequential()}",
+                "database" => OutputDatabaseUuid(option),
+                "decode" => OutputDecode(option),
+                "version" => GetVersion(),
+                _ => null,
+            };
+
+            if (output == null)
+            {
+                Console.WriteLine($"Unkown command [{command}]");
+                Console.WriteLine();
+                Console.WriteLine(Doc);
+            }
+            else if (outputToClipboard)
+                TextCopy.ClipboardService.SetText(output);
+            else
+                Console.WriteLine(output);
+        }
     }
 
-    if (outputToClipboard)
-        TextCopy.ClipboardService.SetText(output);
-    else
-        Console.WriteLine(output);
-}
-
-static string OutputDatabaseUuid(string? dbName)
-{
-    if (!Enum.TryParse(dbName, ignoreCase: true, result: out Database db))
+    private static string GetVersion()
     {
-        var expectedValues = Enum.GetValues<Database>().ToList();
-        // Ensure that Database.Other is the last of the list
-        expectedValues.Remove(Database.Other);
-        expectedValues.Add(Database.Other);
-        return $"Unkown dbName [{dbName}]. Expected dbName values are [{string.Join(", ", expectedValues)}]";
+        var assembly = Assembly.GetExecutingAssembly()!;
+        var versionAttribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!;
+        // This InformationalVersion contains the content of the <version> element in the csproj + the commit id
+        // See https://learn.microsoft.com/en-us/dotnet/api/system.reflection.assemblyinformationalversionattribute#remarks
+        return versionAttribute.InformationalVersion.Split("+")[0];
     }
 
-    return $"{Uuid.NewDatabaseFriendly(db)}";
-}
-
-static string OutputDecode(string? strUuid)
-{
-    strUuid ??= Console.ReadLine();
-    if (string.IsNullOrWhiteSpace(strUuid) || !Guid.TryParse(strUuid, out var uuid))
+    private static string OutputDatabaseUuid(string? dbName)
     {
-        return $"The string [{strUuid}] is not a valid UUID";
+        if (!Enum.TryParse(dbName, ignoreCase: true, result: out Database db))
+        {
+            var expectedValues = Enum.GetValues<Database>().ToList();
+            // Ensure that Database.Other is the last of the list
+            expectedValues.Remove(Database.Other);
+            expectedValues.Add(Database.Other);
+            return $"Unkown dbName [{dbName}]. Expected dbName values are [{string.Join(", ", expectedValues)}]";
+        }
+
+        return $"{Uuid.NewDatabaseFriendly(db)}";
     }
 
-    StringBuilder resultBuilder = new();
-    resultBuilder.Append("{ ");
+    private static string OutputDecode(string? strUuid)
+    {
+        strUuid ??= Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(strUuid) || !Guid.TryParse(strUuid, out var uuid))
+            return $"The string [{strUuid}] is not a valid UUID";
 
-    resultBuilder.Append($"Version: {UuidDecoder.GetVersion(uuid)}");
+        StringBuilder resultBuilder = new();
+        resultBuilder.Append("{ ");
 
-    if (UuidDecoder.TryDecodeTimestamp(uuid, out var date))
-        resultBuilder.Append($", Timestamp: \"{date:O}\"");
+        resultBuilder.Append($"Version: {UuidDecoder.GetVersion(uuid)}");
 
-    if (UuidDecoder.TryDecodeSequence(uuid, out var sequence))
-        resultBuilder.Append($", Sequence: {sequence}");
+        if (UuidDecoder.TryDecodeTimestamp(uuid, out var date))
+            resultBuilder.Append($", Timestamp: \"{date:O}\"");
 
-    resultBuilder.Append(" }");
+        if (UuidDecoder.TryDecodeSequence(uuid, out var sequence))
+            resultBuilder.Append($", Sequence: {sequence}");
 
-    return resultBuilder.ToString();
+        resultBuilder.Append(" }");
+
+        return resultBuilder.ToString();
+    }
 }
