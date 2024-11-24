@@ -5,11 +5,7 @@
 /// </summary>
 internal class QDCache<TKey, TValue>(int capacity)
 {
-#if NET9_OR_GREATER
-    private readonly System.Threading.Lock _lock = new();
-#else
-    private readonly object _lock = new();
-#endif  
+    private readonly Lock _lock = LockFactory.Create();
 
     // a sorted array of the cache's key/value where the first item is the most recently asked one
     private readonly KeyValue[] _store = new KeyValue[capacity];

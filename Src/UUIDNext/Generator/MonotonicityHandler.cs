@@ -8,6 +8,7 @@ namespace UUIDNext.Generator;
 /// </summary>
 internal class MonotonicityHandler(int sequenceBitSize)
 {
+    private readonly Lock _lock = LockFactory.Create();
     private readonly int _sequenceMaxValue = (1 << sequenceBitSize) - 1;
 
     private long _lastUsedTimestamp = 0;
@@ -21,7 +22,7 @@ internal class MonotonicityHandler(int sequenceBitSize)
         long timestamp = date.ToUnixTimeMilliseconds();
         long originalTimestamp = timestamp;
 
-        lock (this)
+        lock (_lock)
         {
             sequence = GetSequenceNumber(ref timestamp);
             if (sequence > _sequenceMaxValue)
