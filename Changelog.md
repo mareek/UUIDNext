@@ -1,6 +1,6 @@
 # Version History
 
-## 4.0.0 (TBD)
+## 4.0.0 (2024-12-05)
 
 * Added UuidToolkit for advanced UUID generation
 * UuidDecoder can now read timestamp and sequence from every version that has timestamp and sequence
