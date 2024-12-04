@@ -41,7 +41,11 @@ public static class UuidToolkit
     {
         SetVersion(bigEndianBytes, version);
         SetVariant(bigEndianBytes);
+#if NET8_0_OR_GREATER
+        return new Guid(bigEndianBytes, bigEndian: true);
+#else
         return GuidHelper.FromBytes(bigEndianBytes, bigEndian: true);
+#endif
     }
 
     private static void SetVersion(Span<byte> bigEndianBytes, byte version)

@@ -13,8 +13,8 @@ namespace UUIDNext.Test.DatabaseSupport
         // have a different dayabase name to prevent failing test due to concurrency errors
 #if NET472
         const string databaseName = "uuidTestDb_472";
-#elif NET48
-        const string databaseName = "uuidTestDb_48";
+#elif NET6_0
+        const string databaseName = "uuidTestDb_6";
 #else
         const string databaseName = "uuidTestDb_8";
 #endif

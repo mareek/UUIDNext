@@ -1,4 +1,5 @@
-﻿namespace UUIDNext;
+﻿#if !NET8_0_OR_GREATER
+namespace UUIDNext;
 
 /// <summary>
 /// Provite a set of static and extensions methods that brings .NET8+ features to .NET Standard 2.1 and .NET framework
@@ -9,9 +10,6 @@ public static class GuidHelper
     /// Creates a new guid from a span of bytes.
     /// </summary>
     public static Guid FromBytes(Span<byte> bytes, bool bigEndian)
-#if NET8_0_OR_GREATER
-        => new(bytes, bigEndian);
-#else
     {
         if (!bigEndian)
 #if NETSTANDARD2_0
@@ -87,5 +85,5 @@ public static class GuidHelper
             (array[indexSource], array[indexDest]) = (array[indexDest], array[indexSource]);
         }
     }
-#endif
 }
+#endif

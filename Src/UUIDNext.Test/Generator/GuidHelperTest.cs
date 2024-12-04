@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NET8_0_OR_GREATER
+using System;
 using System.Linq;
 using NFluent;
 using Xunit;
@@ -55,3 +56,4 @@ public class GuidHelperTest
         Check.That(invertEndiannessGuid).IsNotEqualTo(expectedGuid);
     }
 }
+#endif
