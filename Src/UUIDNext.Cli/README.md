@@ -7,7 +7,7 @@ A command line tool to generate and decode UUID/GUID that are either sequential 
 UUIDNext.Cli is [available as a tool on nuget.org](https://www.nuget.org/packages/UUIDNext.Cli/)
 
 ```text
-dotnet tool install --global UUIDNext.Cli --prerelease
+dotnet tool install --global UUIDNext.Cli
 ```
 
 ## How to Use
@@ -33,7 +33,7 @@ Description :
     Generate a new UUID
 
 Usage : 
-    uuidnext command [options]
+    uuidnext command [options] [--clipboard]
 
 Commands : 
     Random            Create a new UUID v4
@@ -41,4 +41,7 @@ Commands :
     Database [dbName] Create a UUID to be used as a database primary key (v7 or v8 depending on the database)
                       dbName can be "PostgreSQL", "SqlServer", "SQLite" or "Other"
     Decode   [UUID]   Decode the versioo of the UUID and optionally the timestamp an sequence number of UUID v1, 6, 7 and 8
+    Version           Show the version
+
+--clipboard : copy output to clipboard
 ```
