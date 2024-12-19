@@ -13,7 +13,7 @@ using System;
 using UUIDNext;
 
 // Creating a database friendly UUID for PostgreSQL (version 7) or MS SQL Server (Version 8)
-Guid sequentialUuid = Uuid.NewDatabaseFriendly(Database.PostgreSQL);
+Guid sequentialUuid = Uuid.NewDatabaseFriendly(Database.PostgreSql);
 Console.WriteLine($"This is a PostgreSQL friendly UUID : {sequentialUuid}");
 
 Guid sequentialUuid = Uuid.NewDatabaseFriendly(Database.SqlServer);
