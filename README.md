@@ -45,7 +45,7 @@ The fact that the .NET team added UUID v7 support is a good news but their imple
 To sum up, you should use UUIDNext if you're in one of these situations:
 
 * You target a .NET version older than .NET 9 (obviously).
-* You use MS SQL Server. UUIDNext is the only library that generate UUIDs taylored for SQL Server.
+* You use MS SQL Server. UUIDNext is the only library that generate UUIDs tailored for SQL Server.
 * You do a lot of batch inserts. Contrary to .NET 9, UUIDNext ensure that each generated UUID is greater than the previous one even if they're generated in the same ms.
 
 ## But wait, there's more !
