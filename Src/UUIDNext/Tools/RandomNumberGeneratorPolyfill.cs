@@ -15,7 +15,9 @@ internal static class RandomNumberGeneratorPolyfill
         tempBytes.CopyTo(span);
     }
 #else
+    private static readonly ThreadLocal<PrefetchedRandomNumberGenerator> _prefetchRng = new(() => new(512));
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Fill(Span<byte> span) => RandomNumberGenerator.Fill(span);
+    public static void Fill(Span<byte> span) => _prefetchRng.Value.Fill(span);
 #endif
 }
