@@ -9,8 +9,13 @@ public class UuidBench
     private static readonly Generator.UuidV8SqlServerGenerator uuidV8Generator = new();
     private static readonly Generator.UuidV7FromSpecificDateGenerator uuidV7Generator = new();
 
-    [Benchmark]
+    [Benchmark(Baseline = true)]
     public Guid NewGuid() => Guid.NewGuid();
+
+#if NET9_0_OR_GREATER
+    [Benchmark()]
+    public Guid CreateVersion7() => Guid.CreateVersion7();
+#endif
 
     [Benchmark]
     public Guid NewUuidV4() => Uuid.NewRandom();
