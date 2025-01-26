@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 namespace UUIDNext.Tools;
 
 /// <summary>
-/// Call to .NET's RandomNumberGenerator has a significant overhead when filling small spans/array of a few bytes
+/// Call to .NET's RandomNumberGenerator has a significant overhead when filling small spans/arrays of a few bytes
 /// The goal of this class is to generate random numbers in larger batch to reduce the number of calls to RandomNumberGenerator
 /// </summary>
 /// <param name="batchSize"></param>

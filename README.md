@@ -51,6 +51,7 @@ To sum up, you should use UUIDNext if you're in one of these situations:
 ## But wait, there's more !
 
 If you have some special needs, the [UuidToolkit class](https://github.com/mareek/UUIDNext/blob/main/Doc/uuidnext.tools.uuidtoolkit.md) offers a variety of helper methods To create custom UUIDs.
+
 If you want to retrieve some information from a UUID like its version or the date when it as created, check the [UuidDecoder class](https://github.com/mareek/UUIDNext/blob/master/Doc/uuidnext.tools.uuiddecoder.md).
 
 ## Resources
