@@ -82,10 +82,11 @@ public static class UuidToolkit
     internal static Guid CreateUuidFromName(Guid namespaceId, string name, HashAlgorithm hashAlgorithm, byte version)
     {
         //Convert the name to a canonical sequence of octets (as defined by the standards or conventions of its name space);
-        var utf8NameByteCount = Encoding.UTF8.GetByteCount(name.Normalize(NormalizationForm.FormC));
+        var normalizedName = name.Normalize(NormalizationForm.FormC);
+        var utf8NameByteCount = Encoding.UTF8.GetByteCount(normalizedName);
 #if NETSTANDARD2_0
         byte[] utf8NameBytes = new byte[utf8NameByteCount];
-        Encoding.UTF8.GetBytes(name, 0, name.Length, utf8NameBytes, 0);
+        Encoding.UTF8.GetBytes(normalizedName, 0, normalizedName.Length, utf8NameBytes, 0);
 
         //put the name space ID in network byte order.
         Span<byte> namespaceBytes = stackalloc byte[16];
@@ -102,7 +103,7 @@ public static class UuidToolkit
         return CreateGuidFromBigEndianBytes(hash.AsSpan(0, 16), version);
 #else
         Span<byte> utf8NameBytes = (utf8NameByteCount > 256) ? new byte[utf8NameByteCount] : stackalloc byte[utf8NameByteCount];
-        Encoding.UTF8.GetBytes(name, utf8NameBytes);
+        Encoding.UTF8.GetBytes(normalizedName, utf8NameBytes);
 
         //put the name space ID in network byte order.
         Span<byte> namespaceBytes = stackalloc byte[16];

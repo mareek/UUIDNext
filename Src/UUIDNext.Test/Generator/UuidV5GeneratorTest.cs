@@ -35,5 +35,16 @@ namespace UUIDNext.Test.Generator
             UuidTestHelper.CheckVersionAndVariant(generator.New(namespaceId1, UuidTestHelper.LoremIpsum), 5);
             UuidTestHelper.CheckVersionAndVariant(generator.New(namespaceId2, poetry), 5);
         }
+
+        [Fact]
+        public void UuidV5MustHandleNotNormalizedString()
+        {
+            Guid namespaceId = Guid.NewGuid();
+
+            const string poetry = "й";
+            UuidV5Generator generator = new();
+            var uuidv5 = generator.New(namespaceId, poetry);
+            UuidTestHelper.CheckVersionAndVariant(generator.New(namespaceId, poetry), 5);
+        }
     }
 }
