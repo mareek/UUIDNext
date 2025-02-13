@@ -1,5 +1,9 @@
 # Version History
 
+## 4.1.1 (2025-02-13)
+
+* Fixed a crash on name based UUID (UUIDv5) on some inputs
+
 ## 4.1.0 (2025-01-26)
 
 * Improved random number generation performance. UUID V7 generation is now 1.7x faster, UUID V4 is 3x faster
