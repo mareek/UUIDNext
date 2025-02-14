@@ -2,7 +2,7 @@
 
 ## 4.1.1 (2025-02-13)
 
-* Fixed a crash on name based UUID (UUIDv5) on some inputs (see #31)
+* Fixed a crash on name based UUID (UUIDv5) on some inputs (see [#31](https://github.com/mareek/UUIDNext/pull/31))
 
 ## 4.1.0 (2025-01-26)
 
