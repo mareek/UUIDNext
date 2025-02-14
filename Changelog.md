@@ -2,7 +2,7 @@
 
 ## 4.1.1 (2025-02-13)
 
-* Fixed a crash on name based UUID (UUIDv5) on some inputs
+* Fixed a crash on name based UUID (UUIDv5) on some inputs (see #31)
 
 ## 4.1.0 (2025-01-26)
 
