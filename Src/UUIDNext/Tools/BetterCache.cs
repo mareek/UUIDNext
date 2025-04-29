@@ -108,7 +108,7 @@ internal class BetterCache<TKey, TValue>(int capacity)
         _firstIndex = index;
     }
 
-    private struct ListItem(int previousIndex, TKey key, TValue value, int nextIndex)
+    private readonly struct ListItem(int previousIndex, TKey key, TValue value, int nextIndex)
     {
         public int PreviousIndex { get; } = previousIndex;
         public TKey Key { get; } = key;

@@ -24,44 +24,42 @@ namespace UUIDNext.Test.DatabaseSupport
         [Fact]
         public void TestSQLServerOnLocalDb()
         {
-            using (var connection = new SqlConnection("Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;"))
+            using var connection = new SqlConnection("Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;");
+            try
             {
-                try
+                connection.Open();
+            }
+            catch
+            {
+                // localdb is not available on this computer
+                return;
+            }
+
+            try
+            {
+                ExecuteNonQuery(connection, $"CREATE DATABASE {databaseName};");
+
+                ExecuteNonQuery(connection, DatabaseTestHelper.GenerateTableCreationQuery(tableName, "int", "uniqueIdentifier"));
+
+                var generator = new UuidV8SqlServerGenerator();
+                var insertCommand = connection.CreateCommand();
+                InitInsertCommand(insertCommand, UuidTestHelper.GetDatabaseTestSet(generator, 10).ToArray());
+                insertCommand.ExecuteNonQuery();
+
+                var selectCommand = connection.CreateCommand();
+                selectCommand.CommandText = @$"SELECT * FROM {tableName} ORDER BY UUID;";
+
+                using var reader = selectCommand.ExecuteReader();
+                int previousOrder = int.MinValue;
+                while (reader.Read())
                 {
-                    connection.Open();
+                    var expectedOrder = reader.GetInt32(0);
+                    Check.That(expectedOrder).IsStrictlyGreaterThan(previousOrder);
                 }
-                catch
-                {
-                    // localdb is not available on this computer
-                    return;
-                }
-
-                try
-                {
-                    ExecuteNonQuery(connection, $"CREATE DATABASE {databaseName};");
-
-                    ExecuteNonQuery(connection, DatabaseTestHelper.GenerateTableCreationQuery(tableName, "int", "uniqueIdentifier"));
-
-                    var generator = new UuidV8SqlServerGenerator();
-                    var insertCommand = connection.CreateCommand();
-                    InitInsertCommand(insertCommand, UuidTestHelper.GetDatabaseTestSet(generator, 10).ToArray());
-                    insertCommand.ExecuteNonQuery();
-
-                    var selectCommand = connection.CreateCommand();
-                    selectCommand.CommandText = @$"SELECT * FROM {tableName} ORDER BY UUID;";
-
-                    using var reader = selectCommand.ExecuteReader();
-                    int previousOrder = int.MinValue;
-                    while (reader.Read())
-                    {
-                        var expectedOrder = reader.GetInt32(0);
-                        Check.That(expectedOrder).IsStrictlyGreaterThan(previousOrder);
-                    }
-                }
-                finally
-                {
-                    ExecuteNonQuery(connection, $"DROP DATABASE {databaseName};");
-                }
+            }
+            finally
+            {
+                ExecuteNonQuery(connection, $"DROP DATABASE {databaseName};");
             }
         }
 

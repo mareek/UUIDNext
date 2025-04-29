@@ -23,7 +23,7 @@ internal class UuidV7FromSpecificDateGenerator(int cacheSize = 1024)
 {
     private const ushort SequenceMaxValue = 0b1111_1111_1111;
 
-    private BetterCache<long, ushort> _sequenceByTimestamp = new(cacheSize);
+    private readonly BetterCache<long, ushort> _sequenceByTimestamp = new(cacheSize);
 
     /// <summary>
     /// Create a UUID version 7 where the timestamp part represent the given date

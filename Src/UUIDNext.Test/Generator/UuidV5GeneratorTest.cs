@@ -44,7 +44,7 @@ namespace UUIDNext.Test.Generator
             const string poetry = "й";
             UuidV5Generator generator = new();
             var uuidv5 = generator.New(namespaceId, poetry);
-            UuidTestHelper.CheckVersionAndVariant(generator.New(namespaceId, poetry), 5);
+            UuidTestHelper.CheckVersionAndVariant(uuidv5, 5);
         }
     }
 }
