@@ -7,8 +7,8 @@ switch (firstArg)
     case "bench":
         BenchmarkRunner.Run<UuidBench>();
         break;
-    case "qdbench":
-        BenchmarkRunner.Run<QDCacheBench>();
+    case "cachebench":
+        BenchmarkRunner.Run<CacheBench>();
         break;
     case "load":
         LoadTester.LaunchFromCommandLine(args);

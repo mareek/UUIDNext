@@ -4,13 +4,13 @@ using Xunit;
 
 namespace UUIDNext.Test.Tools;
 
-public class QDCacheTest
+public class BetterCacheTest
 {
     [Fact]
     public void EnsureBasicCacheWorks()
     {
         int factoryCount = 0;
-        QDCache<string, int> cache = new(5);
+        BetterCache<string, int> cache = new(5);
 
         for (int i = 0; i < 10; i++)
         {
@@ -25,7 +25,7 @@ public class QDCacheTest
     public void EnsureCacheWorksWithOverflow()
     {
         int factoryCount = 0;
-        QDCache<string, int> cache = new(5);
+        BetterCache<string, int> cache = new(5);
 
         for (int i = 0; i < 10; i++)
         {
@@ -41,7 +41,7 @@ public class QDCacheTest
     [Fact]
     public void EnsureAddOrUpdateMethodWorks()
     {
-        QDCache<string, int> cache = new(5);
+        BetterCache<string, int> cache = new(5);
 
         for (int i = 0; i < 10; i++)
         {

@@ -3,10 +3,9 @@
 namespace UUIDNext.Benchmarks;
 
 [MemoryDiagnoser(false)]
-public class QDCacheBench
+public class CacheBench
 {
-
-    [Params(128, 256, 512, 1024, 2048, 4096, 10_000)]
+    [Params(128, 256, 512, 1024, 2048, 4096, 8192)]
     public int CacheSize { get; set; }
 
     [Benchmark]

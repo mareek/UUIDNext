@@ -7,6 +7,9 @@ internal class Doc
 UUIDNext.Benchmarks bench
     Run benchmarkDotnet on UUIDNext
 
+UUIDNext.Benchmarks cachebench
+    Run benchmarkDotnet on the cache used by UUIDNext For specific date UUIDV7 generation
+
 UUIDNext.Benchmarks load [<options>]
     Run a load test of UUID Generation to ease the use of a profiler
 

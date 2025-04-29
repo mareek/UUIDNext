@@ -16,14 +16,14 @@ namespace UUIDNext.Generator;
 /// The first point implies that there shouldn't be overflow preventing mechanism like in UuidV7Generator. The second
 /// point implies that we should keep track of the monotonicity of multiple timestamps in parallel. The third point 
 /// implies that the number of timestamps we keep track of should be limited.
-/// After some benchmarks, I chose a cache size of 256 entries. The cache has a memory footprint of only a few KB and 
-/// has a reasonable worst case performance
+/// After some benchmarks, I chose a cache size of 256 entries. The cache has a memory footprint of only a few 
+/// dozen KB and has a reasonable worst case performance
 /// </remarks>
-internal class UuidV7FromSpecificDateGenerator(int cacheSize = 256)
+internal class UuidV7FromSpecificDateGenerator(int cacheSize = 1024)
 {
     private const ushort SequenceMaxValue = 0b1111_1111_1111;
 
-    private QDCache<long, ushort> _sequenceByTimestamp = new(cacheSize);
+    private BetterCache<long, ushort> _sequenceByTimestamp = new(cacheSize);
 
     /// <summary>
     /// Create a UUID version 7 where the timestamp part represent the given date

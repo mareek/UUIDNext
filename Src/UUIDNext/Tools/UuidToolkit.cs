@@ -10,7 +10,10 @@ namespace UUIDNext.Tools;
 /// </summary>
 public static class UuidToolkit
 {
-    private static readonly UuidV7FromSpecificDateGenerator _v7Generator = new();
+    // UuidV7FromSpecificDateGenerator has a footprint of ~50KB so we decalre it as Lazy so that it
+    // only impacts the consumers of the feature
+    private static readonly Lazy<UuidV7FromSpecificDateGenerator> _lazyV7Generator = new(() => new());
+    private static UuidV7FromSpecificDateGenerator V7Generator => _lazyV7Generator.Value;
 
     /// <summary>
     /// Create new UUID version 8 with the provided bytes with the variant and version bits set
@@ -190,6 +193,6 @@ public static class UuidToolkit
         if (Math.Abs(date.UtcTicks - now.UtcTicks) < tickThreshold)
             return Uuid.NewSequential();
 
-        return _v7Generator.New(date);
+        return V7Generator.New(date);
     }
 }
