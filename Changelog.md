@@ -1,5 +1,9 @@
 # Version History
 
+## 4.1.2 (2025-04-29)
+
+* Improved performance for UuidToolkit.CreateUuidV7FromSpecificDate
+
 ## 4.1.1 (2025-02-13)
 
 * Fixed a crash on name based UUID (UUIDv5) on some inputs (see [#31](https://github.com/mareek/UUIDNext/pull/31))
