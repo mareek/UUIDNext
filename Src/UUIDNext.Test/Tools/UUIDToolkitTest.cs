@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Security.Cryptography;
 using NFluent;
 using UUIDNext.Tools;
@@ -44,7 +43,7 @@ public class UUIDToolkitTest
     public void TestCreateUuidFromBigEndianBytes()
     {
         Span<byte> bytes = stackalloc byte[16];
-        
+
         for (int i = 0; i < 16; i++)
             bytes[i] = 0;
         var nilV8Uuid = UuidToolkit.CreateGuidFromBigEndianBytes(bytes);

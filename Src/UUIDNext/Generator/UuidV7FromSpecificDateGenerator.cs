@@ -16,50 +16,28 @@ namespace UUIDNext.Generator;
 /// The first point implies that there shouldn't be overflow preventing mechanism like in UuidV7Generator. The second
 /// point implies that we should keep track of the monotonicity of multiple timestamps in parallel. The third point 
 /// implies that the number of timestamps we keep track of should be limited.
-/// After some benchmarks, I chose a cache size of 256 entries. The cache has a memory footprint of only a few 
+/// After some benchmarks, I chose a cache size of 1024 entries. The cache has a memory footprint of only a few 
 /// dozen KB and has a reasonable worst case performance
 /// </remarks>
 internal class UuidV7FromSpecificDateGenerator(int cacheSize = 1024)
 {
     private const ushort SequenceMaxValue = 0b1111_1111_1111;
 
-    private readonly BetterCache<long, ushort> _sequenceByTimestamp = new(cacheSize);
+    private readonly SequenceManager _sequenceManager = new(SequenceMaxValue, cacheSize);
 
     /// <summary>
     /// Create a UUID version 7 where the timestamp part represent the given date
     /// </summary>
-    /// <param name="date">The date that will provide the timestamp par of the UUID</param>
+    /// <param name="date">The date that will provide the timestamp part of the UUID</param>
     /// <returns>A UUID version 7</returns>
     public Guid New(DateTimeOffset date)
     {
         long timestamp = date.ToUnixTimeMilliseconds();
-        if (timestamp < 0) 
-            throw new ArgumentOutOfRangeException(nameof(date), "Dates before 1970-01-01 are not supported");
-
-        ushort sequence = ComputeSequence(timestamp);
+        ushort sequence = _sequenceManager.ComputeSequence(timestamp);
 
         Span<byte> sequenceBytes = stackalloc byte[2];
         BinaryPrimitives.TryWriteUInt16BigEndian(sequenceBytes, sequence);
 
         return UuidToolkit.CreateUuidV7(timestamp, sequenceBytes);
-    }
-
-    private ushort ComputeSequence(long timestamp)
-    {
-        return _sequenceByTimestamp.AddOrUpdate(timestamp, GetSequenceSeed, UpdateSequence);
-
-        static ushort UpdateSequence(long _, ushort sequence) 
-            => sequence < SequenceMaxValue ? (ushort)(sequence + 1) 
-                                           : GetSequenceSeed(default);
-
-        static ushort GetSequenceSeed(long _)
-        {
-            // following section 6.2 on "Fixed-Length Dedicated Counter Seeding", the initial value of the sequence is randomized
-            Span<byte> buffer = stackalloc byte[2];
-            RandomNumberGeneratorPolyfill.Fill(buffer);
-            // Setting the highest bit to 0 mitigate the risk of a sequence overflow (see section 6.2)
-            buffer[0] &= 0b0000_0111;
-            return BinaryPrimitives.ReadUInt16BigEndian(buffer);
-        }
     }
 }
