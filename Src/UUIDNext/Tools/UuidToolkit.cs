@@ -195,4 +195,41 @@ public static class UuidToolkit
 
         return V7Generator.New(date);
     }
+
+    internal static Guid CreateSequentialUuidForSqlServer(long timestamp, Span<byte> followingBytes)
+    {
+        if (followingBytes.Length > 10)
+            throw new ArgumentException($"argument {nameof(followingBytes)} should have a size of 10 bytes or less", nameof(followingBytes));
+
+        Span<byte> buffer = stackalloc byte[16];
+
+        // We only use 48 bits of the timestamp so we can write it on 64 bits and then
+        // erase the 16 most significant bits with the sequence to save some buffer allocation and copy
+        BinaryPrimitives.TryWriteInt64BigEndian(buffer.Slice(8, 8), timestamp);
+
+        // write the data provided by the caller
+        int randomOffset = 0;
+        Span<byte> sequenceBytes = buffer.Slice(8, 2);
+        if (followingBytes.Length == 0)
+            RandomNumberGeneratorPolyfill.Fill(buffer.Slice(8, 2));
+        if (followingBytes.Length == 1)
+        {
+            sequenceBytes[0] = followingBytes[0];
+            RandomNumberGeneratorPolyfill.Fill(sequenceBytes.Slice(1));
+        }
+        else
+        {
+            randomOffset = followingBytes.Length - 2;
+
+            //write the sequence
+            followingBytes.Slice(0, 2).CopyTo(sequenceBytes);
+
+            Span<byte> randBytes = buffer.Slice(0, randomOffset);
+            followingBytes.Slice(2).CopyTo(randBytes);
+        }
+
+        RandomNumberGeneratorPolyfill.Fill(buffer.Slice(randomOffset, 8 - randomOffset));
+
+        return CreateGuidFromBigEndianBytes(buffer, 8);
+    }
 }

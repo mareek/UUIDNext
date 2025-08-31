@@ -34,15 +34,10 @@ internal class UuidV8SqlServerGenerator
          */
 
         var (timestamp, sequence) = _monotonicityHandler.GetTimestampAndSequence(date);
+        
+        Span<byte> sequenceBytes = stackalloc byte[2];
+        BinaryPrimitives.TryWriteUInt16BigEndian(sequenceBytes, sequence);
 
-        Span<byte> bytes = stackalloc byte[16];
-        // We only use 48 bits of the timestamp so we can write it on 64 bits and then
-        // erase the 16 most significant bits with the sequence to save some buffer allocation and copy
-        BinaryPrimitives.TryWriteInt64BigEndian(bytes.Slice(8, 8), timestamp);
-        BinaryPrimitives.TryWriteUInt16BigEndian(bytes.Slice(8, 2), sequence);
-
-        RandomNumberGeneratorPolyfill.Fill(bytes.Slice(0, 8));
-
-        return UuidToolkit.CreateGuidFromBigEndianBytes(bytes, 8);
+        return UuidToolkit.CreateSequentialUuidForSqlServer(timestamp, sequenceBytes);
     }
 }
