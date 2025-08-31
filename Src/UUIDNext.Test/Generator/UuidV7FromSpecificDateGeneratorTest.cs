@@ -8,9 +8,21 @@ using Xunit;
 
 namespace UUIDNext.Test.Generator;
 
-public class UuidV7FromSpecificDateGeneratorTest
+public class UuidV7FromSpecificDateGeneratorTest : UuidTimestampGeneratorBaseTest
 {
     GuidComparer _comparer = new();
+
+    protected override int SequenceBitSize => 12;
+
+    protected override byte Version => 7;
+
+    protected override object NewGenerator() => new UuidV7FromSpecificDateGenerator();
+
+    protected override Guid NewUuid(object generator) 
+        => ((UuidV7FromSpecificDateGenerator)generator).New(DateTimeOffset.Now);
+
+    protected override Guid NewUuid(object generator, DateTimeOffset date)
+        => ((UuidV7FromSpecificDateGenerator)generator).New(date);
 
     [Theory]
     [MemberData(nameof(InvalidDates))]

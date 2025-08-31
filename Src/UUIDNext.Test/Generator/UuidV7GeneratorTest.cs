@@ -9,7 +9,7 @@ using Xunit;
 
 namespace UUIDNext.Test.Generator
 {
-    public class UuidV7GeneratorTest : UuidTimestampGeneratorBaseTest
+    public class UuidV7GeneratorTest : UuidTimestampWithOverflowGeneratorBaseTest
     {
         protected override byte Version => 7;
 
