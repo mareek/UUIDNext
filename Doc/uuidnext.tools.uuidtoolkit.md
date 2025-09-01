@@ -71,6 +71,22 @@ Here is the bit layout of the UUID Version 7 created
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
+### **CreateSequentialUuidForSqlServerFromSpecificDate(DateTimeOffset)**
+
+Create a new sequential UUID Optimised for SQL Server with the given date as timestamp
+
+```csharp
+public static Guid CreateSequentialUuidForSqlServerFromSpecificDate(DateTimeOffset date)
+```
+
+#### Parameters
+
+`date` [DateTimeOffset](https://docs.microsoft.com/en-us/dotnet/api/system.datetimeoffset)<br>
+
+#### Returns
+
+[Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid)<br>
+
 ### **CreateGuidFromBigEndianBytes(Span&lt;Byte&gt;)**
 
 Create new UUID version 8 with the provided bytes with the variant and version bits set

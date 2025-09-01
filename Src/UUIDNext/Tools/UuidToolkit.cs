@@ -13,7 +13,10 @@ public static class UuidToolkit
     // UuidV7FromSpecificDateGenerator has a footprint of ~50KB so we decalre it as Lazy so that it
     // only impacts the consumers of the feature
     private static readonly Lazy<UuidV7FromSpecificDateGenerator> _lazyV7Generator = new(() => new());
-    private static UuidV7FromSpecificDateGenerator V7Generator => _lazyV7Generator.Value;
+
+    // UuidV8SqlServerFromSpecificDateGenerator has a footprint of ~50KB so we decalre it as Lazy
+    // so that it only impacts the consumers of the feature
+    private static readonly Lazy<UuidV8SqlServerFromSpecificDateGenerator> _lazyV8Generator = new(() => new());
 
     /// <summary>
     /// Create new UUID version 8 with the provided bytes with the variant and version bits set
@@ -184,15 +187,79 @@ public static class UuidToolkit
         // wrong method so we're forwarding the call to Uuid.NewSequential to keep consistency accross 
         // different calls
 
+        if (IsCloseToNow(date))
+            return Uuid.NewSequential();
+
+        return _lazyV7Generator.Value.New(date);
+    }
+
+    internal static Guid CreateSequentialUuidForSqlServer(long timestamp, Span<byte> followingBytes)
+    {
+        if (followingBytes.Length > 10)
+            throw new ArgumentException($"argument {nameof(followingBytes)} should have a size of 10 bytes or less", nameof(followingBytes));
+
+        Span<byte> buffer = stackalloc byte[16];
+
+        // We only use 48 bits of the timestamp so we can write it on 64 bits and then
+        // erase the 16 most significant bits with the sequence to save some buffer allocation and copy
+        BinaryPrimitives.TryWriteInt64BigEndian(buffer.Slice(8, 8), timestamp);
+
+        // write the data provided by the caller
+        int randomOffset = 0;
+        Span<byte> sequenceBytes = buffer.Slice(8, 2);
+        if (followingBytes.Length == 0)
+            RandomNumberGeneratorPolyfill.Fill(buffer.Slice(8, 2));
+        if (followingBytes.Length == 1)
+        {
+            sequenceBytes[0] = followingBytes[0];
+            RandomNumberGeneratorPolyfill.Fill(sequenceBytes.Slice(1));
+        }
+        else
+        {
+            randomOffset = followingBytes.Length - 2;
+
+            //write the sequence
+            followingBytes.Slice(0, 2).CopyTo(sequenceBytes);
+
+            Span<byte> randBytes = buffer.Slice(0, randomOffset);
+            followingBytes.Slice(2).CopyTo(randBytes);
+        }
+
+        RandomNumberGeneratorPolyfill.Fill(buffer.Slice(randomOffset, 8 - randomOffset));
+
+        return CreateGuidFromBigEndianBytes(buffer, 8);
+    }
+
+    /// <summary>
+    /// Create a new sequential UUID Optimised for SQL Server with the given date as timestamp 
+    /// </summary>
+    public static Guid CreateSequentialUuidForSqlServerFromSpecificDate(DateTimeOffset date)
+    {
+        // if the date argument is equal or close enough to DateTimeOffset.UtcNow we consider that 
+        // the API consumer just wanted a sequential UUID Optimised for SQL Server without specifying
+        // the date and called the wrong method so we're forwarding the call to Uuid.NewSequential
+        // to keep consistency accross different calls
+
+        if (IsCloseToNow(date))
+            return Uuid.NewDatabaseFriendly(Database.SqlServer);
+
+        return _lazyV8Generator.Value.New(date);
+    }
+
+    /// <summary>
+    /// returns true if the date is close to DateTimeOffset.UtcNow, false otherwise
+    /// </summary>
+    private static bool IsCloseToNow(DateTimeOffset date)
+    {
         const long tickThreshold = 10; // 1 µs
         var now = DateTimeOffset.UtcNow;
 
         if (date.ToUnixTimeMilliseconds() == now.ToUnixTimeMilliseconds())
-            return Uuid.NewSequential();
+            return true;
 
         if (Math.Abs(date.UtcTicks - now.UtcTicks) < tickThreshold)
-            return Uuid.NewSequential();
+            return true;
 
-        return V7Generator.New(date);
+        return false;
     }
 }

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace UUIDNext.Test.Generator
 {
-    public class UuidV8SqlServerGeneratorTest : UuidTimestampGeneratorBaseTest
+    public class UuidV8SqlServerGeneratorTest : UuidTimestampWithOverflowGeneratorBaseTest
     {
         protected override byte Version => 8;
 

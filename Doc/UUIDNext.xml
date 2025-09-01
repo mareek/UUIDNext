@@ -39,6 +39,49 @@
             This class implement the "Fixed Bit-Length Dedicated Counter" described in the section 6.2 of the RFC
             </summary>
         </member>
+        <member name="T:UUIDNext.Generator.UuidFromSpecificDateGeneratorBase">
+            <summary>
+            Generate a UUID with a timestamp given an arbitrary date
+            </summary>
+            <remarks>
+            To give the best possible UUID given an arbitrary date we can't rely on UuidV7Generator because it has some 
+            mechanism to ensure that every UUID generated is greater then the previous one.
+            This generator try to find the best compromise between these three pillars:
+            * The timestamp part should always represent the date parameter. period.
+            * We should stay as close as possible to the "spirit" of UUID V7 and provide incresing value for a given date
+            * This library should be as lightweight as possible
+            The first point implies that there shouldn't be overflow preventing mechanism like in UuidV7Generator. The second
+            point implies that we should keep track of the monotonicity of multiple timestamps in parallel. The third point 
+            implies that the number of timestamps we keep track of should be limited.
+            After some benchmarks, I chose a cache size of 1024 entries. The cache has a memory footprint of only a few 
+            dozen KB and has a reasonable worst case performance
+            </remarks>
+        </member>
+        <member name="M:UUIDNext.Generator.UuidFromSpecificDateGeneratorBase.#ctor(System.UInt16,System.Int32)">
+            <summary>
+            Generate a UUID with a timestamp given an arbitrary date
+            </summary>
+            <remarks>
+            To give the best possible UUID given an arbitrary date we can't rely on UuidV7Generator because it has some 
+            mechanism to ensure that every UUID generated is greater then the previous one.
+            This generator try to find the best compromise between these three pillars:
+            * The timestamp part should always represent the date parameter. period.
+            * We should stay as close as possible to the "spirit" of UUID V7 and provide incresing value for a given date
+            * This library should be as lightweight as possible
+            The first point implies that there shouldn't be overflow preventing mechanism like in UuidV7Generator. The second
+            point implies that we should keep track of the monotonicity of multiple timestamps in parallel. The third point 
+            implies that the number of timestamps we keep track of should be limited.
+            After some benchmarks, I chose a cache size of 1024 entries. The cache has a memory footprint of only a few 
+            dozen KB and has a reasonable worst case performance
+            </remarks>
+        </member>
+        <member name="M:UUIDNext.Generator.UuidFromSpecificDateGeneratorBase.New(System.DateTimeOffset)">
+            <summary>
+            Create a UUID version 7 where the timestamp part represent the given date
+            </summary>
+            <param name="date">The date that will provide the timestamp part of the UUID</param>
+            <returns>A UUID version 7</returns>
+        </member>
         <member name="T:UUIDNext.Generator.UuidV4Generator">
             <summary>
             Generate a UUID version 4 based on RFC 9562
@@ -53,48 +96,25 @@
             <summary>
             Generate a UUID version 7 given an arbitrary date
             </summary>
-            <remarks>
-            To give the best possible UUID given an arbitrary date we can't rely on UuidV7Generator because it has some 
-            mechanism to ensure that every UUID generated is greater then the previous one.
-            This generator try to find the best compromise between these three pillars:
-            * The timestamp part should always represent the date parameter. period.
-            * We should stay as close as possible to the "spirit" of UUID V7 and provide incresing value for a given date
-            * This library should be as lightweight as possible
-            The first point implies that there shouldn't be overflow preventing mechanism like in UuidV7Generator. The second
-            point implies that we should keep track of the monotonicity of multiple timestamps in parallel. The third point 
-            implies that the number of timestamps we keep track of should be limited.
-            After some benchmarks, I chose a cache size of 256 entries. The cache has a memory footprint of only a few KB and 
-            has a reasonable worst case performance
-            </remarks>
         </member>
         <member name="M:UUIDNext.Generator.UuidV7FromSpecificDateGenerator.#ctor(System.Int32)">
             <summary>
             Generate a UUID version 7 given an arbitrary date
             </summary>
-            <remarks>
-            To give the best possible UUID given an arbitrary date we can't rely on UuidV7Generator because it has some 
-            mechanism to ensure that every UUID generated is greater then the previous one.
-            This generator try to find the best compromise between these three pillars:
-            * The timestamp part should always represent the date parameter. period.
-            * We should stay as close as possible to the "spirit" of UUID V7 and provide incresing value for a given date
-            * This library should be as lightweight as possible
-            The first point implies that there shouldn't be overflow preventing mechanism like in UuidV7Generator. The second
-            point implies that we should keep track of the monotonicity of multiple timestamps in parallel. The third point 
-            implies that the number of timestamps we keep track of should be limited.
-            After some benchmarks, I chose a cache size of 256 entries. The cache has a memory footprint of only a few KB and 
-            has a reasonable worst case performance
-            </remarks>
-        </member>
-        <member name="M:UUIDNext.Generator.UuidV7FromSpecificDateGenerator.New(System.DateTimeOffset)">
-            <summary>
-            Create a UUID version 7 where the timestamp part represent the given date
-            </summary>
-            <param name="date">The date that will provide the timestamp par of the UUID</param>
-            <returns>A UUID version 7</returns>
         </member>
         <member name="T:UUIDNext.Generator.UuidV7Generator">
             <summary>
             Generate a UUID version 7 based on RFC 9562
+            </summary>
+        </member>
+        <member name="T:UUIDNext.Generator.UuidV8SqlServerFromSpecificDateGenerator">
+            <summary>
+            Generate a UUID version 8 optimised for SQL Server given an arbitrary date
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Generator.UuidV8SqlServerFromSpecificDateGenerator.#ctor(System.Int32)">
+            <summary>
+            Generate a UUID version 8 optimised for SQL Server given an arbitrary date
             </summary>
         </member>
         <member name="T:UUIDNext.Generator.UuidV8SqlServerGenerator">
@@ -107,24 +127,14 @@
             when used in a uniqueidentifier typed column in SQL Sever
             </remarks>
         </member>
-        <member name="T:UUIDNext.GuidHelper">
+        <member name="T:UUIDNext.Tools.BetterCache`2">
             <summary>
-            Provite a set of static and extensions methods that brings .NET8+ features to .NET Standard 2.1 and .NET framework
+            A better cache
             </summary>
         </member>
-        <member name="M:UUIDNext.GuidHelper.FromBytes(System.Span{System.Byte},System.Boolean)">
+        <member name="M:UUIDNext.Tools.BetterCache`2.#ctor(System.Int32)">
             <summary>
-            Creates a new guid from a span of bytes.
-            </summary>
-        </member>
-        <member name="M:UUIDNext.GuidHelper.ToByteArray(System.Guid,System.Boolean)">
-            <summary>
-            Returns an unsigned byte array containing the GUID.
-            </summary>
-        </member>
-        <member name="M:UUIDNext.GuidHelper.TryWriteBytes(System.Guid,System.Span{System.Byte},System.Boolean,System.Int32@)">
-            <summary>
-            Returns whether bytes are successfully written to given span.
+            A better cache
             </summary>
         </member>
         <member name="T:UUIDNext.Tools.GuidComparer">
@@ -137,15 +147,19 @@
             Compares two Guids and returns an indication of their relative sort order.
             </summary>
         </member>
-        <member name="T:UUIDNext.Tools.QDCache`2">
+        <member name="T:UUIDNext.Tools.PrefetchedRandomNumberGenerator">
             <summary>
-            A quick and dirty cache
+            Call to .NET's RandomNumberGenerator has a significant overhead when filling small spans/arrays of a few bytes
+            The goal of this class is to generate random numbers in larger batch to reduce the number of calls to RandomNumberGenerator
             </summary>
+            <param name="batchSize"></param>
         </member>
-        <member name="M:UUIDNext.Tools.QDCache`2.#ctor(System.Int32)">
+        <member name="M:UUIDNext.Tools.PrefetchedRandomNumberGenerator.#ctor(System.Int32)">
             <summary>
-            A quick and dirty cache
+            Call to .NET's RandomNumberGenerator has a significant overhead when filling small spans/arrays of a few bytes
+            The goal of this class is to generate random numbers in larger batch to reduce the number of calls to RandomNumberGenerator
             </summary>
+            <param name="batchSize"></param>
         </member>
         <member name="T:UUIDNext.Tools.UuidDecoder">
             <summary>
@@ -241,6 +255,16 @@
         <member name="M:UUIDNext.Tools.UuidToolkit.CreateUuidV7FromSpecificDate(System.DateTimeOffset)">
             <summary>
             Create a new UUID version 7 with the given date as timestamp 
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Tools.UuidToolkit.CreateSequentialUuidForSqlServerFromSpecificDate(System.DateTimeOffset)">
+            <summary>
+            Create a new sequential UUID Optimised for SQL Server with the given date as timestamp 
+            </summary>
+        </member>
+        <member name="M:UUIDNext.Tools.UuidToolkit.IsCloseToNow(System.DateTimeOffset)">
+            <summary>
+            returns true if the date is close to DateTimeOffset.UtcNow, false otherwise
             </summary>
         </member>
         <member name="T:UUIDNext.Uuid">
