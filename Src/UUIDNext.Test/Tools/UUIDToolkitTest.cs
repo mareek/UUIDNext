@@ -8,19 +8,20 @@ namespace UUIDNext.Test.Tools;
 
 public class UUIDToolkitTest
 {
-    GuidComparer _comparer = new();
-
     [Fact]
     public void CheckThatUuidV7FromCurrentDateTimeIsCoherentWithNewSequential()
     {
         const int testCount = 10_000;
+
+        GuidComparer comparer = new();
+
         int errorCount = 0;
         for (int i = 0; i < testCount; i++)
         {
             var uuidFromSequential = Uuid.NewSequential();
             var uuidFromToolkit = UuidToolkit.CreateUuidV7FromSpecificDate(DateTimeOffset.Now);
 
-            if (0 <= _comparer.Compare(uuidFromSequential, uuidFromToolkit))
+            if (0 <= comparer.Compare(uuidFromSequential, uuidFromToolkit))
                 errorCount += 1;
         }
 
@@ -31,12 +32,48 @@ public class UUIDToolkitTest
     [Fact]
     public void CheckThatUuidV7DateOrderIsRespected()
     {
+        GuidComparer comparer = new();
+
         var uuidBeforeNow = UuidToolkit.CreateUuidV7FromSpecificDate(DateTimeOffset.UtcNow.AddMilliseconds(-1));
         var uuidNow = Uuid.NewSequential();
         var uuidAfterNow = UuidToolkit.CreateUuidV7FromSpecificDate(DateTimeOffset.UtcNow.AddMilliseconds(1));
 
-        Check.That(_comparer.Compare(uuidBeforeNow, uuidNow)).IsStrictlyNegative();
-        Check.That(_comparer.Compare(uuidNow, uuidAfterNow)).IsStrictlyNegative();
+        Check.That(comparer.Compare(uuidBeforeNow, uuidNow)).IsStrictlyNegative();
+        Check.That(comparer.Compare(uuidNow, uuidAfterNow)).IsStrictlyNegative();
+    }
+
+    [Fact]
+    public void CheckThatUuidV8FromCurrentDateTimeIsCoherentWithNewDatabaseFriendly()
+    {
+        const int testCount = 10_000;
+
+        UuidWithTimestampComparer comparer = new();
+
+        int errorCount = 0;
+        for (int i = 0; i < testCount; i++)
+        {
+            var uuidFromSequential = Uuid.NewDatabaseFriendly(Database.SqlServer);
+            var uuidFromToolkit = UuidToolkit.CreateSequentialUuidForSqlServerFromSpecificDate(DateTimeOffset.Now);
+
+            if (0 <= comparer.Compare(uuidFromSequential, uuidFromToolkit))
+                errorCount += 1;
+        }
+
+        // We check that 99.5% of the call get forwarded to Uuid.NewDatabaseFriendly(Database.SqlServer) as we can never reach 100% acuracy
+        Check.That(errorCount * 100.0 / testCount).IsStrictlyLessThan(0.5);
+    }
+
+    [Fact]
+    public void CheckThatUuidV8DateOrderIsRespected()
+    {
+        UuidWithTimestampComparer comparer = new();
+
+        var uuidBeforeNow = UuidToolkit.CreateSequentialUuidForSqlServerFromSpecificDate(DateTimeOffset.UtcNow.AddMilliseconds(-1));
+        var uuidNow = Uuid.NewSequential();
+        var uuidAfterNow = UuidToolkit.CreateSequentialUuidForSqlServerFromSpecificDate(DateTimeOffset.UtcNow.AddMilliseconds(1));
+
+        Check.That(comparer.Compare(uuidBeforeNow, uuidNow)).IsStrictlyNegative();
+        Check.That(comparer.Compare(uuidNow, uuidAfterNow)).IsStrictlyNegative();
     }
 
     [Fact]

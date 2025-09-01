@@ -13,7 +13,10 @@ public static class UuidToolkit
     // UuidV7FromSpecificDateGenerator has a footprint of ~50KB so we decalre it as Lazy so that it
     // only impacts the consumers of the feature
     private static readonly Lazy<UuidV7FromSpecificDateGenerator> _lazyV7Generator = new(() => new());
-    private static UuidV7FromSpecificDateGenerator V7Generator => _lazyV7Generator.Value;
+
+    // UuidV8SqlServerFromSpecificDateGenerator has a footprint of ~50KB so we decalre it as Lazy
+    // so that it only impacts the consumers of the feature
+    private static readonly Lazy<UuidV8SqlServerFromSpecificDateGenerator> _lazyV8Generator = new(() => new());
 
     /// <summary>
     /// Create new UUID version 8 with the provided bytes with the variant and version bits set
@@ -187,7 +190,7 @@ public static class UuidToolkit
         if (IsCloseToNow(date))
             return Uuid.NewSequential();
 
-        return V7Generator.New(date);
+        return _lazyV7Generator.Value.New(date);
     }
 
     internal static Guid CreateSequentialUuidForSqlServer(long timestamp, Span<byte> followingBytes)
@@ -225,6 +228,22 @@ public static class UuidToolkit
         RandomNumberGeneratorPolyfill.Fill(buffer.Slice(randomOffset, 8 - randomOffset));
 
         return CreateGuidFromBigEndianBytes(buffer, 8);
+    }
+
+    /// <summary>
+    /// Create a new sequential UUID Optimised for SQL Server with the given date as timestamp 
+    /// </summary>
+    public static Guid CreateSequentialUuidForSqlServerFromSpecificDate(DateTimeOffset date)
+    {
+        // if the date argument is equal or close enough to DateTimeOffset.UtcNow we consider that 
+        // the API consumer just wanted a sequential UUID Optimised for SQL Server without specifying
+        // the date and called the wrong method so we're forwarding the call to Uuid.NewSequential
+        // to keep consistency accross different calls
+
+        if (IsCloseToNow(date))
+            return Uuid.NewDatabaseFriendly(Database.SqlServer);
+
+        return _lazyV8Generator.Value.New(date);
     }
 
     /// <summary>
