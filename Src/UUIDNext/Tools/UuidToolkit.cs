@@ -184,13 +184,7 @@ public static class UuidToolkit
         // wrong method so we're forwarding the call to Uuid.NewSequential to keep consistency accross 
         // different calls
 
-        const long tickThreshold = 10; // 1 µs
-        var now = DateTimeOffset.UtcNow;
-
-        if (date.ToUnixTimeMilliseconds() == now.ToUnixTimeMilliseconds())
-            return Uuid.NewSequential();
-
-        if (Math.Abs(date.UtcTicks - now.UtcTicks) < tickThreshold)
+        if (IsCloseToNow(date))
             return Uuid.NewSequential();
 
         return V7Generator.New(date);
@@ -231,5 +225,22 @@ public static class UuidToolkit
         RandomNumberGeneratorPolyfill.Fill(buffer.Slice(randomOffset, 8 - randomOffset));
 
         return CreateGuidFromBigEndianBytes(buffer, 8);
+    }
+
+    /// <summary>
+    /// returns true if the date is close to DateTimeOffset.UtcNow, false otherwise
+    /// </summary>
+    private static bool IsCloseToNow(DateTimeOffset date)
+    {
+        const long tickThreshold = 10; // 1 µs
+        var now = DateTimeOffset.UtcNow;
+
+        if (date.ToUnixTimeMilliseconds() == now.ToUnixTimeMilliseconds())
+            return true;
+
+        if (Math.Abs(date.UtcTicks - now.UtcTicks) < tickThreshold)
+            return true;
+
+        return false;
     }
 }
