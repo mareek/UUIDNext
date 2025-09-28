@@ -36,7 +36,7 @@
 * Added PostgreSQL to the list of supported databases
 * Added Nil UUID
 
-## 2.0.0 (2022-01-09)
+## 2.0.0 (2023-01-09)
 
 * Added the ability to genereate UUID V8 taylored for Microsoft SQL Server
 * NewDatabaseFriendly requires a database parameter to genereate the best UUID for each database
