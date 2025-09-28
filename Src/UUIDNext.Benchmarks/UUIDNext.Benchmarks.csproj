@@ -5,7 +5,9 @@
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<LangVersion>10</LangVersion>
+	<LangVersion>12</LangVersion>
+	<SignAssembly>True</SignAssembly>
+	<AssemblyOriginatorKeyFile>..\UUIDNext.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
