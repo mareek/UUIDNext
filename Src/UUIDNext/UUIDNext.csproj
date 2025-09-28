@@ -25,6 +25,8 @@
 		<PackageIcon>Logo_128.png</PackageIcon>
 		<PackageReleaseNotes>See https://github.com/mareek/UUIDNext/blob/main/Changelog.md</PackageReleaseNotes>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>..\UUIDNext.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
@@ -37,8 +39,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="UUIDNext.Test" />
-		<InternalsVisibleTo Include="UUIDNext.Benchmarks" />
+		<InternalsVisibleTo Include="UUIDNext.Test" Key="002400000480000094000000060200000024000052534131000400000100010011fa1a41d08bbabfc2e15313c97b71f2cd6adb0d26e6e22867d2c869a966fafa16f23221bb491cb629dae4f335015b6c930d67a681a176425cfe07b326b84141cb96dea0323959e4f5b0f48704472dc5be543f33f6171b7d538031ae205bf95f013c96c91a2754ded0421f662c532a8d80b222166f59b95b28bc1db0714b42d0" />
+		<InternalsVisibleTo Include="UUIDNext.Benchmarks" Key="002400000480000094000000060200000024000052534131000400000100010011fa1a41d08bbabfc2e15313c97b71f2cd6adb0d26e6e22867d2c869a966fafa16f23221bb491cb629dae4f335015b6c930d67a681a176425cfe07b326b84141cb96dea0323959e4f5b0f48704472dc5be543f33f6171b7d538031ae205bf95f013c96c91a2754ded0421f662c532a8d80b222166f59b95b28bc1db0714b42d0" />
 	</ItemGroup>
 
 	<ItemGroup>
