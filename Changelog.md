@@ -1,5 +1,9 @@
 # Version History
 
+## 4.2.1 (2025-10-06)
+
+* Enabled strong naming + added source in nuget package
+
 ## 4.2.0 (2025-09-01)
 
 * Added a method to UuidToolkit to create a SQL Server GUID (v8) with a specific timestamp (see [#32](https://github.com/mareek/UUIDNext/issues/32))
