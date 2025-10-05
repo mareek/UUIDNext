@@ -18,6 +18,7 @@
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<IncludeSource>true</IncludeSource>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<Description>A fast and modern .NET library to generate UUID/GUID that are either sequential and database friendly (versions 7), name based (versions 5) or random (version 4).</Description>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
