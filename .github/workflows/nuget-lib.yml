@@ -6,11 +6,16 @@ defaults:
   run:
     working-directory: Src
 
+permissions:
+  id-token: write   # required for Nuget Trusted Publishing
+
 jobs:
   publish:
-
     runs-on: ubuntu-latest
-
+    
+    permissions:
+      id-token: write  # enable GitHub OIDC (OpenID Connect standard) token issuance for this job
+    
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
@@ -25,5 +30,13 @@ jobs:
       run: dotnet test -c Release --no-build --framework net8.0
     - name: Pack nugets
       run: dotnet pack "./UUIDNext/UUIDNext.csproj" -c Release --no-build --output .
+
+      # Get a short-lived NuGet API key
+    - name: NuGet login (OIDC → temp API key)
+      uses: NuGet/login@v1
+      id: login
+      with:
+          user: ${{ secrets.NUGET_USER }}
+
     - name: Push to NuGet
-      run: dotnet nuget push "UUIDNext.*.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "UUIDNext.*.nupkg" --api-key ${{steps.login.outputs.NUGET_API_KEY}} --skip-duplicate --source https://api.nuget.org/v3/index.json
