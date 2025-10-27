@@ -1,0 +1,29 @@
+name: Benchmark
+
+on: workflow_dispatch 
+
+defaults:
+  run:
+    working-directory: Src
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Run benchmark (net9.0)
+      run: dotnet run bench --framework net9.0 --configuration Release
+      working-directory: Src/UUIDNext.Benchmarks
