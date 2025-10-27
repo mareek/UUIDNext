@@ -1,13 +1,6 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+name: Benchmark
 
-name: Continuous integration
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: workflow_dispatch 
 
 permissions:
   contents: read
@@ -27,9 +20,13 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
+
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal --framework net8.0
+
+    - name: Run benchmark (net9.0)
+      run: dotnet run bench --framework net9.0 --configuration Release
+      working-directory: Src/UUIDNext.Benchmarks

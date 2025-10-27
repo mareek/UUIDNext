@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="UUIDNext.Benchmarks/UUIDNext.Benchmarks.csproj" />
+  <Project Path="UUIDNext.Cli/UUIDNext.Cli.csproj" />
+  <Project Path="UUIDNext.Test/UUIDNext.Test.csproj" />
+  <Project Path="UUIDNext/UUIDNext.csproj" />
+</Solution>
