@@ -2,6 +2,9 @@ name: Benchmark
 
 on: workflow_dispatch 
 
+permissions:
+  contents: read
+
 defaults:
   run:
     working-directory: Src
