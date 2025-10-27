@@ -87,44 +87,40 @@ public static class UuidToolkit
     /// </summary>
     internal static Guid CreateUuidFromName(Guid namespaceId, string name, HashAlgorithm hashAlgorithm, byte version)
     {
+        const int namespaceBytesCount = 16;
         //Convert the name to a canonical sequence of octets (as defined by the standards or conventions of its name space);
         var normalizedName = name.Normalize(NormalizationForm.FormC);
         var utf8NameByteCount = Encoding.UTF8.GetByteCount(normalizedName);
+        int bytesToHashCount = namespaceBytesCount + utf8NameByteCount;
 #if NETSTANDARD2_0
-        byte[] utf8NameBytes = new byte[utf8NameByteCount];
-        Encoding.UTF8.GetBytes(normalizedName, 0, normalizedName.Length, utf8NameBytes, 0);
+        byte[] bytesToHash = new byte[bytesToHashCount];
 
-        //put the name space ID in network byte order.
-        Span<byte> namespaceBytes = stackalloc byte[16];
+        //put the namespace ID in network byte order.
+        Span<byte> namespaceBytes = bytesToHash.AsSpan(0, namespaceBytesCount);
         namespaceId.TryWriteBytes(namespaceBytes, bigEndian: true, out _);
 
-        //Compute the hash of the name space ID concatenated with the name.
-        int bytesToHashCount = namespaceBytes.Length + utf8NameBytes.Length;
-        byte[] bytesToHash = new byte[bytesToHashCount];
-        namespaceBytes.CopyTo(bytesToHash);
-        utf8NameBytes.CopyTo(bytesToHash, namespaceBytes.Length);
+        Encoding.UTF8.GetBytes(normalizedName, 0, normalizedName.Length, bytesToHash, namespaceBytesCount);
 
+        //Compute the hash of the namespace ID concatenated with the name.
         var hash = hashAlgorithm.ComputeHash(bytesToHash);
 
         return CreateGuidFromBigEndianBytes(hash.AsSpan(0, 16), version);
 #else
-        Span<byte> utf8NameBytes = (utf8NameByteCount > 256) ? new byte[utf8NameByteCount] : stackalloc byte[utf8NameByteCount];
-        Encoding.UTF8.GetBytes(normalizedName, utf8NameBytes);
+        const int stackallocMaxSize = 512;
+        Span<byte> bytesToHash = (utf8NameByteCount > stackallocMaxSize) ? new byte[bytesToHashCount] : stackalloc byte[bytesToHashCount];
 
-        //put the name space ID in network byte order.
-        Span<byte> namespaceBytes = stackalloc byte[16];
+        //put the namespace ID in network byte order.
+        Span<byte> namespaceBytes = bytesToHash[..namespaceBytesCount];
         namespaceId.TryWriteBytes(namespaceBytes, bigEndian: true, out _);
 
-        //Compute the hash of the name space ID concatenated with the name.
-        int bytesToHashCount = namespaceBytes.Length + utf8NameBytes.Length;
-        Span<byte> bytesToHash = (utf8NameByteCount > 256) ? new byte[bytesToHashCount] : stackalloc byte[bytesToHashCount];
-        namespaceBytes.CopyTo(bytesToHash);
-        utf8NameBytes.CopyTo(bytesToHash[namespaceBytes.Length..]);
+        Span<byte> utf8NameBytes = bytesToHash[namespaceBytesCount..];
+        Encoding.UTF8.GetBytes(normalizedName, utf8NameBytes);
 
+        //Compute the hash of the namespace ID concatenated with the name.
         Span<byte> hash = stackalloc byte[hashAlgorithm.HashSize / 8];
         hashAlgorithm.TryComputeHash(bytesToHash, hash, out _);
 
-        return CreateGuidFromBigEndianBytes(hash[0..16], version);
+        return CreateGuidFromBigEndianBytes(hash[..16], version);
 #endif
     }
 

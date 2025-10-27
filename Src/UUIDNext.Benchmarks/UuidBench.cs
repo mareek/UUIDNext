@@ -5,7 +5,20 @@ namespace UUIDNext.Benchmarks;
 [MemoryDiagnoser(false)]
 public class UuidBench
 {
+    private const string ShortUrl = "http://www.example.com";
     private static readonly Guid urlNamespaceId = Guid.Parse("6ba7b811-9dad-11d1-80b4-00c04fd430c8");
+
+    private static readonly string longUrl = $"{ShortUrl}/?token={GetHexString(1024)}";
+    private static string GetHexString(int stringLength)
+    {
+        Random rng = new();
+        byte[] buffer = new byte[stringLength / 2];
+        rng.NextBytes(buffer);
+        return BitConverter.ToString(buffer)
+                           .Replace("-", "")
+                           .ToLower();
+    }
+
     private static readonly Generator.UuidV8SqlServerGenerator uuidV8Generator = new();
     private static readonly Generator.UuidV7FromSpecificDateGenerator uuidV7Generator = new();
 
@@ -21,7 +34,10 @@ public class UuidBench
     public Guid NewUuidV4() => Uuid.NewRandom();
 
     [Benchmark]
-    public Guid NewUuidV5() => Uuid.NewNameBased(urlNamespaceId, "http://www.example.com");
+    public Guid NewUuidV5_short() => Uuid.NewNameBased(urlNamespaceId, ShortUrl);
+
+    [Benchmark]
+    public Guid NewUuidV5_long() => Uuid.NewNameBased(urlNamespaceId, longUrl);
 
     [Benchmark]
     public Guid NewUuidV7() => Uuid.NewSequential();
