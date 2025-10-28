@@ -1,5 +1,9 @@
 # Version History
 
+## 4.2.2 (2025-10-28)
+
+* Reduced memory allocation for name based UUIDs
+
 ## 4.2.1 (2025-10-06)
 
 * Enabled strong naming + added source in nuget package
