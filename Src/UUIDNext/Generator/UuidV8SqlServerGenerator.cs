@@ -34,7 +34,7 @@ internal class UuidV8SqlServerGenerator
          */
 
         var (timestamp, sequence) = _monotonicityHandler.GetTimestampAndSequence(date);
-        
+
         Span<byte> sequenceBytes = stackalloc byte[2];
         BinaryPrimitives.TryWriteUInt16BigEndian(sequenceBytes, sequence);
 

@@ -2,10 +2,12 @@
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <TargetFrameworks>net8.0;net472</TargetFrameworks>
+    <TargetFrameworks>net472;net8.0</TargetFrameworks>
     <LangVersion>12</LangVersion>
 	<SignAssembly>True</SignAssembly>
 	<AssemblyOriginatorKeyFile>..\UUIDNext.snk</AssemblyOriginatorKeyFile>
+	<UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+	<OutputType>exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,11 +16,7 @@
     <PackageReference Condition="'$(TargetFramework)' != 'net8.0'" Include="SQLitePCLRaw.bundle_sqlite3" Version="2.1.11" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="NFluent" Version="3.1.0" />
-    <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="xunit.v3" Version="3.2.0" />
     <PackageReference Include="coverlet.collector" Version="6.0.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

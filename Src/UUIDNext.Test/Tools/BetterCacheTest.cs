@@ -50,7 +50,7 @@ public class BetterCacheTest
             var second = cache.AddOrUpdate("second", _ => 0, (_, v) => v + 1);
             Check.That(second).Is(i);
         }
-        
+
         var first = cache.AddOrUpdate("0", _ => 0, (_, v) => v + 1);
         Check.That(first).Is(0);
     }

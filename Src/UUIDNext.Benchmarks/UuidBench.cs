@@ -1,8 +1,10 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Columns;
 
 namespace UUIDNext.Benchmarks;
 
 [MemoryDiagnoser(false)]
+[HideColumns(Column.Error, Column.StdDev, Column.RatioSD)]
 public class UuidBench
 {
     private const string ShortUrl = "http://www.example.com";
@@ -25,19 +27,13 @@ public class UuidBench
     [Benchmark(Baseline = true)]
     public Guid NewGuid() => Guid.NewGuid();
 
+    [Benchmark]
+    public Guid NewUuidV4() => Uuid.NewRandom();
+
 #if NET9_0_OR_GREATER
     [Benchmark()]
     public Guid CreateVersion7() => Guid.CreateVersion7();
 #endif
-
-    [Benchmark]
-    public Guid NewUuidV4() => Uuid.NewRandom();
-
-    [Benchmark]
-    public Guid NewUuidV5_short() => Uuid.NewNameBased(urlNamespaceId, ShortUrl);
-
-    [Benchmark]
-    public Guid NewUuidV5_long() => Uuid.NewNameBased(urlNamespaceId, longUrl);
 
     [Benchmark]
     public Guid NewUuidV7() => Uuid.NewSequential();
@@ -47,4 +43,10 @@ public class UuidBench
 
     [Benchmark]
     public Guid NewUuidV7ArbitraryDate() => uuidV7Generator.New(DateTime.Today);
+
+    [Benchmark]
+    public Guid NewUuidV5_short() => Uuid.NewNameBased(urlNamespaceId, ShortUrl);
+
+    [Benchmark]
+    public Guid NewUuidV5_long() => Uuid.NewNameBased(urlNamespaceId, longUrl);
 }
