@@ -1,5 +1,9 @@
 # Version History
 
+## 4.2.3 (2026-01-11)
+
+* Added the list of known namespaces for UUID v5
+
 ## 4.2.2 (2025-10-28)
 
 * Reduced memory allocation for name based UUIDs

@@ -8,7 +8,7 @@
 	<!--Nuget package information-->
 	<PropertyGroup>
 		<PackageId>UUIDNext</PackageId>
-		<Version>4.2.2</Version>
+		<Version>4.2.3</Version>
 		<Authors>Matthieu Mourisson</Authors>
 		<PackageLicenseExpression>0BSD</PackageLicenseExpression>
 		<PackageTags>UUID;GUID;UUIDv5;UUIDv7;UUIDv8</PackageTags>
