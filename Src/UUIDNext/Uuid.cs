@@ -52,4 +52,36 @@ public static class Uuid
     /// Create a new UUID Version 7
     /// </summary>
     public static Guid NewSequential() => _v7Generator.New();
+
+    /// <summary>
+    /// The IANA approved UUID namespaces
+    /// see https://www.iana.org/assignments/uuid/uuid.xhtml#table-uuid-namespace-ids
+    /// </summary>
+    public static class Namespace
+    {
+        /// <summary>
+        /// Domain Name System
+        /// </summary>
+        public static readonly Guid DNS = new("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
+
+        /// <summary>
+        /// Uniform Resource Locator
+        /// </summary>
+        public static readonly Guid URL = new("6ba7b811-9dad-11d1-80b4-00c04fd430c8");
+        
+        /// <summary>
+        /// ASN.1 Object Identifier
+        /// </summary>
+        public static readonly Guid OID = new("6ba7b812-9dad-11d1-80b4-00c04fd430c8");
+        
+        /// <summary>
+        /// X.500 Distinguished Name
+        /// </summary>
+        public static readonly Guid X500 = new("6ba7b814-9dad-11d1-80b4-00c04fd430c8");
+        
+        /// <summary>
+        /// Concise Binary Object Representation - Private Enterprise Number
+        /// </summary>
+        public static readonly Guid CBOR_PEN = new ("47fbdabb-f2e4-55f0-bb39-3620c2f6df4e");
+    }
 }

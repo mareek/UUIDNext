@@ -22,8 +22,7 @@ Console.WriteLine($"This is a SQL Server friendly UUID : {sqlServerUuid}");
 
 
 // Creating a name based UUID (Version 5)
-Guid urlNamespaceId = Guid.Parse("6ba7b811-9dad-11d1-80b4-00c04fd430c8");
-Guid nameBasedUuid = Uuid.NewNameBased(urlNamespaceId, "https://github.com/uuid6/uuid6-ietf-draft");
+Guid nameBasedUuid = Uuid.NewNameBased(Uuid.Namespace.URL, "https://github.com/uuid6/uuid6-ietf-draft");
 Console.WriteLine($"This is a name based UUID : {nameBasedUuid}");
 ```
 

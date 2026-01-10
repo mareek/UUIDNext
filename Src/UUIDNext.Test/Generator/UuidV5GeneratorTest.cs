@@ -10,9 +10,8 @@ namespace UUIDNext.Test.Generator
         [Fact]
         public void UuidV5KnowValue()
         {
-            Guid namespaceId = new("f8e58ba0-803a-402f-9229-a40e7d2d35e4");
-            Guid expectedResult = new("5f9e84e4-1a9f-5ae7-a8dd-522559d3537f");
-            var guidV5 = new UuidV5Generator().New(namespaceId, "toto");
+            Guid expectedResult = new("2ed6657d-e927-568b-95e1-2665a8aea6a2");
+            var guidV5 = new UuidV5Generator().New(Uuid.Namespace.DNS, "www.example.com");
             UuidTestHelper.CheckVersionAndVariant(guidV5, 5);
             Check.That(guidV5).IsEqualTo(expectedResult);
         }
