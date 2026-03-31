@@ -54,4 +54,17 @@ public class BetterCacheTest
         var first = cache.AddOrUpdate("0", _ => 0, (_, v) => v + 1);
         Check.That(first).Is(0);
     }
+
+    [Fact]
+    [Trait("bug", "#40")]
+    public void TestLastIndexBug()
+    {
+        BetterCache<int, int> cache = new(2);
+        cache.GetOrAdd(1, _ => 1);
+        cache.GetOrAdd(2, _ => 1);
+
+        cache.GetOrAdd(1, _ => 1);
+
+        cache.GetOrAdd(3, _ => 1);
+    }
 }

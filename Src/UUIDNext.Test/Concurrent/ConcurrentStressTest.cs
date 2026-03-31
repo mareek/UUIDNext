@@ -6,7 +6,7 @@ using Xunit;
 
 namespace UUIDNext.Test.Concurrent;
 
-public class UuidConcurrentTest
+public class ConcurrentStressTest
 {
     [Theory]
     [InlineData(8, 16_384)]

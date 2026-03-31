@@ -127,8 +127,10 @@ internal class BetterCache<TKey, TValue>(int capacity)
         // we put the item at the first place
         _items[index] = new(-1, item.Key, item.Value, _firstIndex);
 
-        // update the "pointer"
+        // update the "pointers"
         _firstIndex = index;
+        if (index == _lastIindex)
+            _lastIindex = item.PreviousIndex;
     }
 
     private readonly struct ListItem(int previousIndex, TKey key, TValue value, int nextIndex)
