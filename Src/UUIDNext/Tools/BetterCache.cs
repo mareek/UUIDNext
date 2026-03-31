@@ -15,7 +15,7 @@ internal class BetterCache<TKey, TValue>(int capacity)
     private readonly Dictionary<TKey, int> _keysIndex = new(capacity);
     private readonly ListItem[] _items = new ListItem[capacity];
     private int _firstIndex = -1;
-    private int _lastIindex = -1;
+    private int _lastIindex = capacity - 1;
     private int _firstAvailbleIndex = capacity - 1;
 
     public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
@@ -63,28 +63,44 @@ internal class BetterCache<TKey, TValue>(int capacity)
     private void AddOnTop(TKey key, TValue value)
     {
         ListItem newItem = new(-1, key, value, _firstIndex);
+
+        // if the cache is not full, we put the new item at the first available index
         if (_firstAvailbleIndex != -1)
         {
-            if (_firstIndex == -1)
-                _lastIindex = _firstAvailbleIndex;
-            else
-                _items[_firstIndex] = _items[_firstIndex].WithPreviousIndex(_firstAvailbleIndex);
+            // put the new item at the first avilable index
+            var newFirstIndex = _firstAvailbleIndex;
+            _items[newFirstIndex] = newItem;
 
-            _items[_firstAvailbleIndex] = newItem;
-            _firstIndex = _firstAvailbleIndex;
+            // if the cache is not empty, move the previous first item to the second place
+            if (_firstIndex != -1)
+                _items[_firstIndex] = _items[_firstIndex].WithPreviousIndex(newFirstIndex);
+
+            // update the "pointers"
+            _firstIndex = newFirstIndex;
             _firstAvailbleIndex--;
         }
         else
         {
-            var lastItem = _items[_lastIindex];
-            _keysIndex.Remove(lastItem.Key);
-            var newLastIndex = lastItem.PreviousIndex;
-            _items[_lastIindex] = newItem;
-            _items[_firstIndex] = _items[_firstIndex].WithPreviousIndex(_lastIindex);
+            // remove last item from cache
+            var itemToRemove = _items[_lastIindex];
+            _keysIndex.Remove(itemToRemove.Key);
+
+            // set the penultimate item as the last item
+            var newLastIndex = itemToRemove.PreviousIndex;
             _items[newLastIndex] = _items[newLastIndex].WithNextIndex(-1);
-            _firstIndex = _lastIindex;
+
+            // move the previous first item to the second place
+            var newFirstIndex = _lastIindex;
+            _items[_firstIndex] = _items[_firstIndex].WithPreviousIndex(newFirstIndex);
+
+            // set the new item as the first item
+            _items[newFirstIndex] = newItem;
+
+            // update the "pointers"
             _lastIindex = newLastIndex;
+            _firstIndex = newFirstIndex;
         }
+
         _keysIndex[key] = _firstIndex;
     }
 
@@ -94,18 +110,27 @@ internal class BetterCache<TKey, TValue>(int capacity)
 
     private void MoveToTop(int index)
     {
+        // if the item is already first we've got nothing to do
         if (index == _firstIndex)
             return;
 
         var item = _items[index];
 
+        // re remove the item from its position in the "chain" of items 
         _items[item.PreviousIndex] = _items[item.PreviousIndex].WithNextIndex(item.NextIndex);
-        if (item.NextIndex != -1)
+        if (item.NextIndex != -1) // same thing but backward
             _items[item.NextIndex] = _items[item.NextIndex].WithPreviousIndex(item.PreviousIndex);
 
+        // move the previous first item to the second place
         _items[_firstIndex] = _items[_firstIndex].WithPreviousIndex(index);
-        _items[index] = item.WithNextIndex(_firstIndex).WithPreviousIndex(-1);
+
+        // we put the item at the first place
+        _items[index] = new(-1, item.Key, item.Value, _firstIndex);
+
+        // update the "pointers"
         _firstIndex = index;
+        if (index == _lastIindex)
+            _lastIindex = item.PreviousIndex;
     }
 
     private readonly struct ListItem(int previousIndex, TKey key, TValue value, int nextIndex)
