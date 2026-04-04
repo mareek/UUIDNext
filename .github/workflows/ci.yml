@@ -41,3 +41,11 @@ jobs:
       with:
         name: TestResults
         path: Src/TestResults_*/*.trx
+    - name: Publish test report
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: Test Results
+        path: Src/TestResults_*/*.trx
+        reporter: dotnet-trx
+        fail-on-error: true
