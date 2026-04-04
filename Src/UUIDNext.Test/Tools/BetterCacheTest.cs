@@ -15,7 +15,7 @@ public class BetterCacheTest
         for (int i = 0; i < 10; i++)
         {
             var first = cache.GetOrAdd("first", _ => ++factoryCount);
-            Check.That(first).Is(1);
+            Check.That(first).Is(10);
             var second = cache.GetOrAdd("second", _ => ++factoryCount);
             Check.That(second).Is(2);
         }
