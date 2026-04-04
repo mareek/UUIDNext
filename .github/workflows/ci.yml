@@ -8,6 +8,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch: 
 
 permissions:
   contents: read
@@ -19,7 +20,7 @@ defaults:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v6
@@ -31,10 +32,12 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal --framework net10.0 --logger "trx;LogFileName=TestResults.trx"
+    - name: Test net472
+      run: dotnet test UUIDNext.Test/UUIDNext.Test.csproj --framework net472 --no-build --verbosity normal --logger trx --results-directory TestResults_net472
+    - name: Test net10.0
+      run: dotnet test UUIDNext.Test/UUIDNext.Test.csproj --framework net10.0 --no-build --verbosity normal --logger trx --results-directory TestResults_net10.0
     - name: Upload test results
       uses: actions/upload-artifact@v7
       with:
         name: TestResults
-        path: ./src/Test/TestResults/TestResults.trx
+        path: Src/TestResults_*/*.trx
