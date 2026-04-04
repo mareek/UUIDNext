@@ -32,10 +32,14 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test UUIDNext.Test/UUIDNext.Test.csproj --no-build --verbosity normal --logger "trx;LogFileName=TestResults.trx"
+    - name: Test net472
+      run: dotnet test UUIDNext.Test/UUIDNext.Test.csproj --framework net472 --no-build --verbosity normal --logger "trx;LogFileName=TestResults_net472.trx"
+    - name: Test net10.0
+      run: dotnet test UUIDNext.Test/UUIDNext.Test.csproj --framework net10.0 --no-build --verbosity normal --logger "trx;LogFileName=TestResults_net10.0.trx"
     - name: Upload test results
       uses: actions/upload-artifact@v7
       with:
         name: TestResults
-        path: TestResults.trx
+        path: |
+          UUIDNext.Test/TestResults/TestResults_net472.trx
+          UUIDNext.Test/TestResults/TestResults_net10.0.trx
