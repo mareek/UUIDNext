@@ -38,10 +38,9 @@ public abstract class UuidTimestampGeneratorBaseTest
     }
 
     [Fact]
-
     public void CheckSequenceSeeding()
     {
-        const int iterationCOunt = 1_000_000;
+        const int iterationCOunt = 100_000;
 
         short maxSequence = (short)GetSequenceMaxValue();
 

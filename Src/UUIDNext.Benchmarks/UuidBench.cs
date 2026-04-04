@@ -31,7 +31,7 @@ public class UuidBench
     public Guid NewUuidV4() => Uuid.NewRandom();
 
 #if NET9_0_OR_GREATER
-    [Benchmark()]
+    [Benchmark]
     public Guid CreateVersion7() => Guid.CreateVersion7();
 #endif
 
