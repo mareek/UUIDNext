@@ -1,5 +1,9 @@
 # Version History
 
+## 4.2.4 (2026-04-04)
+
+* Fixed a very rare bug in `UuidToolkit.CreateUuidV7FromSpecificDate` (see [#40](https://github.com/mareek/UUIDNext/issues/40))
+
 ## 4.2.3 (2026-01-11)
 
 * Added the list of known namespaces for UUID v5
