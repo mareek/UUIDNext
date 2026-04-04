@@ -33,13 +33,13 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test net472
-      run: dotnet test UUIDNext.Test/UUIDNext.Test.csproj --framework net472 --no-build --verbosity normal --logger "trx;LogFileName=TestResults_net472.trx"
+      run: dotnet test UUIDNext.Test/UUIDNext.Test.csproj --framework net472 --no-build --verbosity normal --logger "trx;LogFileName=../TestResults_net472.trx"
     - name: Test net10.0
-      run: dotnet test UUIDNext.Test/UUIDNext.Test.csproj --framework net10.0 --no-build --verbosity normal --logger "trx;LogFileName=TestResults_net10.0.trx"
+      run: dotnet test UUIDNext.Test/UUIDNext.Test.csproj --framework net10.0 --no-build --verbosity normal --logger "trx;LogFileName=../TestResults_net10.0.trx"
     - name: Upload test results
       uses: actions/upload-artifact@v7
       with:
         name: TestResults
         path: |
-          UUIDNext.Test/TestResults/TestResults_net472.trx
-          UUIDNext.Test/TestResults/TestResults_net10.0.trx
+          TestResults_net472.trx
+          TestResults_net10.0.trx
