@@ -17,17 +17,17 @@ jobs:
       id-token: write  # enable GitHub OIDC (OpenID Connect standard) token issuance for this job
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: 10.0.x
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build -c Release --no-restore
     - name: Test
-      run: dotnet test -c Release --no-build --framework net8.0
+      run: dotnet test -c Release --no-build --framework net10.0
     - name: Pack nugets
       run: dotnet pack "./UUIDNext/UUIDNext.csproj" -c Release --no-build --output .
 
