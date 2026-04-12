@@ -1,6 +1,7 @@
 <Solution>
   <Project Path="UUIDNext.Benchmarks/UUIDNext.Benchmarks.csproj" />
   <Project Path="UUIDNext.Cli/UUIDNext.Cli.csproj" />
+  <Project Path="UUIDNext.Fuzzer/UUIDNext.Fuzzer.csproj" Id="56a6ff8a-2a6f-4974-814d-aa3929e1779b" />
   <Project Path="UUIDNext.Test/UUIDNext.Test.csproj" />
   <Project Path="UUIDNext/UUIDNext.csproj" />
 </Solution>
